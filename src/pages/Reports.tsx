@@ -19,12 +19,12 @@ export const Reports: React.FC = () => {
 
     const flatContrastReports = filteredContrast.flatMap(record => {
         return contrastTypes.map(cType => {
-            const m = record.morning.items.find(i => i.contrastTypeId === cType.id);
-            const a = record.afternoon.items.find(i => i.contrastTypeId === cType.id);
-            const n = record.night.items.find(i => i.contrastTypeId === cType.id);
+            const mEntry = record.morning.items.find(i => i.contrastTypeId === cType.id) || { additionalStockMls: 0, amountConsumedMls: 0 };
+            const aEntry = record.afternoon.items.find(i => i.contrastTypeId === cType.id) || { additionalStockMls: 0, amountConsumedMls: 0 };
+            const nEntry = record.night.items.find(i => i.contrastTypeId === cType.id) || { additionalStockMls: 0, amountConsumedMls: 0 };
 
-            const totalReceived = (m?.additionalStock || 0) + (a?.additionalStock || 0) + (n?.additionalStock || 0);
-            const totalConsumed = (m?.amountConsumed || 0) + (a?.amountConsumed || 0) + (n?.amountConsumed || 0);
+            const totalReceived = mEntry.additionalStockMls + aEntry.additionalStockMls + nEntry.additionalStockMls;
+            const totalConsumed = mEntry.amountConsumedMls + aEntry.amountConsumedMls + nEntry.amountConsumedMls;
 
             if (totalReceived > 0 || totalConsumed > 0) {
                 return {

@@ -69,9 +69,9 @@ export const Dashboard: React.FC = () => {
             const dataPoint: any = { date: new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) };
             if (dayRecord) {
                 contrastTypes.forEach(type => {
-                    const mlForType = (dayRecord.morning.items.find(i => i.contrastTypeId === type.id)?.amountConsumed || 0) +
-                        (dayRecord.afternoon.items.find(i => i.contrastTypeId === type.id)?.amountConsumed || 0) +
-                        (dayRecord.night.items.find(i => i.contrastTypeId === type.id)?.amountConsumed || 0);
+                    const mlForType = (dayRecord.morning.items.find(i => i.contrastTypeId === type.id)?.amountConsumedMls || 0) +
+                        (dayRecord.afternoon.items.find(i => i.contrastTypeId === type.id)?.amountConsumedMls || 0) +
+                        (dayRecord.night.items.find(i => i.contrastTypeId === type.id)?.amountConsumedMls || 0);
                     if (mlForType > 0) {
                         dataPoint[type.name] = mlForType;
                     }

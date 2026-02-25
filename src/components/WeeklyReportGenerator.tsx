@@ -56,9 +56,9 @@ export const WeeklyReportGenerator: React.FC = () => {
         csvContent += "\nContrast Usage\nType,Total ML\n";
         contrastTypes.forEach(c => {
             const ml = periodContrastRecords.reduce((sum, record) => {
-                const morningSum = record.morning.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
-                const afternoonSum = record.afternoon.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
-                const nightSum = record.night.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
+                const morningSum = record.morning.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
+                const afternoonSum = record.afternoon.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
+                const nightSum = record.night.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
                 return sum + morningSum + afternoonSum + nightSum;
             }, 0);
             if (ml > 0) csvContent += `${c.name},${ml}\n`;
@@ -105,9 +105,9 @@ export const WeeklyReportGenerator: React.FC = () => {
 
     const contrastStats = contrastTypes.map(c => {
         const ml = periodContrastRecords.reduce((sum, record) => {
-            const m = record.morning.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
-            const a = record.afternoon.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
-            const n = record.night.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
+            const m = record.morning.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
+            const a = record.afternoon.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
+            const n = record.night.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
             return sum + m + a + n;
         }, 0);
         return {

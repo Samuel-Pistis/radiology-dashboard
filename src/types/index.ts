@@ -31,8 +31,14 @@ export interface DailyActivityLog {
 
 export interface ContrastItemData {
     contrastTypeId: string;
-    additionalStock: number;
-    amountConsumed: number;
+    totalReceivedMls: number;
+    totalReceivedBottles: number;
+    additionalStockMls: number;
+    additionalStockBottles: number;
+    amountConsumedMls: number;
+    amountConsumedBottles: number;
+    outstandingMls: number;
+    outstandingBottles: number;
 }
 
 export interface ShiftRecord {

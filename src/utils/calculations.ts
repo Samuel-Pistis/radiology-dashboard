@@ -18,18 +18,18 @@ export const calculateTotalFilms14x17 = (logs: DailyActivityLog[]) => {
 
 export const calculateTotalContrastML = (records: DailyContrastRecord[]) => {
     return records.reduce((sum, record) => {
-        const morningSum = record.morning.items.reduce((acc, item) => acc + (item.amountConsumed || 0), 0);
-        const afternoonSum = record.afternoon.items.reduce((acc, item) => acc + (item.amountConsumed || 0), 0);
-        const nightSum = record.night.items.reduce((acc, item) => acc + (item.amountConsumed || 0), 0);
+        const morningSum = record.morning.items.reduce((acc, item) => acc + (item.amountConsumedMls || 0), 0);
+        const afternoonSum = record.afternoon.items.reduce((acc, item) => acc + (item.amountConsumedMls || 0), 0);
+        const nightSum = record.night.items.reduce((acc, item) => acc + (item.amountConsumedMls || 0), 0);
         return sum + morningSum + afternoonSum + nightSum;
     }, 0);
 };
 
 export const calculateTotalContrastMLByType = (records: DailyContrastRecord[], contrastTypeId: string) => {
     return records.reduce((sum, record) => {
-        const morningSum = record.morning.items.find(i => i.contrastTypeId === contrastTypeId)?.amountConsumed || 0;
-        const afternoonSum = record.afternoon.items.find(i => i.contrastTypeId === contrastTypeId)?.amountConsumed || 0;
-        const nightSum = record.night.items.find(i => i.contrastTypeId === contrastTypeId)?.amountConsumed || 0;
+        const morningSum = record.morning.items.find(i => i.contrastTypeId === contrastTypeId)?.amountConsumedMls || 0;
+        const afternoonSum = record.afternoon.items.find(i => i.contrastTypeId === contrastTypeId)?.amountConsumedMls || 0;
+        const nightSum = record.night.items.find(i => i.contrastTypeId === contrastTypeId)?.amountConsumedMls || 0;
         return sum + morningSum + afternoonSum + nightSum;
     }, 0);
 };

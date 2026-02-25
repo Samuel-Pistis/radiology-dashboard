@@ -57,9 +57,9 @@ export const WeeklyOperations: React.FC = () => {
 
         periodContrastRecords.forEach(record => {
             contrastTypes.forEach(c => {
-                const mAmount = record.morning.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
-                const aAmount = record.afternoon.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
-                const nAmount = record.night.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
+                const mAmount = record.morning.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
+                const aAmount = record.afternoon.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
+                const nAmount = record.night.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
                 contrastTotals[c.id] += (mAmount + aAmount + nAmount);
             });
         });
