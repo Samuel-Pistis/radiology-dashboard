@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CalendarDays, CalendarRange, FileBarChart, Settings, LogOut, PlusSquare } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, CalendarRange, FileBarChart, Settings, LogOut, PlusSquare, ShieldCheck, UserCog } from 'lucide-react';
 import clsx from 'clsx';
+import { useAuth } from '../context/AuthContext';
 
 const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -12,6 +13,8 @@ const navItems = [
 ];
 
 export const Sidebar: React.FC = () => {
+    const { user, logout } = useAuth();
+
     return (
         <aside className="w-64 bg-surface m-4 rounded-3xl shadow-sm flex flex-col h-[calc(100vh-2rem)] text-text-primary">
             <div className="h-20 flex items-center px-8">
@@ -53,7 +56,20 @@ export const Sidebar: React.FC = () => {
                     </button>
                 </div>
 
-                <button className="flex items-center gap-3 px-2 py-3 w-full text-text-secondary hover:text-text-primary transition-colors font-medium">
+                <div className="flex items-center gap-3 mb-4 px-2 py-3 bg-surface-hover rounded-xl border border-border/50">
+                    <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
+                        {user?.role === 'admin' ? <ShieldCheck className="w-5 h-5" /> : <UserCog className="w-5 h-5" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-text-primary truncate">{user?.name}</p>
+                        <p className="text-xs text-text-secondary truncate capitalize">{user?.role.replace('_', ' ')}</p>
+                    </div>
+                </div>
+
+                <button
+                    onClick={logout}
+                    className="flex items-center gap-3 px-2 py-3 w-full text-text-secondary hover:text-red-500 hover:bg-red-50 rounded-xl transition-all font-medium"
+                >
                     <LogOut className="w-5 h-5" />
                     <span>Log out</span>
                 </button>

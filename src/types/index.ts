@@ -1,3 +1,12 @@
+export type UserRole = 'admin' | 'radiology_user';
+
+export interface User {
+    id: string;
+    name: string;
+    role: UserRole;
+    email?: string;
+}
+
 export interface Modality {
     id: string;
     name: string;

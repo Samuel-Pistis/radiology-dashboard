@@ -31,9 +31,9 @@ export const WeeklyComparison: React.FC = () => {
 
         const contrastStats = contrastTypes.map(c => {
             const ml = periodContrastRecords.reduce((sum, record) => {
-                const m = record.morning.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
-                const a = record.afternoon.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
-                const n = record.night.items.find(i => i.contrastTypeId === c.id)?.amountConsumed || 0;
+                const m = record.morning.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
+                const a = record.afternoon.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
+                const n = record.night.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
                 return sum + m + a + n;
             }, 0);
             return {
