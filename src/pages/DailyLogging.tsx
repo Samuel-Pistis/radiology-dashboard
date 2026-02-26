@@ -399,10 +399,10 @@ export const DailyLogging: React.FC = () => {
                 </div>
             )}
 
-            <div className="flex space-x-2 border-b border-surface-hover/50">
+            <div className="flex overflow-x-auto hide-scrollbar space-x-2 border-b border-surface-hover/50 pb-px">
                 <button
                     onClick={() => setActiveTab('activity')}
-                    className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors border-b-2 ${activeTab === 'activity' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'activity' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
                         }`}
                 >
                     <Activity className="w-5 h-5" />
@@ -410,23 +410,23 @@ export const DailyLogging: React.FC = () => {
                 </button>
                 <button
                     onClick={() => setActiveTab('contrast')}
-                    className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors border-b-2 ${activeTab === 'contrast' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'contrast' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
                         }`}
                 >
                     <PieChartIcon className="w-5 h-5" />
-                    Daily Contrast Consumption
+                    Contrast Log
                 </button>
             </div>
 
             {activeTab === 'activity' && (
                 <form onSubmit={handleActivitySubmit} className="space-y-8 animate-in fade-in relative">
                     {/* General Information */}
-                    <div className="bg-surface rounded-3xl p-8 shadow-sm border border-surface-hover/20">
+                    <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm border border-surface-hover/20">
                         <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-text-primary">
                             <FileText className="w-6 h-6 text-primary-500" />
                             General Information
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-text-secondary">Date</label>
                                 <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required className={inputClasses} />
@@ -449,9 +449,9 @@ export const DailyLogging: React.FC = () => {
                     </div>
 
                     {/* Activity & Film Usage */}
-                    <div className="bg-surface rounded-3xl p-8 shadow-sm border border-surface-hover/20">
+                    <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm border border-surface-hover/20">
                         <h3 className="text-xl font-semibold mb-6 text-text-primary">Investigations & Film Usage</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-text-secondary">Total Investigations</label>
                                 <input type="number" min="0" value={totalInvestigations} onChange={(e) => setTotalInvestigations(Number(e.target.value))} required className={inputClasses} />
@@ -485,7 +485,7 @@ export const DailyLogging: React.FC = () => {
             {activeTab === 'contrast' && (
                 <div className="animate-in fade-in space-y-8">
                     {/* Header Controls */}
-                    <div className="flex justify-between items-center mb-6">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                         <div className="flex flex-col">
                             <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">BT Health & Diagnostics Centre</h3>
                             <h2 className="text-2xl font-black text-text-primary">Daily Contrast Consumption</h2>
@@ -493,7 +493,7 @@ export const DailyLogging: React.FC = () => {
                                 {new Date(contrastDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
                             </p>
                         </div>
-                        <input type="date" value={contrastDate} onChange={e => setContrastDate(e.target.value)} className={`${inputClasses} w-auto py-2 font-medium shadow-sm border border-surface-hover`} />
+                        <input type="date" value={contrastDate} onChange={e => setContrastDate(e.target.value)} className={`${inputClasses} w-full md:w-auto py-2 font-medium shadow-sm border border-surface-hover`} />
                     </div>
 
                     {/* Top Stat Cards matching screenshot directly */}
@@ -528,8 +528,8 @@ export const DailyLogging: React.FC = () => {
                             {renderShiftAccordion('night', 'Night', '7:00 PM - 8:00 AM')}
 
                             <div className="pt-2">
-                                <button onClick={handleContrastSubmit} className="flex justify-center items-center gap-2 w-full bg-slate-800 hover:bg-slate-900 text-white px-10 py-5 rounded-3xl font-bold text-lg transition-all duration-300 shadow-md hover:-translate-y-1">
-                                    <Save className="w-5 h-5" /> Save Daily Contrast Records
+                                <button onClick={handleContrastSubmit} className="flex justify-center items-center gap-2 w-full bg-slate-800 hover:bg-slate-900 text-white px-6 md:px-10 py-5 rounded-3xl font-bold text-lg transition-all duration-300 shadow-md hover:-translate-y-1">
+                                    <Save className="w-5 h-5" /> <span className="hidden sm:inline">Save Daily Contrast Records</span><span className="sm:hidden">Save Records</span>
                                 </button>
                             </div>
                         </div>

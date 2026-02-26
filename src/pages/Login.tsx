@@ -26,7 +26,7 @@ export const Login: React.FC = () => {
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary-100/40 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary-100/40 rounded-full blur-[100px] pointer-events-none" />
 
-            <div className="w-full max-w-md bg-surface p-8 rounded-3xl shadow-xl shadow-primary-500/5 backdrop-blur-sm z-10 border border-border/50">
+            <div className="w-full max-w-md bg-surface p-6 sm:p-8 rounded-3xl shadow-xl shadow-primary-500/5 backdrop-blur-sm z-10 border border-border/50 mx-4">
                 <div className="flex flex-col items-center mb-8">
                     <div className="bg-primary-50 p-4 rounded-2xl mb-4 relative">
                         <Activity className="w-10 h-10 text-primary-500" />

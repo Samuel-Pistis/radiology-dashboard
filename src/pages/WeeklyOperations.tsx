@@ -114,16 +114,16 @@ export const WeeklyOperations: React.FC = () => {
             )}
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <div className="bg-surface rounded-3xl p-8 shadow-sm overflow-hidden h-fit">
-                    <div className="flex items-center gap-4 mb-8 border-b border-surface-hover/50 pb-6">
-                        <div className="p-3 bg-primary-50 rounded-xl text-primary-500">
+                <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm overflow-hidden h-fit">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 md:mb-8 border-b border-surface-hover/50 pb-6">
+                        <div className="p-3 bg-primary-50 rounded-xl text-primary-500 w-fit">
                             <CalendarRange className="w-6 h-6" />
                         </div>
                         <h3 className="text-2xl font-bold text-text-primary">New Weekly Log</h3>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-8">
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-text-secondary">Start Date</label>
                                 <input type="date" value={weekStartDate} onChange={(e) => setWeekStartDate(e.target.value)} required className={inputClasses} />
@@ -269,10 +269,10 @@ export const WeeklyOperations: React.FC = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <h3 className="text-2xl font-bold mb-6 px-2 text-text-primary">Recent Logs</h3>
+                    <h3 className="text-2xl font-bold mb-4 md:mb-6 px-2 text-text-primary">Recent Logs</h3>
                     <div className="space-y-4 pb-8 max-h-[1000px] overflow-y-auto pr-2">
                         {weeklyOpsLogs.length === 0 ? (
-                            <div className="bg-surface border-none rounded-3xl p-12 text-center shadow-sm">
+                            <div className="bg-surface border-none rounded-3xl p-8 md:p-12 text-center shadow-sm">
                                 <CalendarRange className="w-16 h-16 text-surface-hover mx-auto mb-4" />
                                 <p className="text-text-primary font-bold text-lg">No weekly logs found.</p>
                                 <p className="text-sm text-text-secondary mt-2">Submit a log to see it here.</p>
@@ -282,13 +282,13 @@ export const WeeklyOperations: React.FC = () => {
                                 const totalWeeklyRevenue = log.revenue?.reduce((sum, rev) => sum + rev.amount, 0) || 0;
 
                                 return (
-                                    <div key={log.id} className="bg-surface rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="flex justify-between items-center mb-6">
-                                            <div className="text-sm font-bold text-primary-600 bg-primary-50 px-4 py-1.5 rounded-full">
+                                    <div key={log.id} className="bg-surface rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-2 mb-4 md:mb-6">
+                                            <div className="text-xs sm:text-sm font-bold text-primary-600 bg-primary-50 px-3 md:px-4 py-1.5 rounded-full">
                                                 {log.weekStartDate} to {log.weekEndDate}
                                             </div>
                                             {totalWeeklyRevenue > 0 && (
-                                                <div className="text-lg font-bold text-text-primary">
+                                                <div className="text-base sm:text-lg font-bold text-text-primary">
                                                     ₦{totalWeeklyRevenue.toLocaleString()}
                                                 </div>
                                             )}

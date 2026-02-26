@@ -49,29 +49,31 @@ export const Reports: React.FC = () => {
                     <p className="text-text-secondary mt-1">Review historical activity, contrast usage, and generate summaries.</p>
                 </div>
                 {activeTab !== 'generator' && activeTab !== 'comparison' && ( // Hide date filter when using generator/comparison as they have their own
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full md:w-auto">
                         <label className="text-sm font-semibold text-text-primary flex items-center gap-2">
                             <Calendar className="w-4 h-4 text-primary-500" /> Filter
                         </label>
-                        <input
-                            type="date"
-                            value={filterDate}
-                            onChange={(e) => setFilterDate(e.target.value)}
-                            className="bg-background border-none rounded-xl px-4 py-2 text-text-primary focus:ring-2 focus:ring-primary-500 outline-none shadow-inner"
-                        />
-                        {filterDate && (
-                            <button onClick={() => setFilterDate('')} className="text-sm font-bold text-primary-500 hover:text-primary-600 transition-colors">
-                                Clear
-                            </button>
-                        )}
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <input
+                                type="date"
+                                value={filterDate}
+                                onChange={(e) => setFilterDate(e.target.value)}
+                                className="bg-background border-none rounded-xl px-4 py-2 text-text-primary focus:ring-2 focus:ring-primary-500 outline-none shadow-inner w-full sm:w-auto"
+                            />
+                            {filterDate && (
+                                <button onClick={() => setFilterDate('')} className="text-sm font-bold text-primary-500 hover:text-primary-600 transition-colors whitespace-nowrap">
+                                    Clear
+                                </button>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
 
-            <div className="flex space-x-2 border-b border-surface-hover/50 mb-8">
+            <div className="flex overflow-x-auto hide-scrollbar space-x-2 border-b border-surface-hover/50 mb-8 pb-px">
                 <button
                     onClick={() => setActiveTab('activity')}
-                    className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors border-b-2 ${activeTab === 'activity' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'activity' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
                         }`}
                 >
                     <Activity className="w-5 h-5" />
@@ -79,7 +81,7 @@ export const Reports: React.FC = () => {
                 </button>
                 <button
                     onClick={() => setActiveTab('contrast')}
-                    className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors border-b-2 ${activeTab === 'contrast' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'contrast' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
                         }`}
                 >
                     <Droplet className="w-5 h-5" />
@@ -87,7 +89,7 @@ export const Reports: React.FC = () => {
                 </button>
                 <button
                     onClick={() => setActiveTab('generator')}
-                    className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors border-b-2 ${activeTab === 'generator' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'generator' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
                         }`}
                 >
                     <FileBarChart className="w-5 h-5" />
@@ -95,7 +97,7 @@ export const Reports: React.FC = () => {
                 </button>
                 <button
                     onClick={() => setActiveTab('comparison')}
-                    className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors border-b-2 ${activeTab === 'comparison' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'comparison' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
                         }`}
                 >
                     <Spline className="w-5 h-5" />
@@ -107,7 +109,7 @@ export const Reports: React.FC = () => {
                 {activeTab === 'activity' ? (
                     <div className="bg-surface rounded-3xl overflow-hidden shadow-sm">
                         {filteredActivity.length === 0 ? (
-                            <div className="p-16 text-center text-text-secondary">
+                            <div className="p-8 md:p-16 text-center text-text-secondary">
                                 <Activity className="w-12 h-12 mx-auto mb-4 text-surface-hover" />
                                 <p className="font-semibold text-lg text-text-primary">No activity logs found</p>
                                 <p>Try adjusting your date requirements.</p>

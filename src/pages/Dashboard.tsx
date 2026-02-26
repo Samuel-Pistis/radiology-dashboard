@@ -15,7 +15,7 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle, gradient }) => (
-    <div className={`rounded-[2rem] p-8 shadow-sm transition-transform duration-300 relative overflow-hidden ${gradient
+    <div className={`rounded-3xl md:rounded-[2rem] p-6 md:p-8 shadow-sm transition-transform duration-300 relative overflow-hidden ${gradient
         ? 'bg-gradient-to-br from-secondary-500 to-primary-500 text-white shadow-primary-500/20'
         : 'bg-surface text-text-primary'
         }`}>
@@ -136,8 +136,8 @@ export const Dashboard: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* Film Consumption Stacked Bar */}
-                <div className="bg-surface rounded-3xl p-8 shadow-sm">
-                    <h3 className="text-xl font-semibold mb-8 text-text-primary">Film Consumption by Modality</h3>
+                <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm">
+                    <h3 className="text-xl font-semibold mb-6 md:mb-8 text-text-primary">Film Consumption by Modality</h3>
                     {filmData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
                             <p>No film data available.</p>
@@ -160,10 +160,10 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Contrast Usage Line Chart */}
-                <div className="bg-surface rounded-3xl p-8 shadow-sm lg:col-span-2">
-                    <div className="flex justify-between items-center mb-8">
-                        <h3 className="text-xl font-semibold text-text-primary">Contrast Volume Trend (ML)</h3>
-                        <div className="px-4 py-2 bg-background rounded-full text-sm font-medium border border-surface-hover text-text-secondary">
+                <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm lg:col-span-2">
+                    <div className="flex justify-between items-center mb-6 md:mb-8">
+                        <h3 className="text-xl font-semibold text-text-primary">Contrast Volume (ML)</h3>
+                        <div className="hidden sm:block px-4 py-2 bg-background rounded-full text-sm font-medium border border-surface-hover text-text-secondary">
                             Last 30 Days
                         </div>
                     </div>
@@ -198,8 +198,8 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Revenue Comparison Bar Chart */}
-                <div className="bg-surface rounded-3xl p-8 shadow-sm lg:col-span-2">
-                    <h3 className="text-xl font-semibold mb-8 text-text-primary">Weekly Revenue Comparison (₦)</h3>
+                <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm lg:col-span-2">
+                    <h3 className="text-xl font-semibold mb-6 md:mb-8 text-text-primary">Weekly Revenue (₦)</h3>
                     {revenueComparisonData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
                             <p>No revenue comparison data available.</p>
