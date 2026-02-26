@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { Activity, CheckCircle, ChevronDown, ChevronUp, Save, FileText, PieChart as PieChartIcon } from 'lucide-react';
+import { Activity, CheckCircle, Save, FileText, PieChart as PieChartIcon } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import type { ShiftRecord, DailyContrastRecord, ContrastItemData } from '../types';
 
@@ -48,7 +48,6 @@ export const DailyLogging: React.FC = () => {
 
     // === CONTRAST TRACKER STATE ===
     const [contrastDate, setContrastDate] = useState(new Date().toISOString().split('T')[0]);
-    const [expandedShift, setExpandedShift] = useState<'morning' | 'afternoon' | 'night' | null>('morning');
 
     const initItems = (): ContrastItemData[] => contrastTypes.map(c => ({
         contrastTypeId: c.id,
@@ -204,183 +203,174 @@ export const DailyLogging: React.FC = () => {
         return <div className="w-6 h-6 rounded bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs shadow-sm">☽</div>;
     };
 
-    const renderShiftAccordion = (shiftName: 'morning' | 'afternoon' | 'night', title: string, timeRange: string) => {
-        const isExpanded = expandedShift === shiftName;
+    const renderShiftCard = (shiftName: 'morning' | 'afternoon' | 'night', title: string, timeRange: string) => {
         const shiftData = shifts[shiftName];
         const isMorning = shiftName === 'morning';
 
         return (
-            <div className={`bg-surface rounded-3xl border ${isExpanded ? 'border-surface-hover shadow-md' : 'border-surface-hover/50 shadow-sm'} overflow-hidden transition-all mb-6`}>
-                <button
-                    type="button"
-                    onClick={() => setExpandedShift(isExpanded ? null : shiftName)}
-                    className="w-full flex justify-between items-center p-6 bg-gradient-to-r hover:from-surface-hover/30 hover:to-transparent transition-colors"
-                >
+            <div className={`bg-surface rounded-3xl border border-surface-hover shadow-md overflow-hidden transition-all mb-6`}>
+                <div className="w-full flex justify-between items-center p-6 bg-gradient-to-r from-surface-hover/20 to-transparent border-b border-surface-hover/30">
                     <div className="flex items-center gap-4">
                         {getShiftIcon(shiftName)}
                         <div className="text-left">
-                            <h4 className="font-bold text-lg text-text-primary">{title} Shift</h4>
-                            <p className="text-xs font-semibold text-text-secondary">{timeRange}</p>
+                            <h4 className="font-bold text-lg text-text-primary">
+                                {title} Shift <span className="text-sm font-semibold text-text-secondary ml-2">({timeRange})</span>
+                            </h4>
                         </div>
                     </div>
-                    <div className="bg-surface-hover/30 p-2 rounded-full">
-                        {isExpanded ? <ChevronUp className="w-5 h-5 text-text-secondary" /> : <ChevronDown className="w-5 h-5 text-text-secondary" />}
-                    </div>
-                </button>
+                </div>
 
-                {isExpanded && (
-                    <div className="p-6 border-t border-surface-hover/30">
-                        <div className="overflow-x-auto pb-4">
-                            <table className="w-full min-w-[800px] border-collapse">
-                                {/* HTML Table Header */}
-                                <thead>
-                                    <tr>
-                                        <th className="p-3 text-left font-semibold text-sm text-text-secondary bg-surface-hover/10 rounded-tl-xl border-b border-surface-hover">Row Type</th>
-                                        {contrastTypes.map(c => (
-                                            <th key={c.id} className="p-3 text-center font-bold text-sm text-text-primary bg-surface-hover/10 border-b border-surface-hover border-l">
-                                                {c.name}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                    <tr>
-                                        <th className="p-2 border-b border-surface-hover"></th>
-                                        {contrastTypes.map(c => (
-                                            <th key={`sub-${c.id}`} className="p-2 border-b border-surface-hover border-l text-xs font-medium text-text-secondary">
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <span className="text-center">Total (mls)</span>
-                                                    <span className="text-center">Total Bottles</span>
+                <div className="p-6">
+                    <div className="overflow-x-auto pb-4">
+                        <table className="w-full min-w-[800px] border-collapse">
+                            {/* HTML Table Header */}
+                            <thead>
+                                <tr>
+                                    <th className="p-3 text-left font-semibold text-sm text-text-secondary bg-surface-hover/10 rounded-tl-xl border-b border-surface-hover">Row Type</th>
+                                    {contrastTypes.map(c => (
+                                        <th key={c.id} className="p-3 text-center font-bold text-sm text-text-primary bg-surface-hover/10 border-b border-surface-hover border-l">
+                                            {c.name}
+                                        </th>
+                                    ))}
+                                </tr>
+                                <tr>
+                                    <th className="p-2 border-b border-surface-hover"></th>
+                                    {contrastTypes.map(c => (
+                                        <th key={`sub-${c.id}`} className="p-2 border-b border-surface-hover border-l text-xs font-medium text-text-secondary">
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <span className="text-center">Total (mls)</span>
+                                                <span className="text-center">Total Bottles</span>
+                                            </div>
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+
+                            {/* HTML Table Body */}
+                            <tbody>
+                                {/* 1. Received Row */}
+                                <tr className="border-b border-surface-hover/30 hover:bg-surface-hover/10">
+                                    <td className="p-3 text-sm font-semibold text-text-secondary">
+                                        Total Qty Received <br /><span className="text-[10px] font-normal text-text-secondary/70">({isMorning ? 'Start stock' : 'Carried over + Additional'})</span>
+                                    </td>
+                                    {contrastTypes.map(c => {
+                                        const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
+                                        return (
+                                            <td key={`rec-${c.id}`} className="p-3 border-l border-surface-hover/30">
+                                                <div className="grid grid-cols-2 gap-px bg-surface-hover/30 p-px rounded-sm">
+                                                    <input type="number" min="0" value={item.totalReceivedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedMls', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors ${!isMorning ? 'bg-surface-hover/10 text-text-secondary cursor-not-allowed' : ''}`} placeholder="0" />
+                                                    <input type="number" min="0" value={item.totalReceivedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedBottles', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors ${!isMorning ? 'bg-surface-hover/10 text-text-secondary cursor-not-allowed' : ''}`} placeholder="0" />
                                                 </div>
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-
-                                {/* HTML Table Body */}
-                                <tbody>
-                                    {/* 1. Received Row */}
-                                    <tr className="border-b border-surface-hover/30 hover:bg-surface-hover/10">
-                                        <td className="p-3 text-sm font-semibold text-text-secondary">
-                                            Total Qty Received <br /><span className="text-[10px] font-normal text-text-secondary/70">({isMorning ? 'Start stock' : 'Carried over + Additional'})</span>
-                                        </td>
-                                        {contrastTypes.map(c => {
-                                            const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
-                                            return (
-                                                <td key={`rec-${c.id}`} className="p-3 border-l border-surface-hover/30">
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <input type="number" min="0" value={item.totalReceivedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedMls', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-background border border-surface-hover rounded-full px-2 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-500 outline-none transition-colors ${!isMorning ? 'bg-surface-hover/30 text-text-secondary cursor-not-allowed' : ''}`} placeholder="0" />
-                                                        <input type="number" min="0" value={item.totalReceivedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedBottles', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-background border border-surface-hover rounded-full px-2 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-500 outline-none transition-colors ${!isMorning ? 'bg-surface-hover/30 text-text-secondary cursor-not-allowed' : ''}`} placeholder="0" />
-                                                    </div>
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
-
-                                    {/* 2. Additional Row */}
-                                    {!isMorning && (
-                                        <tr className="border-b border-surface-hover/30 hover:bg-surface-hover/10">
-                                            <td className="p-3 text-sm font-semibold text-text-secondary">
-                                                <span className="text-primary-500">+</span> Additional Stock <br /><span className="text-[10px] font-normal text-text-secondary/70">(Extra received this shift)</span>
                                             </td>
-                                            {contrastTypes.map(c => {
-                                                const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
-                                                return (
-                                                    <td key={`add-${c.id}`} className="p-3 border-l border-surface-hover/30">
-                                                        <div className="grid grid-cols-2 gap-2">
-                                                            <input type="number" min="0" value={item.additionalStockMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockMls', parseInt(e.target.value) || 0)} className="w-full bg-background border border-surface-hover rounded-full px-2 py-1.5 text-center text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none transition-colors" placeholder="0" />
-                                                            <input type="number" min="0" value={item.additionalStockBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockBottles', parseInt(e.target.value) || 0)} className="w-full bg-background border border-surface-hover rounded-full px-2 py-1.5 text-center text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none transition-colors" placeholder="0" />
-                                                        </div>
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    )}
+                                        );
+                                    })}
+                                </tr>
 
-                                    {/* 3. Consumption Row */}
+                                {/* 2. Additional Row */}
+                                {!isMorning && (
                                     <tr className="border-b border-surface-hover/30 hover:bg-surface-hover/10">
                                         <td className="p-3 text-sm font-semibold text-text-secondary">
-                                            Total Consumption
+                                            <span className="text-primary-500">+</span> Additional Stock <br /><span className="text-[10px] font-normal text-text-secondary/70">(Extra received this shift)</span>
                                         </td>
                                         {contrastTypes.map(c => {
                                             const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
                                             return (
-                                                <td key={`cons-${c.id}`} className="p-3 border-l border-surface-hover/30">
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <input type="number" min="0" value={item.amountConsumedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedMls', parseInt(e.target.value) || 0)} className="w-full bg-background border border-surface-hover rounded-full px-2 py-1.5 text-center text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none transition-colors" placeholder="0" />
-                                                        <input type="number" min="0" value={item.amountConsumedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedBottles', parseInt(e.target.value) || 0)} className="w-full bg-background border border-surface-hover rounded-full px-2 py-1.5 text-center text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none transition-colors" placeholder="0" />
+                                                <td key={`add-${c.id}`} className="p-3 border-l border-surface-hover/30">
+                                                    <div className="grid grid-cols-2 gap-px bg-surface-hover/30 p-px rounded-sm">
+                                                        <input type="number" min="0" value={item.additionalStockMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockMls', parseInt(e.target.value) || 0)} className="w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors hover:bg-surface-hover/10" placeholder="0" />
+                                                        <input type="number" min="0" value={item.additionalStockBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockBottles', parseInt(e.target.value) || 0)} className="w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors hover:bg-surface-hover/10" placeholder="0" />
                                                     </div>
                                                 </td>
                                             );
                                         })}
                                     </tr>
+                                )}
 
-                                    {/* 4. Outstanding Row */}
-                                    <tr className="bg-[#EAF5F0]">
-                                        <td className="p-3 text-sm font-bold text-[#2A7B5F] rounded-bl-xl border-l-4 border-l-[#49CBA4]">
-                                            Outstanding Stock <br /><span className="text-[10px] font-medium text-[#2A7B5F]/70">(Received - Consumption)</span>
-                                        </td>
-                                        {contrastTypes.map(c => {
-                                            const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
-                                            return (
-                                                <td key={`out-${c.id}`} className="p-3 border-l border-[#49CBA4]/20">
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <div className="w-full bg-[#D1EBE1] rounded-full px-2 py-1.5 text-center text-sm font-bold text-[#1E5C46] tracking-wide">{item.outstandingMls}</div>
-                                                        <div className="w-full bg-[#D1EBE1] rounded-full px-2 py-1.5 text-center text-sm font-bold text-[#1E5C46] tracking-wide">{item.outstandingBottles}</div>
-                                                    </div>
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                {/* 3. Consumption Row */}
+                                <tr className="border-b border-surface-hover/30 hover:bg-surface-hover/10">
+                                    <td className="p-3 text-sm font-semibold text-text-secondary">
+                                        Total Consumption
+                                    </td>
+                                    {contrastTypes.map(c => {
+                                        const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
+                                        return (
+                                            <td key={`cons-${c.id}`} className="p-3 border-l border-surface-hover/30">
+                                                <div className="grid grid-cols-2 gap-px bg-surface-hover/30 p-px rounded-sm">
+                                                    <input type="number" min="0" value={item.amountConsumedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedMls', parseInt(e.target.value) || 0)} className="w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors hover:bg-surface-hover/10" placeholder="0" />
+                                                    <input type="number" min="0" value={item.amountConsumedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedBottles', parseInt(e.target.value) || 0)} className="w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors hover:bg-surface-hover/10" placeholder="0" />
+                                                </div>
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
 
-                        {/* Progress Bars */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-6 border-b border-surface-hover/50 mt-2">
-                            {contrastTypes.map(c => {
-                                const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
-                                const percent = item.totalReceivedMls > 0 ? Math.min(100, Math.round((item.amountConsumedMls / item.totalReceivedMls) * 100)) : 0;
-                                return (
-                                    <div key={`prog-${c.id}`} className="space-y-2">
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-xs font-bold text-text-primary uppercase tracking-wide">{c.name}</span>
-                                            <span className="text-[10px] font-bold text-text-secondary">{percent}%</span>
-                                        </div>
-                                        <div className="h-2 w-full bg-surface-hover/80 rounded-full overflow-hidden">
-                                            <div className="h-full bg-primary-300 transition-all duration-500" style={{ width: `${percent}%` }}></div>
-                                        </div>
-                                        <div className="flex justify-between text-[10px] font-medium text-text-secondary">
-                                            <div>Used:<br /><span className="text-text-primary text-xs font-bold">{item.amountConsumedMls} mls</span></div>
-                                            <div className="text-right">Total:<br /><span className="text-text-primary text-xs font-bold">{item.totalReceivedMls} mls</span></div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        {/* Sign Off Row */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 bg-surface">
-                            <div className="bg-background rounded-2xl p-4 border border-surface-hover/40 shadow-sm">
-                                <label className="text-xs font-bold text-text-secondary flex items-center gap-2 mb-2"><div className="w-3 h-3 rounded-full bg-[#D0F3FF]" /> Handed Over To</label>
-                                <input type="text" placeholder="Enter staff name" value={shiftData.handedOverTo} onChange={e => updateShiftDetails(shiftName, 'handedOverTo', e.target.value)} className="w-full bg-transparent border-b border-surface-hover/60 pb-2 text-sm outline-none focus:border-primary-500 transition-colors font-semibold placeholder:font-normal" />
-                            </div>
-                            <div className="bg-background rounded-2xl p-4 border border-surface-hover/40 shadow-sm">
-                                <label className="text-xs font-bold text-text-secondary flex items-center gap-2 mb-2"><div className="w-3 h-3 rounded-sm bg-[#49CBA4]/40" /> Calculated By</label>
-                                <input type="text" placeholder="Enter staff name" value={shiftData.calculatedBy} onChange={e => updateShiftDetails(shiftName, 'calculatedBy', e.target.value)} className="w-full bg-transparent border-b border-surface-hover/60 pb-2 text-sm outline-none focus:border-primary-500 transition-colors font-semibold placeholder:font-normal" />
-                            </div>
-                            <div className="bg-background rounded-2xl p-4 border border-surface-hover/40 shadow-sm flex flex-col justify-center">
-                                <label className="text-xs font-bold text-text-secondary flex items-center gap-2 mb-3"><div className="w-3 h-3 rounded-sm border-2 border-surface-hover" /> Verification</label>
-                                <label className="flex items-center gap-3 cursor-pointer group">
-                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${shiftData.isVerified ? 'border-primary-500 bg-primary-500' : 'border-surface-hover group-hover:border-primary-400'}`}>
-                                        {shiftData.isVerified && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                                    </div>
-                                    <input type="checkbox" checked={shiftData.isVerified} onChange={e => updateShiftDetails(shiftName, 'isVerified', e.target.checked)} className="hidden" />
-                                    <span className="text-xs font-semibold text-text-primary">I attest to the correctness of this data</span>
-                                </label>
-                            </div>
-                        </div>
-
+                                {/* 4. Outstanding Row */}
+                                <tr className="bg-primary-50 border-t-2 border-primary-200">
+                                    <td className="p-3 text-sm font-bold text-primary-800 rounded-bl-xl border-l-4 border-l-primary-500">
+                                        Outstanding Stock <br /><span className="text-[10px] font-medium text-primary-700/70">(Received - Consumption)</span>
+                                    </td>
+                                    {contrastTypes.map(c => {
+                                        const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
+                                        return (
+                                            <td key={`out-${c.id}`} className="p-3 border-l border-primary-200/50">
+                                                <div className="grid grid-cols-2 gap-px">
+                                                    <div className="w-full text-center text-sm font-bold text-primary-900 tracking-wide">{item.outstandingMls}</div>
+                                                    <div className="w-full text-center text-sm font-bold text-primary-900 tracking-wide">{item.outstandingBottles}</div>
+                                                </div>
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                )}
+
+                    {/* Progress Bars */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-6 border-b border-surface-hover/50 mt-2">
+                        {contrastTypes.map(c => {
+                            const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
+                            const percent = item.totalReceivedMls > 0 ? Math.min(100, Math.round((item.amountConsumedMls / item.totalReceivedMls) * 100)) : 0;
+                            return (
+                                <div key={`prog-${c.id}`} className="space-y-2">
+                                    <div className="flex justify-between items-end">
+                                        <span className="text-xs font-bold text-text-primary uppercase tracking-wide">{c.name}</span>
+                                        <span className="text-[10px] font-bold text-text-secondary">{percent}%</span>
+                                    </div>
+                                    <div className="h-2 w-full bg-surface-hover/80 rounded-full overflow-hidden">
+                                        <div className="h-full bg-primary-300 transition-all duration-500" style={{ width: `${percent}%` }}></div>
+                                    </div>
+                                    <div className="flex justify-between text-[10px] font-medium text-text-secondary">
+                                        <div>Used:<br /><span className="text-text-primary text-xs font-bold">{item.amountConsumedMls} mls</span></div>
+                                        <div className="text-right">Total:<br /><span className="text-text-primary text-xs font-bold">{item.totalReceivedMls} mls</span></div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Sign Off Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 bg-surface">
+                        <div className="bg-background rounded-2xl p-4 border border-surface-hover/40 shadow-sm">
+                            <label className="text-xs font-bold text-text-secondary flex items-center gap-2 mb-2"><div className="w-3 h-3 rounded-full bg-[#D0F3FF]" /> Handed Over To</label>
+                            <input type="text" placeholder="Enter staff name" value={shiftData.handedOverTo} onChange={e => updateShiftDetails(shiftName, 'handedOverTo', e.target.value)} className="w-full bg-transparent border-b border-surface-hover/60 pb-2 text-sm outline-none focus:border-primary-500 transition-colors font-semibold placeholder:font-normal" />
+                        </div>
+                        <div className="bg-background rounded-2xl p-4 border border-surface-hover/40 shadow-sm">
+                            <label className="text-xs font-bold text-text-secondary flex items-center gap-2 mb-2"><div className="w-3 h-3 rounded-sm bg-[#49CBA4]/40" /> Calculated By</label>
+                            <input type="text" placeholder="Enter staff name" value={shiftData.calculatedBy} onChange={e => updateShiftDetails(shiftName, 'calculatedBy', e.target.value)} className="w-full bg-transparent border-b border-surface-hover/60 pb-2 text-sm outline-none focus:border-primary-500 transition-colors font-semibold placeholder:font-normal" />
+                        </div>
+                        <div className="bg-background rounded-2xl p-4 border border-surface-hover/40 shadow-sm flex flex-col justify-center">
+                            <label className="text-xs font-bold text-text-secondary flex items-center gap-2 mb-3"><div className="w-3 h-3 rounded-sm border-2 border-surface-hover" /> Verification</label>
+                            <label className="flex items-center gap-3 cursor-pointer group">
+                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${shiftData.isVerified ? 'border-primary-500 bg-primary-500' : 'border-surface-hover group-hover:border-primary-400'}`}>
+                                    {shiftData.isVerified && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                                </div>
+                                <input type="checkbox" checked={shiftData.isVerified} onChange={e => updateShiftDetails(shiftName, 'isVerified', e.target.checked)} className="hidden" />
+                                <span className="text-xs font-semibold text-text-primary">I attest to the correctness of this data</span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         );
     };
@@ -520,12 +510,12 @@ export const DailyLogging: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-                        {/* Accordions */}
-                        <div className="xl:col-span-3 space-y-2">
-                            {renderShiftAccordion('morning', 'Morning', '8:00 AM - 4:00 PM')}
-                            {renderShiftAccordion('afternoon', 'Afternoon', '4:00 PM - 7:00 PM')}
-                            {renderShiftAccordion('night', 'Night', '7:00 PM - 8:00 AM')}
+                    <div className="grid grid-cols-1 xl:grid-cols-10 gap-8">
+                        {/* Static Cards List */}
+                        <div className="xl:col-span-7 space-y-6">
+                            {renderShiftCard('morning', 'Morning', '8am - 4pm')}
+                            {renderShiftCard('afternoon', 'Afternoon', '4pm - 7pm')}
+                            {renderShiftCard('night', 'Night', '7pm - 8am')}
 
                             <div className="pt-2">
                                 <button onClick={handleContrastSubmit} className="flex justify-center items-center gap-2 w-full bg-slate-800 hover:bg-slate-900 text-white px-6 md:px-10 py-5 rounded-3xl font-bold text-lg transition-all duration-300 shadow-md hover:-translate-y-1">
@@ -535,7 +525,7 @@ export const DailyLogging: React.FC = () => {
                         </div>
 
                         {/* Daily Summary Sidebar (matching screenshot) */}
-                        <div className="xl:col-span-1">
+                        <div className="xl:col-span-3">
                             <div className="bg-surface p-7 rounded-3xl shadow-sm border border-surface-hover/40 sticky top-6">
                                 <h3 className="text-sm font-bold text-text-primary mb-6">Daily Summary</h3>
 
