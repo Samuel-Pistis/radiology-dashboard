@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { Activity, CheckCircle, Save, FileText, PieChart as PieChartIcon } from 'lucide-react';
+import { Activity, CheckCircle, Save, FileText, PieChart as PieChartIcon, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import type { ShiftRecord, DailyContrastRecord, ContrastItemData } from '../types';
 
@@ -48,6 +48,19 @@ export const DailyLogging: React.FC = () => {
 
     // === CONTRAST TRACKER STATE ===
     const [contrastDate, setContrastDate] = useState(new Date().toISOString().split('T')[0]);
+    const [dateOffset, setDateOffset] = useState(0);
+
+    const visibleDates = useMemo(() => {
+        const dates = [];
+        const today = new Date();
+        // Generate 7 days. If offset = 0, today is the right-most (last) day.
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() + dateOffset - i);
+            dates.push(d);
+        }
+        return dates;
+    }, [dateOffset]);
 
     const initItems = (): ContrastItemData[] => contrastTypes.map(c => ({
         contrastTypeId: c.id,
@@ -314,8 +327,8 @@ export const DailyLogging: React.FC = () => {
                                         return (
                                             <td key={`out-${c.id}`} className="p-3 border-l border-primary-200/50">
                                                 <div className="grid grid-cols-2 gap-px">
-                                                    <div className="w-full text-center text-sm font-bold text-primary-900 tracking-wide">{item.outstandingMls}</div>
-                                                    <div className="w-full text-center text-sm font-bold text-primary-900 tracking-wide">{item.outstandingBottles}</div>
+                                                    <div className={`w-full text-center text-sm font-bold tracking-wide ${item.outstandingMls < 0 ? 'text-red-600' : 'text-primary-900'}`}>{item.outstandingMls}</div>
+                                                    <div className={`w-full text-center text-sm font-bold tracking-wide ${item.outstandingBottles < 0 ? 'text-red-600' : 'text-primary-900'}`}>{item.outstandingBottles}</div>
                                                 </div>
                                             </td>
                                         );
@@ -475,7 +488,7 @@ export const DailyLogging: React.FC = () => {
             {activeTab === 'contrast' && (
                 <div className="animate-in fade-in space-y-8">
                     {/* Header Controls */}
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-8 mt-2">
                         <div className="flex flex-col">
                             <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-1">BT Health & Diagnostics Centre</h3>
                             <h2 className="text-2xl font-black text-text-primary">Daily Contrast Consumption</h2>
@@ -483,7 +496,41 @@ export const DailyLogging: React.FC = () => {
                                 {new Date(contrastDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
                             </p>
                         </div>
-                        <input type="date" value={contrastDate} onChange={e => setContrastDate(e.target.value)} className={`${inputClasses} w-full md:w-auto py-2 font-medium shadow-sm border border-surface-hover`} />
+
+                        {/* Custom Date Navigation Carousel */}
+                        <div className="flex items-center gap-1 md:gap-2">
+                            <button onClick={() => setDateOffset(prev => prev - 7)} className="p-1.5 md:p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover/50 rounded-full transition-colors">
+                                <ChevronLeft className="w-5 h-5 opacity-40" />
+                            </button>
+
+                            <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar">
+                                {visibleDates.map(d => {
+                                    const dateStr = d.toISOString().split('T')[0];
+                                    const isSelected = dateStr === contrastDate;
+                                    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+                                    const dayNum = d.getDate();
+
+                                    return (
+                                        <button
+                                            key={dateStr}
+                                            onClick={() => setContrastDate(dateStr)}
+                                            className={`flex flex-col items-center justify-center min-w-[3.5rem] py-2 rounded-2xl transition-all ${isSelected ? 'bg-[#1E5C46] text-white shadow-md' : 'text-text-secondary hover:bg-surface-hover/60 hover:text-text-primary'}`}
+                                        >
+                                            <span className={`text-[10px] font-bold tracking-wider mb-1 ${isSelected ? 'text-white/80' : 'text-text-secondary/80'}`}>{dayName}</span>
+                                            <span className={`text-lg font-black leading-none ${isSelected ? 'text-white' : 'text-text-primary'}`}>{dayNum}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <button onClick={() => setDateOffset(prev => prev + 7)} className="p-1.5 md:p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover/50 rounded-full transition-colors">
+                                <ChevronRight className="w-5 h-5 opacity-40" />
+                            </button>
+
+                            <div className="ml-1 md:ml-3 pl-3 md:pl-5 border-l-2 border-surface-hover/50 flex items-center h-12">
+                                <Calendar className="w-5 h-5 md:w-6 md:h-6 text-text-secondary opacity-60" />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Top Stat Cards matching screenshot directly */}
