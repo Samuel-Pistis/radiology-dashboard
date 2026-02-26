@@ -583,8 +583,8 @@ export const DailyLogging: React.FC = () => {
                                                 data={donutData.length > 0 ? donutData : [{ name: 'Empty', value: 1, fill: '#EAF5F0' }]}
                                                 cx="50%"
                                                 cy="50%"
-                                                innerRadius={65}
-                                                outerRadius={85}
+                                                innerRadius={78}
+                                                outerRadius={88}
                                                 dataKey="value"
                                                 stroke="none"
                                             >
@@ -642,7 +642,7 @@ export const DailyLogging: React.FC = () => {
                                             <span className="text-text-secondary font-medium tracking-wide">Morning</span>
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-1 bg-surface-hover rounded-full overflow-hidden">
-                                                    <div className="h-full bg-[#E2E8F0] w-full"></div>
+                                                    <div className="h-full bg-[#31A5F5]" style={{ width: totalDayConsumed > 0 ? `${(shifts.morning.items.reduce((s, i) => s + i.amountConsumedMls, 0) / totalDayConsumed) * 100}%` : '0%' }}></div>
                                                 </div>
                                                 <span className="font-bold text-text-primary w-6 text-right tracking-wide">
                                                     {shifts.morning.items.reduce((s, i) => s + i.amountConsumedMls, 0)}
@@ -653,7 +653,7 @@ export const DailyLogging: React.FC = () => {
                                             <span className="text-text-secondary font-medium tracking-wide">Afternoon</span>
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-1 bg-surface-hover rounded-full overflow-hidden">
-                                                    <div className="h-full bg-[#E2E8F0] w-3/4"></div>
+                                                    <div className="h-full bg-[#49CBA4]" style={{ width: totalDayConsumed > 0 ? `${(shifts.afternoon.items.reduce((s, i) => s + i.amountConsumedMls, 0) / totalDayConsumed) * 100}%` : '0%' }}></div>
                                                 </div>
                                                 <span className="font-bold text-text-primary w-6 text-right tracking-wide">
                                                     {shifts.afternoon.items.reduce((s, i) => s + i.amountConsumedMls, 0)}
@@ -664,7 +664,7 @@ export const DailyLogging: React.FC = () => {
                                             <span className="text-text-secondary font-medium tracking-wide">Night</span>
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-1 bg-surface-hover rounded-full overflow-hidden">
-                                                    <div className="h-full bg-[#E2E8F0] w-1/2"></div>
+                                                    <div className="h-full bg-[#0F172A]" style={{ width: totalDayConsumed > 0 ? `${(shifts.night.items.reduce((s, i) => s + i.amountConsumedMls, 0) / totalDayConsumed) * 100}%` : '0%' }}></div>
                                                 </div>
                                                 <span className="font-bold text-text-primary w-6 text-right tracking-wide">
                                                     {shifts.night.items.reduce((s, i) => s + i.amountConsumedMls, 0)}
