@@ -89,11 +89,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     revenue: log.revenue
                 }));
 
+                const finalContrastTypes = (contrastTypes && contrastTypes.length > 0)
+                    ? [...contrastTypes, ...defaultState.contrastTypes.filter(d => !contrastTypes.some(c => c.name === d.name))]
+                    : defaultState.contrastTypes;
+
                 setState({
-                    modalities: modalities || defaultState.modalities,
-                    locations: locations || defaultState.locations,
+                    modalities: (modalities && modalities.length > 0) ? modalities : defaultState.modalities,
+                    locations: (locations && locations.length > 0) ? locations : defaultState.locations,
                     filmSizes: defaultState.filmSizes, // Static in frontend for now
-                    contrastTypes: contrastTypes || defaultState.contrastTypes,
+                    contrastTypes: finalContrastTypes,
                     activityLogs: mappedActivityLogs,
                     contrastRecords: contrastRecords || [],
                     weeklyOpsLogs: mappedWeeklyOpsLogs,
