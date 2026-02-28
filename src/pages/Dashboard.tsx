@@ -150,24 +150,24 @@ export const Dashboard: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                {/* Film Consumption Stacked Bar */}
+                {/* Revenue Comparison Bar Chart */}
                 <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-black tracking-tight">Film Consumption</h3>
-                    {filmData.length === 0 ? (
+                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-black tracking-tight">Weekly Revenue</h3>
+                    {revenueComparisonData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
-                            <p>No film data available.</p>
+                            <p>No revenue comparison data available.</p>
                         </div>
                     ) : (
                         <div className="h-80 w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={filmData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <BarChart data={revenueComparisonData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
                                     <XAxis dataKey="name" stroke="#94a3b8" tick={{ fill: '#64748B' }} axisLine={false} tickLine={false} />
                                     <YAxis stroke="#94a3b8" tick={{ fill: '#64748B' }} axisLine={false} tickLine={false} />
                                     <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={chartTooltipStyle} />
                                     <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                                    <Bar dataKey="10x12" stackId="a" fill="#DDCBF5" radius={[0, 0, 4, 4]} barSize={40} />
-                                    <Bar dataKey="14x17" stackId="a" fill="#7AFFA1" radius={[4, 4, 0, 0]} barSize={40} />
+                                    <Bar dataKey="Last Week" fill="#DDCBF5" radius={[4, 4, 0, 0]} barSize={30} />
+                                    <Bar dataKey="This Week" fill="#FFA27D" radius={[4, 4, 0, 0]} barSize={30} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -212,24 +212,24 @@ export const Dashboard: React.FC = () => {
                     )}
                 </div>
 
-                {/* Revenue Comparison Bar Chart */}
+                {/* Film Consumption Stacked Bar */}
                 <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm lg:col-span-2 mt-4">
-                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-black tracking-tight">Weekly Revenue</h3>
-                    {revenueComparisonData.length === 0 ? (
+                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-black tracking-tight">Film Consumption</h3>
+                    {filmData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
-                            <p>No revenue comparison data available.</p>
+                            <p>No film data available.</p>
                         </div>
                     ) : (
                         <div className="h-80 w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={revenueComparisonData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <BarChart data={filmData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
                                     <XAxis dataKey="name" stroke="#94a3b8" tick={{ fill: '#64748B' }} axisLine={false} tickLine={false} />
                                     <YAxis stroke="#94a3b8" tick={{ fill: '#64748B' }} axisLine={false} tickLine={false} />
                                     <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={chartTooltipStyle} />
                                     <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                                    <Bar dataKey="Last Week" fill="#DDCBF5" radius={[4, 4, 0, 0]} barSize={30} />
-                                    <Bar dataKey="This Week" fill="#FFA27D" radius={[4, 4, 0, 0]} barSize={30} />
+                                    <Bar dataKey="10x12" stackId="a" fill="#DDCBF5" radius={[0, 0, 4, 4]} barSize={40} />
+                                    <Bar dataKey="14x17" stackId="a" fill="#7AFFA1" radius={[4, 4, 0, 0]} barSize={40} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
