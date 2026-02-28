@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { LayoutDashboard, CalendarDays, CalendarRange, FileBarChart, Settings, LogOut, ShieldCheck, UserCog, X } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../context/AuthContext';
@@ -37,11 +37,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 )}
             >
                 <div className="h-24 flex items-center justify-between px-6 md:px-8 border-b border-black/5 md:border-none">
-                    <div className="flex items-center">
+                    <Link to="/" className="flex items-center">
                         <div className="bg-black text-white p-2 rounded-2xl mr-3 shadow-md flex items-center justify-center">
                             <span className="font-bold text-xl italic leading-none pr-1">sf.</span>
                         </div>
-                    </div>
+                    </Link>
                     {/* Mobile close button */}
                     <button
                         onClick={onClose}
