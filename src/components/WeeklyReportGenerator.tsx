@@ -120,14 +120,14 @@ export const WeeklyReportGenerator: React.FC = () => {
 
     const totalPeriodRevenue = modalityStats.reduce((sum, s) => sum + s.revenue, 0);
 
-    const inputClasses = "w-full bg-background border-none rounded-xl px-4 py-3 text-text-primary focus:ring-2 focus:ring-primary-500 outline-none transition-all shadow-inner";
+    const inputClasses = "w-full bg-white/50 border border-white/60 rounded-full px-5 py-3 text-black font-bold focus:border-black/20 focus:bg-white outline-none transition-all shadow-sm backdrop-blur-md";
 
     return (
         <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-surface p-8 rounded-3xl shadow-sm">
-                <div className="space-y-2">
-                    <label className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                        <CalendarRange className="w-5 h-5 text-primary-500" /> Start Date
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-sm border border-white/60">
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-black/60 flex items-center gap-2">
+                        <CalendarRange className="w-4 h-4 text-mint stroke-[3]" /> Start Date
                     </label>
                     <input
                         type="date"
@@ -136,9 +136,9 @@ export const WeeklyReportGenerator: React.FC = () => {
                         className={inputClasses}
                     />
                 </div>
-                <div className="space-y-2">
-                    <label className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                        <CalendarRange className="w-5 h-5 text-primary-500" /> End Date
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-black/60 flex items-center gap-2">
+                        <CalendarRange className="w-4 h-4 text-mint stroke-[3]" /> End Date
                     </label>
                     <input
                         type="date"
@@ -149,64 +149,64 @@ export const WeeklyReportGenerator: React.FC = () => {
                 </div>
             </div>
 
-            <div className="flex justify-end gap-4 border-b border-surface-hover/50 pb-8 mb-8">
+            <div className="flex justify-end gap-4 border-b border-black/5 pb-8 mb-8">
                 <button
                     onClick={handleExportCSV}
                     disabled={!isDataAvailable}
-                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-surface hover:bg-surface-hover text-text-primary font-bold shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-8 py-4 rounded-full bg-white/50 border border-white/60 hover:bg-white text-black font-black shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
                 >
-                    <FileText className="w-5 h-5" />
+                    <FileText className="w-5 h-5 stroke-[2.5]" />
                     Export CSV
                 </button>
                 <button
                     onClick={handleExportPDF}
                     disabled={!isDataAvailable || isGenerating}
-                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-600 text-white font-bold shadow-lg shadow-primary-500/30 transition-all hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+                    className="flex items-center gap-2 px-8 py-4 rounded-full bg-black hover:bg-black/80 text-white font-black shadow-xl shadow-black/20 transition-all hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
                 >
-                    <FileDown className="w-5 h-5" />
+                    <FileDown className="w-5 h-5 stroke-[2.5]" />
                     {isGenerating ? 'Generating...' : 'Export PDF'}
                 </button>
             </div>
 
             {!isDataAvailable ? (
-                <div className="text-center py-16 text-text-secondary bg-surface rounded-3xl shadow-sm">
-                    <FileBarChart className="w-12 h-12 mx-auto mb-4 text-surface-hover" />
-                    <p className="font-semibold text-lg text-text-primary">No data available for the selected dates</p>
-                    <p>Change the start and end dates to see report data.</p>
+                <div className="text-center py-16 text-black/50 bg-white/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/60 shadow-sm">
+                    <FileBarChart className="w-16 h-16 mx-auto mb-6 text-black/20 stroke-[1.5]" />
+                    <p className="font-black text-2xl text-black tracking-tight mb-2">No data available for the selected dates</p>
+                    <p className="font-bold">Change the start and end dates to see report data.</p>
                 </div>
             ) : (
-                <div className="bg-surface p-10 rounded-3xl shadow-sm mt-4 overflow-x-auto" ref={reportRef}>
-                    <div className="text-center mb-10 border-b border-surface-hover/50 pb-8">
-                        <h2 className="text-3xl font-bold tracking-tight text-text-primary">Weekly Operations Summary</h2>
-                        <p className="text-text-secondary mt-2 font-medium">
+                <div className="bg-white/40 backdrop-blur-3xl p-10 rounded-[2.5rem] shadow-sm border border-white/60 mt-4 overflow-x-auto" ref={reportRef}>
+                    <div className="text-center mb-10 border-b border-black/5 pb-8">
+                        <h2 className="text-3xl font-black tracking-tight text-black">Weekly Operations Summary</h2>
+                        <p className="text-black/60 mt-2 font-bold bg-white/50 inline-block px-4 py-1.5 rounded-full border border-white/60">
                             {startDate ? new Date(startDate).toLocaleDateString() : 'Start'} to {endDate ? new Date(endDate).toLocaleDateString() : 'End'}
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                         {/* Modality Stats */}
-                        <div className="bg-background rounded-2xl p-6 border border-surface-hover/30">
-                            <h3 className="text-xl font-bold mb-6 text-text-primary">Investigations & Revenue</h3>
+                        <div className="bg-white/50 rounded-[2rem] p-8 border border-white/60 shadow-sm">
+                            <h3 className="text-xl font-black mb-6 text-black tracking-tight">Investigations & Revenue</h3>
                             <table className="w-full text-left text-sm">
                                 <thead>
-                                    <tr className="border-b border-surface-hover/50 text-text-secondary">
-                                        <th className="pb-3 font-semibold uppercase tracking-wider text-xs">Modality</th>
-                                        <th className="pb-3 font-semibold uppercase tracking-wider text-xs text-center">Inv.</th>
-                                        <th className="pb-3 font-semibold uppercase tracking-wider text-xs text-right">Revenue (₦)</th>
+                                    <tr className="border-b border-black/5 text-black/60">
+                                        <th className="pb-4 font-black uppercase tracking-widest text-[10px]">Modality</th>
+                                        <th className="pb-4 font-black uppercase tracking-widest text-[10px] text-center">Inv.</th>
+                                        <th className="pb-4 font-black uppercase tracking-widest text-[10px] text-right">Revenue (₦)</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-surface-hover/30">
+                                <tbody className="divide-y divide-black/5">
                                     {modalityStats.map(stat => (
-                                        <tr key={stat.name} className="text-text-primary">
-                                            <td className="py-4 font-bold text-primary-600">{stat.name}</td>
-                                            <td className="py-4 text-center font-medium">{stat.investigations}</td>
-                                            <td className="py-4 text-right font-bold text-green-600">₦{stat.revenue.toLocaleString()}</td>
+                                        <tr key={stat.name} className="text-black">
+                                            <td className="py-5 font-black text-black">{stat.name}</td>
+                                            <td className="py-5 text-center font-bold">{stat.investigations}</td>
+                                            <td className="py-5 text-right font-black text-black">₦{stat.revenue.toLocaleString()}</td>
                                         </tr>
                                     ))}
-                                    <tr className="font-bold text-text-primary bg-primary-50/50">
-                                        <td className="py-4 px-3 rounded-l-xl">Total</td>
-                                        <td className="py-4 text-center px-3">{modalityStats.reduce((sum, s) => sum + s.investigations, 0)}</td>
-                                        <td className="py-4 text-right px-3 text-green-600 rounded-r-xl">₦{totalPeriodRevenue.toLocaleString()}</td>
+                                    <tr className="font-black text-black bg-mint/20">
+                                        <td className="py-5 px-4 rounded-l-full">Total</td>
+                                        <td className="py-5 text-center px-4">{modalityStats.reduce((sum, s) => sum + s.investigations, 0)}</td>
+                                        <td className="py-5 text-right px-4 text-black rounded-r-full">₦{totalPeriodRevenue.toLocaleString()}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -214,30 +214,30 @@ export const WeeklyReportGenerator: React.FC = () => {
 
                         {/* Film & Contrast */}
                         <div className="space-y-8">
-                            <div className="bg-background rounded-2xl p-6 border border-surface-hover/30">
-                                <h3 className="text-xl font-bold mb-6 text-text-primary">Film Consumption</h3>
+                            <div className="bg-white/50 rounded-[2rem] p-8 border border-white/60 shadow-sm">
+                                <h3 className="text-xl font-black mb-6 text-black tracking-tight">Film Consumption</h3>
                                 <div className="grid grid-cols-2 gap-6">
-                                    <div className="bg-surface border border-surface-hover rounded-2xl p-5 text-center shadow-sm">
-                                        <div className="text-sm font-medium text-text-secondary mb-2">10x12 Used</div>
-                                        <div className="text-3xl font-bold text-primary-500">{modalityStats.reduce((sum, s) => sum + s.film10x12, 0)}</div>
+                                    <div className="bg-white/60 border border-white rounded-[1.5rem] p-6 text-center shadow-sm">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-black/60 mb-2">10x12 Used</div>
+                                        <div className="text-4xl font-black text-black tracking-tighter">{modalityStats.reduce((sum, s) => sum + s.film10x12, 0)}</div>
                                     </div>
-                                    <div className="bg-surface border border-surface-hover rounded-2xl p-5 text-center shadow-sm">
-                                        <div className="text-sm font-medium text-text-secondary mb-2">14x17 Used</div>
-                                        <div className="text-3xl font-bold text-secondary-500">{modalityStats.reduce((sum, s) => sum + s.film14x17, 0)}</div>
+                                    <div className="bg-white/60 border border-white rounded-[1.5rem] p-6 text-center shadow-sm">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-black/60 mb-2">14x17 Used</div>
+                                        <div className="text-4xl font-black text-black tracking-tighter">{modalityStats.reduce((sum, s) => sum + s.film14x17, 0)}</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-background rounded-2xl p-6 border border-surface-hover/30">
-                                <h3 className="text-xl font-bold mb-6 text-text-primary">Total Contrast Used (ML)</h3>
+                            <div className="bg-white/50 rounded-[2rem] p-8 border border-white/60 shadow-sm">
+                                <h3 className="text-xl font-black mb-6 text-black tracking-tight">Total Contrast Used (ML)</h3>
                                 {contrastStats.length === 0 ? (
-                                    <p className="text-sm text-text-secondary">No contrast data.</p>
+                                    <p className="text-sm font-bold text-black/50">No contrast data.</p>
                                 ) : (
                                     <div className="flex flex-wrap gap-3">
                                         {contrastStats.map(c => (
-                                            <div key={c.name} className="bg-surface border border-surface-hover px-4 py-2.5 rounded-xl flex items-center gap-3 shadow-sm">
-                                                <span className="text-sm font-medium text-text-secondary">{c.name}:</span>
-                                                <span className="text-base font-bold text-secondary-600">{c.ml}</span>
+                                            <div key={c.name} className="bg-white/60 border border-white px-5 py-3 rounded-full flex items-center gap-3 shadow-sm">
+                                                <span className="text-sm font-bold text-black/60">{c.name}:</span>
+                                                <span className="text-lg font-black text-black">{c.ml}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -248,26 +248,26 @@ export const WeeklyReportGenerator: React.FC = () => {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                         {/* Challenges & Resolutions */}
-                        <div className="bg-background rounded-2xl p-6 border border-surface-hover/30 lg:col-span-3 flex flex-col">
-                            <h3 className="text-xl font-bold mb-6 text-text-primary">Challenges & Resolutions</h3>
+                        <div className="bg-white/50 rounded-[2rem] p-8 border border-white/60 lg:col-span-3 flex flex-col shadow-sm">
+                            <h3 className="text-xl font-black mb-6 text-black tracking-tight">Challenges & Resolutions</h3>
                             <div className="flex-1 space-y-4 overflow-y-auto max-h-64 pr-2">
                                 {periodWeeklyLogs.filter(log => log.challenges || log.resolutions).length === 0 ? (
-                                    <p className="text-sm text-text-secondary py-4">No operational challenges recorded for this period.</p>
+                                    <p className="text-sm font-bold text-black/50 py-4">No operational challenges recorded for this period.</p>
                                 ) : (
                                     periodWeeklyLogs.map(log => (
                                         (log.challenges || log.resolutions) && (
-                                            <div key={log.id} className="p-5 bg-surface border border-surface-hover rounded-2xl text-sm shadow-sm">
-                                                <div className="text-xs text-primary-500 mb-3 font-bold uppercase tracking-wider">{log.weekStartDate} to {log.weekEndDate}</div>
+                                            <div key={log.id} className="p-6 bg-white/60 border border-white rounded-[1.5rem] text-sm shadow-sm">
+                                                <div className="inline-block bg-black/5 px-4 py-1.5 rounded-full text-[10px] text-black/70 mb-4 font-black uppercase tracking-widest">{log.weekStartDate} to {log.weekEndDate}</div>
                                                 {log.challenges && (
-                                                    <div className="mb-3">
-                                                        <span className="font-bold text-amber-600 block mb-1">Issue:</span>
-                                                        <p className="text-text-primary font-medium">{log.challenges}</p>
+                                                    <div className="mb-4 bg-peach/30 p-4 rounded-xl">
+                                                        <span className="font-black text-peach tracking-widest uppercase text-[10px] block mb-2">Issue:</span>
+                                                        <p className="text-black font-bold text-base leading-relaxed">{log.challenges}</p>
                                                     </div>
                                                 )}
                                                 {log.resolutions && (
-                                                    <div>
-                                                        <span className="font-bold text-secondary-600 block mb-1">Resolution:</span>
-                                                        <p className="text-text-primary font-medium">{log.resolutions}</p>
+                                                    <div className="bg-mint/30 p-4 rounded-xl">
+                                                        <span className="font-black text-black/60 tracking-widest uppercase text-[10px] block mb-2">Resolution:</span>
+                                                        <p className="text-black font-bold text-base leading-relaxed">{log.resolutions}</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -278,7 +278,7 @@ export const WeeklyReportGenerator: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="text-center pt-8 border-t border-surface-hover/50 text-xs font-semibold text-text-secondary">
+                    <div className="text-center pt-8 border-t border-black/5 text-[10px] uppercase tracking-widest font-black text-black/40">
                         Generated by MediControl Management System on {new Date().toLocaleDateString()}
                     </div>
                 </div>

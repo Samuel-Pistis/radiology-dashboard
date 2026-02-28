@@ -74,8 +74,8 @@ export const WeeklyComparison: React.FC = () => {
     const renderTrend = (valueA: number, valueB: number, reverseColors: boolean = false) => {
         if (valueA === 0 && valueB === 0) {
             return (
-                <div className="flex items-center gap-1 text-text-secondary text-sm font-medium">
-                    <Minus className="w-4 h-4" /> 0%
+                <div className="flex items-center gap-1 text-black/50 text-[10px] tracking-widest uppercase font-black bg-white/50 border border-white/60 px-3 py-1 rounded-full shadow-sm backdrop-blur-md">
+                    <Minus className="w-3 h-3 stroke-[3]" /> 0%
                 </div>
             );
         }
@@ -84,66 +84,64 @@ export const WeeklyComparison: React.FC = () => {
         const isPositive = percentage > 0;
         const isNegative = percentage < 0;
 
-        // If reverseColors is true, positive percentage is bad (red), negative is good (green)
-        // E.g., for Film Consumption where less is better.
-        let colorClass = "text-text-secondary";
-        let bgClass = "bg-surface-hover/50";
+        let textColor = "text-black/60";
+        let bgClass = "bg-white/50 border border-white/60 shadow-sm";
 
         if (isPositive) {
-            colorClass = reverseColors ? "text-red-600" : "text-green-600";
-            bgClass = reverseColors ? "bg-red-50" : "bg-green-50";
+            textColor = "text-black";
+            bgClass = reverseColors ? "bg-peach/40 border border-peach/50 shadow-sm" : "bg-mint/40 border border-mint/50 shadow-sm";
         } else if (isNegative) {
-            colorClass = reverseColors ? "text-green-600" : "text-red-600";
-            bgClass = reverseColors ? "bg-green-50" : "bg-red-50";
+            textColor = "text-black";
+            bgClass = reverseColors ? "bg-mint/40 border border-mint/50 shadow-sm" : "bg-peach/40 border border-peach/50 shadow-sm";
         }
 
         return (
-            <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-sm font-bold ${colorClass} ${bgClass}`}>
-                {isPositive && <ArrowUpRight className="w-4 h-4" />}
-                {isNegative && <ArrowDownRight className="w-4 h-4" />}
-                {(!isPositive && !isNegative) && <Minus className="w-4 h-4" />}
+            <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-[10px] tracking-widest uppercase font-black ${textColor} ${bgClass} backdrop-blur-md`}>
+                {isPositive && <ArrowUpRight className="w-3 h-3 stroke-[3]" />}
+                {isNegative && <ArrowDownRight className="w-3 h-3 stroke-[3]" />}
+                {(!isPositive && !isNegative) && <Minus className="w-3 h-3 stroke-[3]" />}
                 {Math.abs(percentage).toFixed(1)}%
             </div>
         );
     };
 
-    const inputClasses = "w-full bg-background border border-surface-hover/50 rounded-xl px-4 py-2.5 text-text-primary focus:ring-2 focus:ring-primary-500 outline-none transition-all shadow-sm text-sm";
+    const inputClasses = "w-full bg-white/50 border border-white/60 rounded-full px-5 py-3 text-black font-bold focus:border-black/20 focus:bg-white outline-none transition-all shadow-sm backdrop-blur-md";
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Controls */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Period A */}
-                <div className="bg-surface p-6 rounded-3xl shadow-sm border border-surface-hover/30">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-surface-hover/50">
-                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 font-bold">A</div>
-                        <h3 className="text-xl font-bold text-text-primary">Base Period</h3>
+                <div className="bg-white/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-sm border border-white/60">
+                    <div className="flex items-center gap-4 mb-8 pb-6 border-b border-black/5">
+                        <div className="w-10 h-10 rounded-full bg-white/60 border border-white flex items-center justify-center text-black font-black shadow-sm tracking-tighter">A</div>
+                        <h3 className="text-2xl font-black text-black tracking-tight">Base Period</h3>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-text-secondary">Start Date</label>
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-black/60">Start Date</label>
                             <input type="date" value={periodAStart} onChange={e => setPeriodAStart(e.target.value)} className={inputClasses} />
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-text-secondary">End Date</label>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-black/60">End Date</label>
                             <input type="date" value={periodAEnd} onChange={e => setPeriodAEnd(e.target.value)} className={inputClasses} />
                         </div>
                     </div>
                 </div>
 
                 {/* Period B */}
-                <div className="bg-surface p-6 rounded-3xl shadow-sm border border-surface-hover/30">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-surface-hover/50">
-                        <div className="w-8 h-8 rounded-full bg-secondary-50 flex items-center justify-center text-secondary-600 font-bold">B</div>
-                        <h3 className="text-xl font-bold text-text-primary">Comparison Period</h3>
+                <div className="bg-white/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-sm border border-white/60">
+                    <div className="flex items-center gap-4 mb-8 pb-6 border-b border-black/5">
+                        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white font-black shadow-sm tracking-tighter">B</div>
+                        <h3 className="text-2xl font-black text-black tracking-tight">Comparison Period</h3>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-text-secondary">Start Date</label>
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-black/60">Start Date</label>
                             <input type="date" value={periodBStart} onChange={e => setPeriodBStart(e.target.value)} className={inputClasses} />
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-text-secondary">End Date</label>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-black/60">End Date</label>
                             <input type="date" value={periodBEnd} onChange={e => setPeriodBEnd(e.target.value)} className={inputClasses} />
                         </div>
                     </div>
@@ -152,67 +150,67 @@ export const WeeklyComparison: React.FC = () => {
 
             {/* Empty State */}
             {(!statsA || !statsB) ? (
-                <div className="bg-surface rounded-3xl p-16 text-center shadow-sm border border-surface-hover/30">
-                    <CalendarRange className="w-16 h-16 text-surface-hover mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-text-primary mb-2">Select Dates to Compare</h3>
-                    <p className="text-text-secondary">Please select complete start and end dates for both Period A and Period B to view the comparison.</p>
+                <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] p-16 text-center shadow-sm border border-white/60">
+                    <CalendarRange className="w-16 h-16 text-black/20 mx-auto mb-6 stroke-[1.5]" />
+                    <h3 className="text-2xl font-black text-black mb-2 tracking-tight">Select Dates to Compare</h3>
+                    <p className="text-black/60 font-bold">Please select complete start and end dates for both Period A and Period B to view the comparison.</p>
                 </div>
             ) : (
                 <div className="space-y-8">
                     {/* Overall Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                        <div className="bg-surface p-6 rounded-3xl shadow-sm border border-surface-hover/30 flex flex-col justify-between hover:-translate-y-1 transition-transform">
-                            <div className="flexitems-center gap-2 text-text-secondary font-semibold mb-4 text-sm uppercase tracking-wider">
-                                <Activity className="w-4 h-4 inline-block -mt-1 mr-1 text-primary-500" />
+                        <div className="bg-white/50 backdrop-blur-xl p-8 rounded-[2rem] shadow-sm border border-white/60 flex flex-col justify-between hover:-translate-y-1 transition-transform">
+                            <div className="flex items-center gap-2 text-black/60 font-black mb-6 text-[10px] uppercase tracking-widest">
+                                <Activity className="w-4 h-4 inline-block -mt-1 mr-1 text-mint stroke-[3]" />
                                 Investigations
                             </div>
                             <div className="flex justify-between items-end">
                                 <div>
-                                    <div className="text-3xl font-bold text-text-primary">{statsB.totals.investigations}</div>
-                                    <div className="text-xs text-text-secondary mt-1">vs {statsA.totals.investigations}</div>
+                                    <div className="text-4xl font-black text-black tracking-tighter">{statsB.totals.investigations}</div>
+                                    <div className="text-sm text-black/50 font-bold mt-1">vs {statsA.totals.investigations}</div>
                                 </div>
                                 {renderTrend(statsA.totals.investigations, statsB.totals.investigations)}
                             </div>
                         </div>
 
-                        <div className="bg-surface p-6 rounded-3xl shadow-sm border border-surface-hover/30 flex flex-col justify-between hover:-translate-y-1 transition-transform relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/20 to-emerald-500/0 rounded-bl-full pointer-events-none"></div>
-                            <div className="flex items-center gap-2 text-text-secondary font-semibold mb-4 text-sm uppercase tracking-wider relative z-10">
-                                <CreditCard className="w-4 h-4 inline-block -mt-1 mr-1 text-green-500" />
+                        <div className="bg-white/50 backdrop-blur-xl p-8 rounded-[2rem] shadow-sm border border-white/60 flex flex-col justify-between hover:-translate-y-1 transition-transform relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-mint/20 rounded-bl-full pointer-events-none"></div>
+                            <div className="flex items-center gap-2 text-black/60 font-black mb-6 text-[10px] uppercase tracking-widest relative z-10">
+                                <CreditCard className="w-4 h-4 inline-block -mt-1 mr-1 text-mint stroke-[3]" />
                                 Revenue
                             </div>
                             <div className="flex justify-between items-end relative z-10">
                                 <div>
-                                    <div className="text-2xl font-bold text-text-primary">₦{(statsB.totals.revenue / 1000).toFixed(1)}k</div>
-                                    <div className="text-xs text-text-secondary mt-1">vs ₦{(statsA.totals.revenue / 1000).toFixed(1)}k</div>
+                                    <div className="text-4xl font-black text-black tracking-tighter">₦{(statsB.totals.revenue / 1000).toFixed(1)}k</div>
+                                    <div className="text-sm text-black/50 font-bold mt-1">vs ₦{(statsA.totals.revenue / 1000).toFixed(1)}k</div>
                                 </div>
                                 {renderTrend(statsA.totals.revenue, statsB.totals.revenue)}
                             </div>
                         </div>
 
-                        <div className="bg-surface p-6 rounded-3xl shadow-sm border border-surface-hover/30 flex flex-col justify-between hover:-translate-y-1 transition-transform">
-                            <div className="flex items-center gap-2 text-text-secondary font-semibold mb-4 text-sm uppercase tracking-wider">
-                                <Layers className="w-4 h-4 inline-block -mt-1 mr-1 text-secondary-500" />
+                        <div className="bg-white/50 backdrop-blur-xl p-8 rounded-[2rem] shadow-sm border border-white/60 flex flex-col justify-between hover:-translate-y-1 transition-transform">
+                            <div className="flex items-center gap-2 text-black/60 font-black mb-6 text-[10px] uppercase tracking-widest">
+                                <Layers className="w-4 h-4 inline-block -mt-1 mr-1 text-peach stroke-[3]" />
                                 Total Film
                             </div>
                             <div className="flex justify-between items-end">
                                 <div>
-                                    <div className="text-3xl font-bold text-text-primary">{statsB.totals.film10x12 + statsB.totals.film14x17}</div>
-                                    <div className="text-xs text-text-secondary mt-1">vs {statsA.totals.film10x12 + statsA.totals.film14x17}</div>
+                                    <div className="text-4xl font-black text-black tracking-tighter">{statsB.totals.film10x12 + statsB.totals.film14x17}</div>
+                                    <div className="text-sm text-black/50 font-bold mt-1">vs {statsA.totals.film10x12 + statsA.totals.film14x17}</div>
                                 </div>
                                 {renderTrend(statsA.totals.film10x12 + statsA.totals.film14x17, statsB.totals.film10x12 + statsB.totals.film14x17, true)}
                             </div>
                         </div>
 
-                        <div className="bg-surface p-6 rounded-3xl shadow-sm border border-surface-hover/30 flex flex-col justify-between hover:-translate-y-1 transition-transform">
-                            <div className="flex items-center gap-2 text-text-secondary font-semibold mb-4 text-sm uppercase tracking-wider">
-                                <Droplets className="w-4 h-4 inline-block -mt-1 mr-1 text-amber-500" />
+                        <div className="bg-white/50 backdrop-blur-xl p-8 rounded-[2rem] shadow-sm border border-white/60 flex flex-col justify-between hover:-translate-y-1 transition-transform">
+                            <div className="flex items-center gap-2 text-black/60 font-black mb-6 text-[10px] uppercase tracking-widest">
+                                <Droplets className="w-4 h-4 inline-block -mt-1 mr-1 text-yellow stroke-[3]" />
                                 Total Contrast (ML)
                             </div>
                             <div className="flex justify-between items-end">
                                 <div>
-                                    <div className="text-3xl font-bold text-text-primary">{statsB.totals.contrastML}</div>
-                                    <div className="text-xs text-text-secondary mt-1">vs {statsA.totals.contrastML}</div>
+                                    <div className="text-4xl font-black text-black tracking-tighter">{statsB.totals.contrastML}</div>
+                                    <div className="text-sm text-black/50 font-bold mt-1">vs {statsA.totals.contrastML}</div>
                                 </div>
                                 {renderTrend(statsA.totals.contrastML, statsB.totals.contrastML, true)}
                             </div>
@@ -222,33 +220,33 @@ export const WeeklyComparison: React.FC = () => {
                     {/* Detailed Breakdowns */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Investigations by Modality */}
-                        <div className="bg-surface rounded-3xl overflow-hidden shadow-sm border border-surface-hover/30">
-                            <div className="p-6 border-b border-surface-hover/50 bg-background/50">
-                                <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                                    <Activity className="w-5 h-5 text-primary-500" /> Investigations by Modality
+                        <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/60">
+                            <div className="p-8 border-b border-black/5 bg-white/40">
+                                <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
+                                    <Activity className="w-5 h-5 text-mint stroke-[3]" /> Investigations by Modality
                                 </h3>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm">
-                                    <thead className="bg-background/80 text-text-secondary">
+                                    <thead className="bg-black/5 text-black/60">
                                         <tr>
-                                            <th className="px-6 py-4 font-semibold">Modality</th>
-                                            <th className="px-6 py-4 font-semibold text-center">Period A</th>
-                                            <th className="px-6 py-4 font-semibold text-center">Period B</th>
-                                            <th className="px-6 py-4 font-semibold text-right">Trend</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px]">Modality</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-center">Period A</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-center">Period B</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Trend</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-surface-hover/30">
+                                    <tbody className="divide-y divide-black/5">
                                         {modalities.map(m => {
                                             const valA = statsA.modalityStats.find(s => s.id === m.id)?.investigations || 0;
                                             const valB = statsB.modalityStats.find(s => s.id === m.id)?.investigations || 0;
                                             if (valA === 0 && valB === 0) return null;
                                             return (
-                                                <tr key={m.id} className="hover:bg-surface-hover/20 transition-colors">
-                                                    <td className="px-6 py-4 font-bold text-text-primary">{m.name}</td>
-                                                    <td className="px-6 py-4 text-center font-medium text-text-secondary">{valA}</td>
-                                                    <td className="px-6 py-4 text-center font-bold text-text-primary">{valB}</td>
-                                                    <td className="px-6 py-4 flex justify-end">{renderTrend(valA, valB)}</td>
+                                                <tr key={m.id} className="hover:bg-white/30 transition-colors">
+                                                    <td className="px-8 py-5 font-black text-black">{m.name}</td>
+                                                    <td className="px-8 py-5 text-center font-bold text-black/60">{valA}</td>
+                                                    <td className="px-8 py-5 text-center font-black text-black">{valB}</td>
+                                                    <td className="px-8 py-5 flex justify-end">{renderTrend(valA, valB)}</td>
                                                 </tr>
                                             );
                                         })}
@@ -258,33 +256,33 @@ export const WeeklyComparison: React.FC = () => {
                         </div>
 
                         {/* Revenue by Modality (₦) */}
-                        <div className="bg-surface rounded-3xl overflow-hidden shadow-sm border border-surface-hover/30">
-                            <div className="p-6 border-b border-surface-hover/50 bg-background/50">
-                                <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                                    <CreditCard className="w-5 h-5 text-green-500" /> Revenue by Modality (₦)
+                        <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/60">
+                            <div className="p-8 border-b border-black/5 bg-white/40">
+                                <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
+                                    <CreditCard className="w-5 h-5 text-mint stroke-[3]" /> Revenue by Modality (₦)
                                 </h3>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm">
-                                    <thead className="bg-background/80 text-text-secondary">
+                                    <thead className="bg-black/5 text-black/60">
                                         <tr>
-                                            <th className="px-6 py-4 font-semibold">Modality</th>
-                                            <th className="px-6 py-4 font-semibold text-right">Period A</th>
-                                            <th className="px-6 py-4 font-semibold text-right">Period B</th>
-                                            <th className="px-6 py-4 font-semibold text-right">Trend</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px]">Modality</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Period A</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Period B</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Trend</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-surface-hover/30">
+                                    <tbody className="divide-y divide-black/5">
                                         {modalities.map(m => {
                                             const valA = statsA.modalityStats.find(s => s.id === m.id)?.revenue || 0;
                                             const valB = statsB.modalityStats.find(s => s.id === m.id)?.revenue || 0;
                                             if (valA === 0 && valB === 0) return null;
                                             return (
-                                                <tr key={m.id} className="hover:bg-surface-hover/20 transition-colors">
-                                                    <td className="px-6 py-4 font-bold text-text-primary">{m.name}</td>
-                                                    <td className="px-6 py-4 text-right font-medium text-text-secondary">{valA.toLocaleString()}</td>
-                                                    <td className="px-6 py-4 text-right font-bold text-text-primary">{valB.toLocaleString()}</td>
-                                                    <td className="px-6 py-4 flex justify-end">{renderTrend(valA, valB)}</td>
+                                                <tr key={m.id} className="hover:bg-white/30 transition-colors">
+                                                    <td className="px-8 py-5 font-black text-black">{m.name}</td>
+                                                    <td className="px-8 py-5 text-right font-bold text-black/60">{valA.toLocaleString()}</td>
+                                                    <td className="px-8 py-5 text-right font-black text-black">{valB.toLocaleString()}</td>
+                                                    <td className="px-8 py-5 flex justify-end">{renderTrend(valA, valB)}</td>
                                                 </tr>
                                             );
                                         })}
@@ -294,33 +292,33 @@ export const WeeklyComparison: React.FC = () => {
                         </div>
 
                         {/* Contrast Usage (ML) */}
-                        <div className="bg-surface rounded-3xl overflow-hidden shadow-sm border border-surface-hover/30">
-                            <div className="p-6 border-b border-surface-hover/50 bg-background/50">
-                                <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                                    <Droplets className="w-5 h-5 text-amber-500" /> Contrast Usage (ML)
+                        <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/60">
+                            <div className="p-8 border-b border-black/5 bg-white/40">
+                                <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
+                                    <Droplets className="w-5 h-5 text-yellow stroke-[3]" /> Contrast Usage (ML)
                                 </h3>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm">
-                                    <thead className="bg-background/80 text-text-secondary">
+                                    <thead className="bg-black/5 text-black/60">
                                         <tr>
-                                            <th className="px-6 py-4 font-semibold">Contrast Type</th>
-                                            <th className="px-6 py-4 font-semibold text-center">Period A</th>
-                                            <th className="px-6 py-4 font-semibold text-center">Period B</th>
-                                            <th className="px-6 py-4 font-semibold text-right">Trend</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px]">Contrast Type</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-center">Period A</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-center">Period B</th>
+                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Trend</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-surface-hover/30">
+                                    <tbody className="divide-y divide-black/5">
                                         {contrastTypes.map(c => {
                                             const valA = statsA.contrastStats.find(s => s.id === c.id)?.ml || 0;
                                             const valB = statsB.contrastStats.find(s => s.id === c.id)?.ml || 0;
                                             if (valA === 0 && valB === 0) return null;
                                             return (
-                                                <tr key={c.id} className="hover:bg-surface-hover/20 transition-colors">
-                                                    <td className="px-6 py-4 font-bold text-text-primary">{c.name}</td>
-                                                    <td className="px-6 py-4 text-center font-medium text-text-secondary">{valA}</td>
-                                                    <td className="px-6 py-4 text-center font-bold text-text-primary">{valB}</td>
-                                                    <td className="px-6 py-4 flex justify-end">{renderTrend(valA, valB, true)}</td>
+                                                <tr key={c.id} className="hover:bg-white/30 transition-colors">
+                                                    <td className="px-8 py-5 font-black text-black">{c.name}</td>
+                                                    <td className="px-8 py-5 text-center font-bold text-black/60">{valA}</td>
+                                                    <td className="px-8 py-5 text-center font-black text-black">{valB}</td>
+                                                    <td className="px-8 py-5 flex justify-end">{renderTrend(valA, valB, true)}</td>
                                                 </tr>
                                             );
                                         })}

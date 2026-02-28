@@ -208,7 +208,7 @@ export const DailyLogging: React.FC = () => {
     }, [shifts]);
 
 
-    const inputClasses = "w-full bg-background border-none rounded-xl px-4 py-3 text-text-primary focus:ring-2 focus:ring-primary-500 outline-none transition-all shadow-inner";
+    const inputClasses = "w-full bg-white/40 border-2 border-transparent rounded-full px-5 py-3 text-black font-bold focus:border-black/20 focus:bg-white/60 outline-none transition-all shadow-sm placeholder:text-black/40 backdrop-blur-md";
 
     const getShiftIcon = (name: string) => {
         if (name === 'morning') return <div className="w-6 h-6 rounded bg-primary-100 flex items-center justify-center text-primary-500 font-bold text-xs shadow-sm">☀</div>;
@@ -221,13 +221,13 @@ export const DailyLogging: React.FC = () => {
         const isMorning = shiftName === 'morning';
 
         return (
-            <div className={`bg-surface rounded-3xl border border-surface-hover shadow-md overflow-hidden transition-all mb-6`}>
-                <div className="w-full flex justify-between items-center p-6 bg-gradient-to-r from-surface-hover/20 to-transparent border-b border-surface-hover/30">
+            <div className={`bg-white/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/50 shadow-sm overflow-hidden transition-all mb-8`}>
+                <div className="w-full flex justify-between items-center p-8 bg-black/5 border-b border-black/5">
                     <div className="flex items-center gap-4">
                         {getShiftIcon(shiftName)}
                         <div className="text-left">
-                            <h4 className="font-bold text-lg text-text-primary">
-                                {title} Shift <span className="text-sm font-semibold text-text-secondary ml-2">({timeRange})</span>
+                            <h4 className="font-black text-2xl text-black tracking-tight leading-none">
+                                {title} Shift <span className="text-sm font-bold text-black/50 ml-2 tracking-wide">({timeRange})</span>
                             </h4>
                         </div>
                     </div>
@@ -239,20 +239,20 @@ export const DailyLogging: React.FC = () => {
                             {/* HTML Table Header */}
                             <thead>
                                 <tr>
-                                    <th className="p-3 text-left font-semibold text-sm text-text-secondary bg-surface-hover/10 rounded-tl-xl border-b border-surface-hover">Row Type</th>
+                                    <th className="p-4 text-left font-black text-sm text-black/60 uppercase tracking-widest bg-black/5 rounded-tl-3xl border-b border-black/5">Row Type</th>
                                     {contrastTypes.map(c => (
-                                        <th key={c.id} className="p-3 text-center font-bold text-sm text-text-primary bg-surface-hover/10 border-b border-surface-hover border-l">
+                                        <th key={c.id} className="p-4 text-center font-black text-sm text-black bg-black/5 border-b border-black/5 border-l border-white/30 truncate max-w-[100px]">
                                             {c.name}
                                         </th>
                                     ))}
                                 </tr>
                                 <tr>
-                                    <th className="p-2 border-b border-surface-hover"></th>
+                                    <th className="p-2 border-b border-black/5"></th>
                                     {contrastTypes.map(c => (
-                                        <th key={`sub-${c.id}`} className="p-2 border-b border-surface-hover border-l text-xs font-medium text-text-secondary">
+                                        <th key={`sub-${c.id}`} className="p-3 border-b border-black/5 border-l border-white/30 text-[10px] font-bold text-black/50 uppercase tracking-widest">
                                             <div className="grid grid-cols-2 gap-2">
                                                 <span className="text-center">Total (mls)</span>
-                                                <span className="text-center">Total Bottles</span>
+                                                <span className="text-center">Bottles</span>
                                             </div>
                                         </th>
                                     ))}
@@ -262,17 +262,17 @@ export const DailyLogging: React.FC = () => {
                             {/* HTML Table Body */}
                             <tbody>
                                 {/* 1. Received Row */}
-                                <tr className="border-b border-surface-hover/30 hover:bg-surface-hover/10">
-                                    <td className="p-3 text-sm font-semibold text-text-secondary">
-                                        Total Qty Received <br /><span className="text-[10px] font-normal text-text-secondary/70">({isMorning ? 'Start stock' : 'Carried over + Additional'})</span>
+                                <tr className="border-b border-black/5 hover:bg-white/30 transition-colors">
+                                    <td className="p-4 text-sm font-bold text-black">
+                                        Total Qty Received <br /><span className="text-[10px] font-bold text-black/40 uppercase tracking-wider">({isMorning ? 'Start stock' : 'Carried over + Additional'})</span>
                                     </td>
                                     {contrastTypes.map(c => {
                                         const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
                                         return (
-                                            <td key={`rec-${c.id}`} className="p-3 border-l border-surface-hover/30">
-                                                <div className="grid grid-cols-2 gap-px bg-surface-hover/30 p-px rounded-sm">
-                                                    <input type="number" min="0" value={item.totalReceivedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedMls', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors ${!isMorning ? 'bg-surface-hover/10 text-text-secondary cursor-not-allowed' : ''}`} placeholder="0" />
-                                                    <input type="number" min="0" value={item.totalReceivedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedBottles', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors ${!isMorning ? 'bg-surface-hover/10 text-text-secondary cursor-not-allowed' : ''}`} placeholder="0" />
+                                            <td key={`rec-${c.id}`} className="p-3 border-l border-white/30">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <input type="number" min="0" value={item.totalReceivedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedMls', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-black text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm ${!isMorning ? 'opacity-50 cursor-not-allowed' : ''}`} placeholder="0" />
+                                                    <input type="number" min="0" value={item.totalReceivedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedBottles', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-black text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm ${!isMorning ? 'opacity-50 cursor-not-allowed' : ''}`} placeholder="0" />
                                                 </div>
                                             </td>
                                         );
@@ -281,17 +281,17 @@ export const DailyLogging: React.FC = () => {
 
                                 {/* 2. Additional Row */}
                                 {!isMorning && (
-                                    <tr className="border-b border-surface-hover/30 hover:bg-surface-hover/10">
-                                        <td className="p-3 text-sm font-semibold text-text-secondary">
-                                            <span className="text-primary-500">+</span> Additional Stock <br /><span className="text-[10px] font-normal text-text-secondary/70">(Extra received this shift)</span>
+                                    <tr className="border-b border-black/5 hover:bg-white/30 transition-colors">
+                                        <td className="p-4 text-sm font-bold text-black">
+                                            <span className="text-mint font-black text-lg mr-1">+</span> Additional Stock <br /><span className="text-[10px] font-bold text-black/40 uppercase tracking-wider">(Extra received this shift)</span>
                                         </td>
                                         {contrastTypes.map(c => {
                                             const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
                                             return (
-                                                <td key={`add-${c.id}`} className="p-3 border-l border-surface-hover/30">
-                                                    <div className="grid grid-cols-2 gap-px bg-surface-hover/30 p-px rounded-sm">
-                                                        <input type="number" min="0" value={item.additionalStockMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockMls', parseInt(e.target.value) || 0)} className="w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors hover:bg-surface-hover/10" placeholder="0" />
-                                                        <input type="number" min="0" value={item.additionalStockBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockBottles', parseInt(e.target.value) || 0)} className="w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors hover:bg-surface-hover/10" placeholder="0" />
+                                                <td key={`add-${c.id}`} className="p-3 border-l border-white/30">
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <input type="number" min="0" value={item.additionalStockMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockMls', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-black text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
+                                                        <input type="number" min="0" value={item.additionalStockBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockBottles', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-black text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
                                                     </div>
                                                 </td>
                                             );
@@ -300,17 +300,17 @@ export const DailyLogging: React.FC = () => {
                                 )}
 
                                 {/* 3. Consumption Row */}
-                                <tr className="border-b border-surface-hover/30 hover:bg-surface-hover/10">
-                                    <td className="p-3 text-sm font-semibold text-text-secondary">
+                                <tr className="border-b border-black/5 hover:bg-white/30 transition-colors">
+                                    <td className="p-4 text-sm font-bold text-black">
                                         Total Consumption
                                     </td>
                                     {contrastTypes.map(c => {
                                         const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
                                         return (
-                                            <td key={`cons-${c.id}`} className="p-3 border-l border-surface-hover/30">
-                                                <div className="grid grid-cols-2 gap-px bg-surface-hover/30 p-px rounded-sm">
-                                                    <input type="number" min="0" value={item.amountConsumedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedMls', parseInt(e.target.value) || 0)} className="w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors hover:bg-surface-hover/10" placeholder="0" />
-                                                    <input type="number" min="0" value={item.amountConsumedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedBottles', parseInt(e.target.value) || 0)} className="w-full bg-background px-1 py-1.5 text-center text-sm font-medium focus:ring-1 focus:ring-primary-400 outline-none transition-colors hover:bg-surface-hover/10" placeholder="0" />
+                                            <td key={`cons-${c.id}`} className="p-3 border-l border-white/30">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <input type="number" min="0" value={item.amountConsumedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedMls', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-black text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
+                                                    <input type="number" min="0" value={item.amountConsumedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedBottles', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-black text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
                                                 </div>
                                             </td>
                                         );
@@ -362,23 +362,23 @@ export const DailyLogging: React.FC = () => {
                     </div>
 
                     {/* Sign Off Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 bg-surface">
-                        <div className="bg-background rounded-2xl p-4 border border-surface-hover/40 shadow-sm">
-                            <label className="text-xs font-bold text-text-secondary flex items-center gap-2 mb-2"><div className="w-3 h-3 rounded-full bg-[#D0F3FF]" /> Handed Over To</label>
-                            <input type="text" placeholder="Enter staff name" value={shiftData.handedOverTo} onChange={e => updateShiftDetails(shiftName, 'handedOverTo', e.target.value)} className="w-full bg-transparent border-b border-surface-hover/60 pb-2 text-sm outline-none focus:border-primary-500 transition-colors font-semibold placeholder:font-normal" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 pb-2 border-t border-black/5 mx-6">
+                        <div className="bg-white/40 rounded-[1.5rem] p-5 border border-white/60 shadow-sm backdrop-blur-md">
+                            <label className="text-sm font-black text-black/60 uppercase tracking-widest flex items-center gap-2 mb-3"><div className="w-3 h-3 rounded-full bg-mint" /> Handed Over To</label>
+                            <input type="text" placeholder="Enter staff name" value={shiftData.handedOverTo} onChange={e => updateShiftDetails(shiftName, 'handedOverTo', e.target.value)} className="w-full bg-transparent border-b-2 border-black/10 pb-2 text-lg outline-none focus:border-black transition-colors font-bold text-black placeholder:text-black/30 placeholder:font-medium" />
                         </div>
-                        <div className="bg-background rounded-2xl p-4 border border-surface-hover/40 shadow-sm">
-                            <label className="text-xs font-bold text-text-secondary flex items-center gap-2 mb-2"><div className="w-3 h-3 rounded-sm bg-[#49CBA4]/40" /> Calculated By</label>
-                            <input type="text" placeholder="Enter staff name" value={shiftData.calculatedBy} onChange={e => updateShiftDetails(shiftName, 'calculatedBy', e.target.value)} className="w-full bg-transparent border-b border-surface-hover/60 pb-2 text-sm outline-none focus:border-primary-500 transition-colors font-semibold placeholder:font-normal" />
+                        <div className="bg-white/40 rounded-[1.5rem] p-5 border border-white/60 shadow-sm backdrop-blur-md">
+                            <label className="text-sm font-black text-black/60 uppercase tracking-widest flex items-center gap-2 mb-3"><div className="w-3 h-3 rounded-sm bg-yellow" /> Calculated By</label>
+                            <input type="text" placeholder="Enter staff name" value={shiftData.calculatedBy} onChange={e => updateShiftDetails(shiftName, 'calculatedBy', e.target.value)} className="w-full bg-transparent border-b-2 border-black/10 pb-2 text-lg outline-none focus:border-black transition-colors font-bold text-black placeholder:text-black/30 placeholder:font-medium" />
                         </div>
-                        <div className="bg-background rounded-2xl p-4 border border-surface-hover/40 shadow-sm flex flex-col justify-center">
-                            <label className="text-xs font-bold text-text-secondary flex items-center gap-2 mb-3"><div className="w-3 h-3 rounded-sm border-2 border-surface-hover" /> Verification</label>
-                            <label className="flex items-center gap-3 cursor-pointer group">
-                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${shiftData.isVerified ? 'border-primary-500 bg-primary-500' : 'border-surface-hover group-hover:border-primary-400'}`}>
-                                    {shiftData.isVerified && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                        <div className="bg-black text-white rounded-[1.5rem] p-5 shadow-lg flex flex-col justify-center relative overflow-hidden group">
+                            <label className="text-sm font-black text-white/60 uppercase tracking-widest flex items-center gap-2 mb-3 z-10"><div className="w-3 h-3 rounded-sm border-2 border-white/30" /> Verification</label>
+                            <label className="flex items-center gap-4 cursor-pointer z-10">
+                                <div className={`w-8 h-8 rounded-full border-[3px] flex items-center justify-center transition-colors ${shiftData.isVerified ? 'border-mint bg-mint text-black' : 'border-white/30 group-hover:border-white/50'}`}>
+                                    {shiftData.isVerified && <CheckCircle className="w-5 h-5 font-black" />}
                                 </div>
                                 <input type="checkbox" checked={shiftData.isVerified} onChange={e => updateShiftDetails(shiftName, 'isVerified', e.target.checked)} className="hidden" />
-                                <span className="text-xs font-semibold text-text-primary">I attest to the correctness of this data</span>
+                                <span className="text-sm font-bold text-white tracking-wide">I attest to the correctness</span>
                             </label>
                         </div>
                     </div>
@@ -478,7 +478,7 @@ export const DailyLogging: React.FC = () => {
                     </div>
 
                     <div className="pt-2 flex justify-end">
-                        <button type="submit" className="bg-primary-500 hover:bg-primary-600 text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all duration-300 w-full md:w-auto shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:-translate-y-1">
+                        <button type="submit" className="bg-black text-white px-10 py-4 rounded-full font-black text-lg transition-all duration-300 w-full md:w-auto shadow-lg hover:scale-105 active:scale-95 cursor-pointer">
                             Save Activity Log
                         </button>
                     </div>
@@ -534,26 +534,28 @@ export const DailyLogging: React.FC = () => {
                     </div>
 
                     {/* Top Stat Cards matching screenshot directly */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-surface rounded-2xl p-6 shadow-sm border border-surface-hover/40 flex flex-col justify-center">
-                            <h2 className="text-4xl font-black text-text-primary tracking-tight leading-none mb-1">{totalDayReceived}</h2>
-                            <p className="text-[10px] font-bold text-text-secondary mb-3">mls</p>
-                            <p className="text-xs font-bold text-text-secondary">Total Received</p>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+                        <div className="bg-white/40 backdrop-blur-3xl rounded-[2rem] p-6 shadow-sm border border-white/60 flex flex-col justify-center">
+                            <h2 className="text-[3rem] font-black text-black tracking-tighter leading-none mb-1">{totalDayReceived}</h2>
+                            <p className="text-[10px] font-bold text-black/50 mb-3 uppercase tracking-wider">mls</p>
+                            <p className="text-xs font-black text-black">Total Received</p>
                         </div>
-                        <div className="bg-surface rounded-2xl p-6 shadow-sm border border-surface-hover/40 flex flex-col justify-center">
-                            <h2 className="text-4xl font-black text-text-primary tracking-tight leading-none mb-1">{totalDayConsumed}</h2>
-                            <p className="text-[10px] font-bold text-text-secondary mb-3">mls</p>
-                            <p className="text-xs font-bold text-text-secondary">Total Consumed</p>
+                        <div className="bg-mint text-black rounded-[2rem] p-6 shadow-sm flex flex-col justify-center relative overflow-hidden">
+                            {/* Decorative element like the screenshot */}
+                            <div className="absolute top-0 right-0 p-4 opacity-50"><PieChartIcon className="w-16 h-16 text-black/10" /></div>
+                            <h2 className="text-[3rem] font-black text-black tracking-tighter leading-none mb-1 z-10">{totalDayConsumed}</h2>
+                            <p className="text-[10px] font-bold text-black/70 mb-3 uppercase tracking-wider z-10">mls</p>
+                            <p className="text-xs font-black text-black z-10">Total Consumed</p>
                         </div>
-                        <div className="bg-surface rounded-2xl p-6 shadow-sm border border-surface-hover/40 flex flex-col justify-center">
-                            <h2 className="text-4xl font-black text-text-primary tracking-tight leading-none mb-1">{totalRemaining}</h2>
-                            <p className="text-[10px] font-bold text-text-secondary mb-3">mls</p>
-                            <p className="text-xs font-bold text-text-secondary">Remaining Stock</p>
+                        <div className="bg-peach text-black rounded-[2rem] p-6 shadow-sm flex flex-col justify-center">
+                            <h2 className="text-[3rem] font-black text-black tracking-tighter leading-none mb-1">{totalRemaining}</h2>
+                            <p className="text-[10px] font-bold text-black/70 mb-3 uppercase tracking-wider">mls</p>
+                            <p className="text-xs font-black text-black">Remaining Stock</p>
                         </div>
-                        <div className="bg-surface rounded-2xl p-6 shadow-sm border border-surface-hover/40 flex flex-col justify-center">
-                            <h2 className="text-4xl font-black text-text-primary tracking-tight leading-none mb-1">{contrastTypes.length}</h2>
-                            <p className="text-[10px] font-bold text-text-secondary mb-3">tracked</p>
-                            <p className="text-xs font-bold text-text-secondary">Contrast Types</p>
+                        <div className="bg-lavender text-black rounded-[2rem] p-6 shadow-sm flex flex-col justify-center">
+                            <h2 className="text-[3rem] font-black text-black tracking-tighter leading-none mb-1">{contrastTypes.length}</h2>
+                            <p className="text-[10px] font-bold text-black/70 mb-3 uppercase tracking-wider">tracked</p>
+                            <p className="text-xs font-black text-black">Contrast Types</p>
                         </div>
                     </div>
 
@@ -565,41 +567,41 @@ export const DailyLogging: React.FC = () => {
                             {renderShiftCard('night', 'Night', '7pm - 8am')}
 
                             <div className="pt-2">
-                                <button onClick={handleContrastSubmit} className="flex justify-center items-center gap-2 w-full bg-slate-800 hover:bg-slate-900 text-white px-6 md:px-10 py-5 rounded-3xl font-bold text-lg transition-all duration-300 shadow-md hover:-translate-y-1">
-                                    <Save className="w-5 h-5" /> <span className="hidden sm:inline">Save Daily Contrast Records</span><span className="sm:hidden">Save Records</span>
+                                <button onClick={handleContrastSubmit} className="flex justify-center items-center gap-2 w-full bg-black text-white px-6 md:px-10 py-5 rounded-full font-black text-lg transition-all duration-300 shadow-md hover:scale-[1.02] cursor-pointer">
+                                    <Save className="w-5 h-5 stroke-[2.5]" /> <span className="hidden sm:inline">Save Daily Contrast Records</span><span className="sm:hidden">Save Records</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* Daily Summary Sidebar (matching screenshot) */}
                         <div className="xl:col-span-3">
-                            <div className="bg-surface p-7 rounded-3xl shadow-sm border border-surface-hover/40 sticky top-6">
-                                <h3 className="text-sm font-bold text-text-primary mb-6">Daily Summary</h3>
+                            <div className="bg-white/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-sm border border-white/60 sticky top-6">
+                                <h3 className="text-sm font-black text-black/60 uppercase tracking-widest mb-8">Daily Summary</h3>
 
-                                <div className="relative h-48 w-full mb-8">
+                                <div className="relative h-56 w-full mb-10">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <PieChart>
                                             <Pie
-                                                data={donutData.length > 0 ? donutData : [{ name: 'Empty', value: 1, fill: '#EAF5F0' }]}
+                                                data={donutData.length > 0 ? donutData : [{ name: 'Empty', value: 1, fill: '#FFFFFF' }]}
                                                 cx="50%"
                                                 cy="50%"
-                                                innerRadius={78}
-                                                outerRadius={88}
+                                                innerRadius={80}
+                                                outerRadius={100}
                                                 dataKey="value"
                                                 stroke="none"
                                             >
                                                 {donutData.length > 0
                                                     ? donutData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)
-                                                    : <Cell fill="#D1EBE1" />
+                                                    : <Cell fill="#FFFFFF" fillOpacity={0.5} />
                                                 }
                                             </Pie>
-                                            {donutData.length > 0 && <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />}
+                                            {donutData.length > 0 && <RechartsTooltip contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)', padding: '12px 20px', fontWeight: 'bold' }} />}
                                         </PieChart>
                                     </ResponsiveContainer>
                                     {/* Center Text inside Donut */}
                                     <div className="absolute inset-0 flex flex-col items-center justify-center mt-2">
-                                        <span className="text-3xl font-black text-text-primary tracking-tight">{totalDayConsumed}</span>
-                                        <span className="text-[10px] font-semibold text-text-secondary mt-1 tracking-wide">mls used</span>
+                                        <span className="text-[3.5rem] font-black text-black tracking-tighter leading-none">{totalDayConsumed}</span>
+                                        <span className="text-[10px] font-bold text-black/50 mt-1 uppercase tracking-wider">mls used</span>
                                     </div>
                                 </div>
 
@@ -610,15 +612,15 @@ export const DailyLogging: React.FC = () => {
                                             + shifts.afternoon.items.find(item => item.contrastTypeId === c.id)!.amountConsumedMls
                                             + shifts.night.items.find(item => item.contrastTypeId === c.id)!.amountConsumedMls;
 
-                                        const colors = ['#2A7B5F', '#49CBA4', '#31A5F5', '#0F172A', '#f59e0b', '#8b5cf6'];
+                                        const colors = ['#000000', '#7AFFA1', '#FFF87C', '#DDCBF5', '#FFA27D'];
 
                                         return (
-                                            <div key={`leg-${c.id}`} className="flex justify-between items-center text-xs font-bold">
+                                            <div key={`leg-${c.id}`} className="flex justify-between items-center text-sm font-black">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colors[i % colors.length] }}></div>
-                                                    <span className="text-text-primary tracking-wide">{c.name}</span>
+                                                    <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: colors[i % colors.length] }}></div>
+                                                    <span className="text-black">{c.name}</span>
                                                 </div>
-                                                <span className="text-text-primary">{typeTotal}</span>
+                                                <span className="text-black">{typeTotal}</span>
                                             </div>
                                         );
                                     })}

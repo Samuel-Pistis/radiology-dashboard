@@ -45,23 +45,23 @@ export const Reports: React.FC = () => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight text-text-primary">Reports</h2>
-                    <p className="text-text-secondary mt-1">Review historical activity, contrast usage, and generate summaries.</p>
+                    <h2 className="text-3xl font-black tracking-tight text-black">Reports</h2>
+                    <p className="text-black/60 font-bold mt-1">Review historical activity, contrast usage, and generate summaries.</p>
                 </div>
                 {activeTab !== 'generator' && activeTab !== 'comparison' && ( // Hide date filter when using generator/comparison as they have their own
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full md:w-auto">
-                        <label className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-primary-500" /> Filter
+                        <label className="text-[10px] font-black uppercase tracking-widest text-black/60 flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-mint stroke-[3]" /> Filter
                         </label>
                         <div className="flex items-center gap-2 w-full sm:w-auto">
                             <input
                                 type="date"
                                 value={filterDate}
                                 onChange={(e) => setFilterDate(e.target.value)}
-                                className="bg-background border-none rounded-xl px-4 py-2 text-text-primary focus:ring-2 focus:ring-primary-500 outline-none shadow-inner w-full sm:w-auto"
+                                className="bg-white/50 border-2 border-transparent rounded-full px-5 py-2.5 text-black font-bold focus:border-black/20 focus:bg-white outline-none shadow-sm transition-all w-full sm:w-auto backdrop-blur-md"
                             />
                             {filterDate && (
-                                <button onClick={() => setFilterDate('')} className="text-sm font-bold text-primary-500 hover:text-primary-600 transition-colors whitespace-nowrap">
+                                <button onClick={() => setFilterDate('')} className="text-sm font-black text-black/50 hover:text-black transition-colors whitespace-nowrap px-2">
                                     Clear
                                 </button>
                             )}
@@ -70,72 +70,72 @@ export const Reports: React.FC = () => {
                 )}
             </div>
 
-            <div className="flex overflow-x-auto hide-scrollbar space-x-2 border-b border-surface-hover/50 mb-8 pb-px">
+            <div className="flex overflow-x-auto hide-scrollbar space-x-2 border-b-2 border-black/5 mb-8 pb-px">
                 <button
                     onClick={() => setActiveTab('activity')}
-                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'activity' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-6 md:px-8 py-4 font-black transition-colors rounded-t-[2rem] whitespace-nowrap border-b-2 -mb-[2px] ${activeTab === 'activity' ? 'border-black text-black bg-white/40 shadow-sm backdrop-blur-sm' : 'border-transparent text-black/50 hover:text-black hover:bg-white/20'
                         }`}
                 >
-                    <Activity className="w-5 h-5" />
+                    <Activity className={`w-5 h-5 ${activeTab === 'activity' ? 'stroke-[3]' : ''}`} />
                     Activity Reports
                 </button>
                 <button
                     onClick={() => setActiveTab('contrast')}
-                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'contrast' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-6 md:px-8 py-4 font-black transition-colors rounded-t-[2rem] whitespace-nowrap border-b-2 -mb-[2px] ${activeTab === 'contrast' ? 'border-black text-black bg-white/40 shadow-sm backdrop-blur-sm' : 'border-transparent text-black/50 hover:text-black hover:bg-white/20'
                         }`}
                 >
-                    <Droplet className="w-5 h-5" />
+                    <Droplet className={`w-5 h-5 ${activeTab === 'contrast' ? 'stroke-[3]' : ''}`} />
                     Contrast Reports
                 </button>
                 <button
                     onClick={() => setActiveTab('generator')}
-                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'generator' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-6 md:px-8 py-4 font-black transition-colors rounded-t-[2rem] whitespace-nowrap border-b-2 -mb-[2px] ${activeTab === 'generator' ? 'border-black text-black bg-white/40 shadow-sm backdrop-blur-sm' : 'border-transparent text-black/50 hover:text-black hover:bg-white/20'
                         }`}
                 >
-                    <FileBarChart className="w-5 h-5" />
+                    <FileBarChart className={`w-5 h-5 ${activeTab === 'generator' ? 'stroke-[3]' : ''}`} />
                     Generate Weekly Report
                 </button>
                 <button
                     onClick={() => setActiveTab('comparison')}
-                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'comparison' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
+                    className={`flex items-center gap-2 px-6 md:px-8 py-4 font-black transition-colors rounded-t-[2rem] whitespace-nowrap border-b-2 -mb-[2px] ${activeTab === 'comparison' ? 'border-black text-black bg-white/40 shadow-sm backdrop-blur-sm' : 'border-transparent text-black/50 hover:text-black hover:bg-white/20'
                         }`}
                 >
-                    <Spline className="w-5 h-5" />
+                    <Spline className={`w-5 h-5 ${activeTab === 'comparison' ? 'stroke-[3]' : ''}`} />
                     Performance Comparison
                 </button>
             </div>
 
             <div className="w-full">
                 {activeTab === 'activity' ? (
-                    <div className="bg-surface rounded-3xl overflow-hidden shadow-sm">
+                    <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/60 overflow-hidden shadow-sm">
                         {filteredActivity.length === 0 ? (
-                            <div className="p-8 md:p-16 text-center text-text-secondary">
-                                <Activity className="w-12 h-12 mx-auto mb-4 text-surface-hover" />
-                                <p className="font-semibold text-lg text-text-primary">No activity logs found</p>
-                                <p>Try adjusting your date requirements.</p>
+                            <div className="p-8 md:p-16 text-center text-black/50">
+                                <Activity className="w-16 h-16 mx-auto mb-6 text-black/20 stroke-[1.5]" />
+                                <p className="font-black text-2xl text-black tracking-tight mb-2">No activity logs found</p>
+                                <p className="font-bold">Try adjusting your date requirements.</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="bg-background text-text-secondary border-b border-surface-hover/50">
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider">Date</th>
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider">Modality</th>
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider text-center">Investigations</th>
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider text-center">10x12 Film</th>
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider text-center">14x17 Film</th>
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider text-right">Revenue (₦)</th>
+                                        <tr className="bg-black/5 text-black/60 border-b border-black/5">
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest">Date</th>
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest">Modality</th>
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest text-center">Investigations</th>
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest text-center">10x12 Film</th>
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest text-center">14x17 Film</th>
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest text-right">Revenue (₦)</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-surface-hover/50 text-sm">
+                                    <tbody className="divide-y divide-black/5 text-sm">
                                         {filteredActivity.map(log => (
-                                            <tr key={log.id} className="hover:bg-surface-hover/30 transition-colors">
-                                                <td className="p-5 whitespace-nowrap font-medium text-text-primary">{log.date}</td>
-                                                <td className="p-5"><span className="bg-primary-50 text-primary-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">{getModalityName(log.modalityId)}</span></td>
-                                                <td className="p-5 text-center font-semibold text-text-primary">{log.totalInvestigations}</td>
-                                                <td className="p-5 text-center text-text-secondary font-medium">{log.film10x12Used}</td>
-                                                <td className="p-5 text-center text-text-secondary font-medium">{log.film14x17Used}</td>
-                                                <td className="p-5 text-right font-bold text-green-600">{log.revenueAmount?.toLocaleString() || 0}</td>
+                                            <tr key={log.id} className="hover:bg-white/30 transition-colors">
+                                                <td className="p-6 whitespace-nowrap font-bold text-black">{log.date}</td>
+                                                <td className="p-6"><span className="bg-white/50 border border-white/60 text-black px-4 py-2 rounded-full text-xs font-black shadow-sm">{getModalityName(log.modalityId)}</span></td>
+                                                <td className="p-6 text-center font-black text-black text-lg">{log.totalInvestigations}</td>
+                                                <td className="p-6 text-center text-black/60 font-bold">{log.film10x12Used}</td>
+                                                <td className="p-6 text-center text-black/60 font-bold">{log.film14x17Used}</td>
+                                                <td className="p-6 text-right font-black text-black text-lg">₦{log.revenueAmount?.toLocaleString() || 0}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -144,31 +144,31 @@ export const Reports: React.FC = () => {
                         )}
                     </div>
                 ) : activeTab === 'contrast' ? (
-                    <div className="bg-surface rounded-3xl overflow-hidden shadow-sm">
+                    <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/60 overflow-hidden shadow-sm">
                         {flatContrastReports.length === 0 ? (
-                            <div className="p-16 text-center text-text-secondary">
-                                <Droplet className="w-12 h-12 mx-auto mb-4 text-surface-hover" />
-                                <p className="font-semibold text-lg text-text-primary">No contrast logs found</p>
-                                <p>Try adjusting your date requirements.</p>
+                            <div className="p-16 text-center text-black/50">
+                                <Droplet className="w-16 h-16 mx-auto mb-6 text-black/20 stroke-[1.5]" />
+                                <p className="font-black text-2xl text-black tracking-tight mb-2">No contrast logs found</p>
+                                <p className="font-bold">Try adjusting your date requirements.</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="bg-background text-text-secondary border-b border-surface-hover/50">
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider">Date</th>
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider">Contrast Type</th>
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider text-center">Total Received (ML)</th>
-                                            <th className="p-5 font-bold text-xs uppercase tracking-wider text-right">Total Consumed (ML)</th>
+                                        <tr className="bg-black/5 text-black/60 border-b border-black/5">
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest">Date</th>
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest">Contrast Type</th>
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest text-center">Total Received (ML)</th>
+                                            <th className="p-6 font-black text-[10px] uppercase tracking-widest text-right">Total Consumed (ML)</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-surface-hover/50 text-sm">
+                                    <tbody className="divide-y divide-black/5 text-sm">
                                         {flatContrastReports.map((log: any) => (
-                                            <tr key={log.id} className="hover:bg-surface-hover/30 transition-colors">
-                                                <td className="p-5 whitespace-nowrap font-medium text-text-primary">{log.date}</td>
-                                                <td className="p-5"><span className="bg-primary-50 text-primary-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">{log.typeName}</span></td>
-                                                <td className="p-5 text-center text-text-secondary font-medium">{log.received} ml</td>
-                                                <td className="p-5 text-right font-bold text-secondary-600">{log.consumed} ml</td>
+                                            <tr key={log.id} className="hover:bg-white/30 transition-colors">
+                                                <td className="p-6 whitespace-nowrap font-bold text-black">{log.date}</td>
+                                                <td className="p-6"><span className="bg-white/50 border border-white/60 text-black px-4 py-2 rounded-full text-xs font-black shadow-sm">{log.typeName}</span></td>
+                                                <td className="p-6 text-center text-black/60 font-bold">{log.received} ml</td>
+                                                <td className="p-6 text-right font-black text-black text-lg">{log.consumed} ml</td>
                                             </tr>
                                         ))}
                                     </tbody>

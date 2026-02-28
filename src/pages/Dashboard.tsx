@@ -11,34 +11,44 @@ interface StatCardProps {
     title: string;
     value: string | number;
     subtitle?: string;
-    gradient?: boolean;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle, gradient }) => (
-    <div className={`rounded-3xl md:rounded-[2rem] p-6 md:p-8 shadow-sm transition-transform duration-300 relative overflow-hidden ${gradient
-        ? 'bg-gradient-to-br from-secondary-500 to-primary-500 text-white shadow-primary-500/20'
-        : 'bg-surface text-text-primary'
-        }`}>
-        <div className="flex justify-between items-start mb-6">
-            <p className={gradient ? 'text-white/90 font-medium' : 'text-text-secondary font-medium'}>
-                {title}
-            </p>
-            <div className={`p-2 rounded-full ${gradient ? 'bg-white/20 text-white' : 'bg-background text-text-primary border border-surface-hover'}`}>
-                <ArrowUpRight className="w-5 h-5" />
+const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle }) => {
+    let bgClass = 'bg-white/40 border border-white/60 text-black backdrop-blur-2xl';
+
+    // Use the reference image colors for different stat cards
+    if (title.includes('Revenue')) {
+        bgClass = 'bg-mint text-black border border-mint/50 shadow-[0_0_20px_rgba(122,255,161,0.3)]';
+    } else if (title.includes('Contrast')) {
+        bgClass = 'bg-yellow text-black border border-yellow/50 shadow-[0_0_20px_rgba(255,248,124,0.3)]';
+    } else if (title.includes('Investigations')) {
+        bgClass = 'bg-white/60 text-black border border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.4)] backdrop-blur-2xl';
+    }
+
+    return (
+        <div className={`rounded-[2.5rem] p-6 md:p-8 shadow-sm transition-transform duration-300 relative overflow-hidden flex flex-col justify-center ${bgClass}`}>
+            <div className="flex justify-between items-center mb-6">
+                <p className="text-black/70 font-bold text-sm uppercase tracking-widest bg-black/5 px-4 py-1.5 rounded-full inline-block">
+                    {title}
+                </p>
+                <div className="p-2.5 rounded-full bg-white/40 text-black shadow-sm mr-2">
+                    <ArrowUpRight className="w-5 h-5 stroke-[3]" />
+                </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold opacity-60 mb-1">{title.includes('Revenue') ? '₦' : ''}</span>
+                <h3 className="text-[3.5rem] font-black tracking-tighter leading-none">{value}</h3>
+                {subtitle && (
+                    <span className="text-xs font-bold text-black/50 tracking-wider uppercase ml-2">
+                        {subtitle}
+                    </span>
+                )}
             </div>
         </div>
-        <div className="flex items-baseline gap-3">
-            <h3 className="text-4xl font-bold tracking-tight">{value}</h3>
-            {subtitle && (
-                <span className={`text-sm font-medium ${gradient ? 'text-white/80' : 'text-text-secondary'}`}>
-                    {subtitle}
-                </span>
-            )}
-        </div>
-    </div>
-);
+    );
+};
 
-const COLORS = ['#31A5F5', '#49CBA4', '#D0F3FF', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4'];
+const COLORS = ['#7AFFA1', '#FFF87C', '#DDCBF5', '#FFA27D', '#000000', '#A0AEC0'];
 
 export const Dashboard: React.FC = () => {
     const { activityLogs, contrastRecords, weeklyOpsLogs, modalities, contrastTypes } = useAppContext();
@@ -110,8 +120,14 @@ export const Dashboard: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold tracking-tight text-text-primary">Dashboard Overview</h2>
+            <div className="flex justify-between items-center mb-10">
+                <h2 className="text-[2.5rem] font-medium tracking-tight text-black">
+                    <span className="opacity-40 font-bold">←</span> Dashboard
+                </h2>
+                <div className="flex gap-4">
+                    <button className="bg-white/50 backdrop-blur-md px-6 py-2.5 rounded-full font-bold text-sm shadow-sm border border-white/60">Issue Report</button>
+                    <button className="bg-white/50 backdrop-blur-md px-6 py-2.5 rounded-full font-bold text-sm shadow-sm border border-white/60">Edit Metrics</button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -129,15 +145,14 @@ export const Dashboard: React.FC = () => {
                     title="Total Revenue (₦)"
                     value={totalRevenue.toLocaleString()}
                     subtitle="Collected fees"
-                    gradient={true}
                 />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* Film Consumption Stacked Bar */}
-                <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm">
-                    <h3 className="text-xl font-semibold mb-6 md:mb-8 text-text-primary">Film Consumption by Modality</h3>
+                <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+                    <h3 className="text-2xl font-black mb-6 md:mb-8 text-black tracking-tight">Film Consumption</h3>
                     {filmData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
                             <p>No film data available.</p>
@@ -151,8 +166,8 @@ export const Dashboard: React.FC = () => {
                                     <YAxis stroke="#94a3b8" tick={{ fill: '#64748B' }} axisLine={false} tickLine={false} />
                                     <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={chartTooltipStyle} />
                                     <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                                    <Bar dataKey="10x12" stackId="a" fill="#31A5F5" radius={[0, 0, 4, 4]} barSize={40} />
-                                    <Bar dataKey="14x17" stackId="a" fill="#49CBA4" radius={[4, 4, 0, 0]} barSize={40} />
+                                    <Bar dataKey="10x12" stackId="a" fill="#DDCBF5" radius={[0, 0, 4, 4]} barSize={40} />
+                                    <Bar dataKey="14x17" stackId="a" fill="#7AFFA1" radius={[4, 4, 0, 0]} barSize={40} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -160,10 +175,10 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Contrast Usage Line Chart */}
-                <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm lg:col-span-2">
+                <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm lg:col-span-2">
                     <div className="flex justify-between items-center mb-6 md:mb-8">
-                        <h3 className="text-xl font-semibold text-text-primary">Contrast Volume (ML)</h3>
-                        <div className="hidden sm:block px-4 py-2 bg-background rounded-full text-sm font-medium border border-surface-hover text-text-secondary">
+                        <h3 className="text-2xl font-black text-black tracking-tight">Contrast Volume</h3>
+                        <div className="hidden sm:block px-5 py-2.5 bg-white/50 rounded-full text-xs font-bold border border-white/60 text-black shadow-sm uppercase tracking-wider">
                             Last 30 Days
                         </div>
                     </div>
@@ -198,8 +213,8 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Revenue Comparison Bar Chart */}
-                <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm lg:col-span-2">
-                    <h3 className="text-xl font-semibold mb-6 md:mb-8 text-text-primary">Weekly Revenue (₦)</h3>
+                <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm lg:col-span-2 mt-4">
+                    <h3 className="text-2xl font-black mb-6 md:mb-8 text-black tracking-tight">Weekly Revenue</h3>
                     {revenueComparisonData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
                             <p>No revenue comparison data available.</p>
@@ -213,8 +228,8 @@ export const Dashboard: React.FC = () => {
                                     <YAxis stroke="#94a3b8" tick={{ fill: '#64748B' }} axisLine={false} tickLine={false} />
                                     <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={chartTooltipStyle} />
                                     <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                                    <Bar dataKey="Last Week" fill="#D0F3FF" radius={[4, 4, 0, 0]} barSize={30} />
-                                    <Bar dataKey="This Week" fill="#31A5F5" radius={[4, 4, 0, 0]} barSize={30} />
+                                    <Bar dataKey="Last Week" fill="#DDCBF5" radius={[4, 4, 0, 0]} barSize={30} />
+                                    <Bar dataKey="This Week" fill="#FFA27D" radius={[4, 4, 0, 0]} barSize={30} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>

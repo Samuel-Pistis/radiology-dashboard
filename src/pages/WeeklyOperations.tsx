@@ -95,8 +95,8 @@ export const WeeklyOperations: React.FC = () => {
 
     const getModalityName = (id: string) => modalities.find(m => m.id === id)?.name || 'Unknown';
 
-    const inputClasses = "w-full bg-background border-none rounded-xl px-4 py-3 text-text-primary focus:ring-2 focus:ring-primary-500 outline-none transition-all shadow-inner";
-    const smallInputClasses = "w-full bg-background border-none rounded-lg px-3 py-2 text-sm text-text-primary focus:ring-2 focus:ring-primary-500 outline-none transition-all shadow-inner";
+    const inputClasses = "w-full bg-white/40 border-2 border-transparent rounded-full px-5 py-3 text-black font-bold focus:border-black/20 focus:bg-white/60 outline-none transition-all shadow-sm placeholder:text-black/40 backdrop-blur-md";
+    const smallInputClasses = "w-full bg-white/40 border-2 border-transparent rounded-full px-4 py-2 text-sm text-black font-bold focus:border-black/20 focus:bg-white/60 outline-none transition-all shadow-sm placeholder:text-black/40 backdrop-blur-md";
 
 
     return (
@@ -114,40 +114,40 @@ export const WeeklyOperations: React.FC = () => {
             )}
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm overflow-hidden h-fit">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 md:mb-8 border-b border-surface-hover/50 pb-6">
-                        <div className="p-3 bg-primary-50 rounded-xl text-primary-500 w-fit">
-                            <CalendarRange className="w-6 h-6" />
+                <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] p-8 shadow-sm border border-white/60 h-fit">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8 border-b border-black/5 pb-6">
+                        <div className="p-4 bg-lavender rounded-[1.5rem] text-black w-fit shadow-sm">
+                            <CalendarRange className="w-8 h-8 stroke-[2.5]" />
                         </div>
-                        <h3 className="text-2xl font-bold text-text-primary">New Weekly Log</h3>
+                        <h3 className="text-3xl font-black text-black tracking-tight">New Weekly Log</h3>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-text-secondary">Start Date</label>
+                                <label className="text-sm font-black text-black/60 uppercase tracking-widest pl-2">Start Date</label>
                                 <input type="date" value={weekStartDate} onChange={(e) => setWeekStartDate(e.target.value)} required className={inputClasses} />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-text-secondary">End Date</label>
+                                <label className="text-sm font-black text-black/60 uppercase tracking-widest pl-2">End Date</label>
                                 <input type="date" value={weekEndDate} onChange={(e) => setWeekEndDate(e.target.value)} required className={inputClasses} />
                             </div>
                         </div>
 
                         {/* Auto-Calculated Weekly Totals Display */}
                         <div className="space-y-4 pt-2">
-                            <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-primary-500" />
+                            <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-2">
+                                <Activity className="w-5 h-5 text-mint stroke-[2.5]" />
                                 Total Investigations by Modality
                             </h4>
                             {!weeklyData ? (
-                                <p className="text-sm text-text-secondary pb-2">Please select a Start and End Date to view auto-calculated investigation number.</p>
+                                <p className="text-sm font-medium text-black/50 pb-2 pl-7">Please select a Start and End Date.</p>
                             ) : (
-                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-background rounded-2xl border border-surface-hover/30">
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-white/30 rounded-[2rem] border border-white/50 backdrop-blur-md">
                                     {modalities.map(m => (
-                                        <div key={m.id} className="flex flex-col p-2 bg-surface rounded-xl border border-surface-hover/50 shadow-sm text-center">
-                                            <span className="text-xs font-bold text-text-secondary mb-1 truncate" title={m.name}>{m.name}</span>
-                                            <span className="text-xl font-bold text-primary-600">{weeklyData.totals[m.id]}</span>
+                                        <div key={m.id} className="flex flex-col py-4 px-2 bg-white/50 rounded-2xl border border-white/60 shadow-sm text-center">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-black/60 mb-1 truncate" title={m.name}>{m.name}</span>
+                                            <span className="text-3xl font-black text-black tracking-tighter leading-none">{weeklyData.totals[m.id]}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -155,87 +155,87 @@ export const WeeklyOperations: React.FC = () => {
                         </div>
 
                         {/* Total Film Consumption by Modality */}
-                        <div className="space-y-4 pt-4 border-t border-surface-hover/50">
-                            <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                                <Layers className="w-5 h-5 text-secondary-500" />
+                        <div className="space-y-4 pt-4 border-t border-black/5">
+                            <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-2">
+                                <Layers className="w-5 h-5 text-lavender stroke-[2.5]" />
                                 Total Film Consumption by Modality
                             </h4>
                             {!weeklyData ? (
-                                <p className="text-sm text-text-secondary pb-2">Please select a Start and End Date to view auto-calculated film consumption.</p>
+                                <p className="text-sm font-medium text-black/50 pb-2 pl-7">Please select a Start and End Date.</p>
                             ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-background rounded-2xl border border-surface-hover/30">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-white/30 rounded-[2rem] border border-white/50 backdrop-blur-md">
                                     {modalities.map(m => {
                                         const film = weeklyData.filmTotals[m.id];
                                         if (film.f10x12 === 0 && film.f14x17 === 0) return null;
                                         return (
-                                            <div key={m.id} className="flex flex-col p-3 bg-surface rounded-xl border border-surface-hover/50 shadow-sm">
-                                                <span className="text-xs font-bold text-text-secondary mb-2 truncate" title={m.name}>{m.name}</span>
-                                                <div className="flex justify-between items-center bg-background px-2 py-1.5 rounded-lg mb-1">
-                                                    <span className="text-xs font-medium text-text-secondary">10x12</span>
-                                                    <span className="text-sm font-bold text-primary-600">{film.f10x12}</span>
+                                            <div key={m.id} className="flex flex-col p-4 bg-white/50 rounded-2xl border border-white/60 shadow-sm">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-black/60 mb-3 truncate" title={m.name}>{m.name}</span>
+                                                <div className="flex justify-between items-center bg-white/60 px-3 py-2 rounded-full mb-2 shadow-sm border border-transparent">
+                                                    <span className="text-xs font-black text-black/50">10x12</span>
+                                                    <span className="text-base font-black text-black">{film.f10x12}</span>
                                                 </div>
-                                                <div className="flex justify-between items-center bg-background px-2 py-1.5 rounded-lg">
-                                                    <span className="text-xs font-medium text-text-secondary">14x17</span>
-                                                    <span className="text-sm font-bold text-secondary-600">{film.f14x17}</span>
+                                                <div className="flex justify-between items-center bg-white/60 px-3 py-2 rounded-full shadow-sm border border-transparent">
+                                                    <span className="text-xs font-black text-black/50">14x17</span>
+                                                    <span className="text-base font-black text-black">{film.f14x17}</span>
                                                 </div>
                                             </div>
                                         );
                                     })}
                                     {modalities.every(m => weeklyData.filmTotals[m.id].f10x12 === 0 && weeklyData.filmTotals[m.id].f14x17 === 0) && (
-                                        <p className="text-sm text-text-secondary col-span-full py-2">No film usage logged for this period.</p>
+                                        <p className="text-sm font-medium text-black/50 col-span-full py-2">No film usage logged for this period.</p>
                                     )}
                                 </div>
                             )}
                         </div>
 
                         {/* Total Contrast Consumption */}
-                        <div className="space-y-4 pt-4 border-t border-surface-hover/50">
-                            <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                                <Droplets className="w-5 h-5 text-amber-500" />
+                        <div className="space-y-4 pt-4 border-t border-black/5">
+                            <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-2">
+                                <Droplets className="w-5 h-5 text-peach stroke-[2.5]" />
                                 Total Contrast Consumption by Type
                             </h4>
                             {!weeklyData ? (
-                                <p className="text-sm text-text-secondary pb-2">Please select a Start and End Date to view auto-calculated contrast consumption.</p>
+                                <p className="text-sm font-medium text-black/50 pb-2 pl-7">Please select a Start and End Date.</p>
                             ) : (
-                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-background rounded-2xl border border-surface-hover/30">
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-white/30 rounded-[2rem] border border-white/50 backdrop-blur-md">
                                     {contrastTypes.map(c => {
                                         const totalML = weeklyData.contrastTotals[c.id];
                                         if (totalML === 0) return null;
                                         return (
-                                            <div key={c.id} className="flex flex-col p-3 bg-surface rounded-xl border border-surface-hover/50 shadow-sm text-center">
-                                                <span className="text-xs font-bold text-text-secondary mb-1 truncate" title={c.name}>{c.name}</span>
+                                            <div key={c.id} className="flex flex-col py-4 px-2 bg-white/50 rounded-2xl border border-white/60 shadow-sm text-center">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-black/60 mb-1 truncate" title={c.name}>{c.name}</span>
                                                 <div className="flex items-baseline justify-center gap-1">
-                                                    <span className="text-xl font-bold text-amber-600">{totalML}</span>
-                                                    <span className="text-xs font-medium text-text-secondary">ML</span>
+                                                    <span className="text-3xl font-black text-black tracking-tighter leading-none">{totalML}</span>
+                                                    <span className="text-[10px] font-bold text-black/40 uppercase tracking-wider">ML</span>
                                                 </div>
                                             </div>
                                         );
                                     })}
                                     {contrastTypes.every(c => weeklyData.contrastTotals[c.id] === 0) && (
-                                        <p className="text-sm text-text-secondary col-span-full text-left py-2">No contrast usage logged for this period.</p>
+                                        <p className="text-sm font-medium text-black/50 col-span-full text-left py-2">No contrast usage logged for this period.</p>
                                     )}
                                 </div>
                             )}
-                        </div>                        <div className="space-y-4 pt-4 border-t border-surface-hover/50">
-                            <h4 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                                <CreditCard className="w-5 h-5 text-secondary-500" />
+                        </div>                        <div className="space-y-4 pt-4 border-t border-black/5">
+                            <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-2">
+                                <CreditCard className="w-5 h-5 text-yellow stroke-[2.5]" />
                                 Revenue Collection by Modality (₦)
                             </h4>
                             {modalities.length === 0 ? (
-                                <p className="text-sm text-text-secondary pb-2">No modalities configured.</p>
+                                <p className="text-sm font-medium text-black/50 pb-2 pl-7">No modalities configured.</p>
                             ) : !weeklyData ? (
-                                <p className="text-sm text-text-secondary pb-2">Please select a Start and End Date to view auto-calculated revenue.</p>
+                                <p className="text-sm font-medium text-black/50 pb-2 pl-7">Please select a Start and End Date.</p>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {modalities.map(modality => (
-                                        <div key={modality.id} className="space-y-1.5 p-3 bg-background rounded-xl border border-surface-hover/30">
-                                            <label className="text-xs font-bold text-text-secondary truncate block" title={modality.name}>{modality.name}</label>
+                                        <div key={modality.id} className="space-y-2 p-4 bg-white/30 rounded-3xl border border-white/50 backdrop-blur-md text-center">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-black/60 truncate block" title={modality.name}>{modality.name}</label>
                                             <input
                                                 type="text"
                                                 value={weeklyData.revenueTotals[modality.id].toLocaleString()}
                                                 disabled
                                                 readOnly
-                                                className={`${smallInputClasses} disabled:opacity-50 disabled:bg-surface-hover font-semibold`}
+                                                className={`${smallInputClasses} disabled:opacity-70 disabled:bg-white/50 text-center text-lg shadow-none`}
                                             />
                                         </div>
                                     ))}
@@ -243,25 +243,25 @@ export const WeeklyOperations: React.FC = () => {
                             )}
                         </div>
 
-                        <div className="space-y-6 pt-4 border-t border-surface-hover/50">
+                        <div className="space-y-6 pt-4 border-t border-black/5">
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                                    <AlertTriangle className="w-5 h-5 text-amber-500" />
+                                <label className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-2 pl-2">
+                                    <AlertTriangle className="w-5 h-5 text-peach stroke-[2.5]" />
                                     Challenges Faced
                                 </label>
-                                <textarea rows={3} value={challenges} onChange={(e) => setChallenges(e.target.value)} className={`${inputClasses} resize-none`} placeholder="Describe any operational challenges..." />
+                                <textarea rows={3} value={challenges} onChange={(e) => setChallenges(e.target.value)} className={`${inputClasses} rounded-[2rem] resize-none`} placeholder="Describe any operational challenges..." />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                                    <CheckCircle className="w-5 h-5 text-secondary-500" />
+                                <label className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-2 pl-2">
+                                    <CheckCircle className="w-5 h-5 text-mint stroke-[2.5]" />
                                     Resolutions / Actions Taken
                                 </label>
-                                <textarea rows={3} value={resolutions} onChange={(e) => setResolutions(e.target.value)} className={`${inputClasses} resize-none`} placeholder="Describe how challenges were addressed..." />
+                                <textarea rows={3} value={resolutions} onChange={(e) => setResolutions(e.target.value)} className={`${inputClasses} rounded-[2rem] resize-none`} placeholder="Describe how challenges were addressed..." />
                             </div>
                         </div>
 
-                        <div className="pt-4 flex justify-end border-t border-surface-hover/50 text-right">
-                            <button type="submit" className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3.5 rounded-2xl font-bold transition-all duration-300 shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:-translate-y-1 w-full md:w-auto">
+                        <div className="pt-6 flex justify-end border-t border-black/5 text-right">
+                            <button type="submit" className="bg-black text-white px-10 py-4 rounded-full font-black text-lg transition-all duration-300 shadow-lg hover:scale-105 active:scale-95 cursor-pointer w-full md:w-auto">
                                 Save Weekly Log
                             </button>
                         </div>
@@ -269,26 +269,26 @@ export const WeeklyOperations: React.FC = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <h3 className="text-2xl font-bold mb-4 md:mb-6 px-2 text-text-primary">Recent Logs</h3>
-                    <div className="space-y-4 pb-8 max-h-[1000px] overflow-y-auto pr-2">
+                    <h3 className="text-3xl font-black mb-8 px-2 text-black tracking-tight">Recent Logs</h3>
+                    <div className="space-y-6 pb-8 max-h-[1000px] overflow-y-auto pr-2">
                         {weeklyOpsLogs.length === 0 ? (
-                            <div className="bg-surface border-none rounded-3xl p-8 md:p-12 text-center shadow-sm">
-                                <CalendarRange className="w-16 h-16 text-surface-hover mx-auto mb-4" />
-                                <p className="text-text-primary font-bold text-lg">No weekly logs found.</p>
-                                <p className="text-sm text-text-secondary mt-2">Submit a log to see it here.</p>
+                            <div className="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[2.5rem] p-12 text-center shadow-sm">
+                                <CalendarRange className="w-16 h-16 text-black/20 mx-auto mb-6 stroke-[1.5]" />
+                                <p className="text-black font-black text-2xl tracking-tight">No weekly logs found.</p>
+                                <p className="text-base font-bold text-black/50 mt-2">Submit a log to see it here.</p>
                             </div>
                         ) : (
                             [...weeklyOpsLogs].reverse().map(log => {
                                 const totalWeeklyRevenue = log.revenue?.reduce((sum, rev) => sum + rev.amount, 0) || 0;
 
                                 return (
-                                    <div key={log.id} className="bg-surface rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-2 mb-4 md:mb-6">
-                                            <div className="text-xs sm:text-sm font-bold text-primary-600 bg-primary-50 px-3 md:px-4 py-1.5 rounded-full">
+                                    <div key={log.id} className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] p-6 md:p-8 shadow-sm border border-white/60 hover:shadow-md transition-all">
+                                        <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                                            <div className="text-sm font-black text-black bg-white/60 px-5 py-2.5 rounded-full shadow-sm border border-white">
                                                 {log.weekStartDate} to {log.weekEndDate}
                                             </div>
                                             {totalWeeklyRevenue > 0 && (
-                                                <div className="text-base sm:text-lg font-bold text-text-primary">
+                                                <div className="text-2xl font-black text-black tracking-tighter">
                                                     ₦{totalWeeklyRevenue.toLocaleString()}
                                                 </div>
                                             )}
@@ -296,13 +296,13 @@ export const WeeklyOperations: React.FC = () => {
 
 
                                         {log.revenue && log.revenue.length > 0 && totalWeeklyRevenue > 0 && (
-                                            <div className="mt-4 pt-4 border-t border-surface-hover/50">
-                                                <span className="text-xs font-bold text-text-secondary uppercase tracking-wider block mb-3">Revenue Breakdown</span>
+                                            <div className="mt-4 pt-6 border-t border-black/5">
+                                                <span className="text-[10px] font-black text-black/50 uppercase tracking-widest block mb-4">Revenue Breakdown</span>
                                                 <div className="flex flex-wrap gap-2">
                                                     {log.revenue.filter(r => r.amount > 0).map(r => (
-                                                        <div key={r.modalityId} className="bg-white border border-surface-hover px-3 py-1.5 text-xs rounded-lg flex items-center gap-2 shadow-sm">
-                                                            <span className="text-text-secondary font-medium">{getModalityName(r.modalityId)}:</span>
-                                                            <span className="font-bold text-text-primary">₦{r.amount.toLocaleString()}</span>
+                                                        <div key={r.modalityId} className="bg-white/50 border border-white/60 px-4 py-2 text-sm rounded-full flex items-center gap-2 shadow-sm">
+                                                            <span className="text-black/60 font-bold">{getModalityName(r.modalityId)}:</span>
+                                                            <span className="font-black text-black">₦{r.amount.toLocaleString()}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -310,21 +310,21 @@ export const WeeklyOperations: React.FC = () => {
                                         )}
 
                                         {((log.challenges && log.challenges.trim() !== '') || (log.resolutions && log.resolutions.trim() !== '')) && (
-                                            <div className="space-y-4 mt-6 pt-4 border-t border-surface-hover/50">
+                                            <div className="space-y-4 mt-6 pt-6 border-t border-black/5">
                                                 {log.challenges && log.challenges.trim() !== '' && (
-                                                    <div className="bg-amber-50/50 p-4 rounded-xl">
-                                                        <span className="text-xs font-bold text-amber-600 uppercase tracking-wider block mb-2 flex items-center gap-1">
-                                                            <AlertTriangle className="w-3 h-3" /> Challenges
+                                                    <div className="bg-peach/30 border border-peach/50 p-5 rounded-[1.5rem] shadow-sm">
+                                                        <span className="text-[10px] font-black text-peach tracking-widest uppercase block mb-2 flex items-center gap-1">
+                                                            <AlertTriangle className="w-3 h-3 stroke-[3]" /> Challenges
                                                         </span>
-                                                        <p className="text-sm text-text-primary font-medium">{log.challenges}</p>
+                                                        <p className="text-base text-black font-bold leading-relaxed">{log.challenges}</p>
                                                     </div>
                                                 )}
                                                 {log.resolutions && log.resolutions.trim() !== '' && (
-                                                    <div className="bg-secondary-500/10 p-4 rounded-xl">
-                                                        <span className="text-xs font-bold text-secondary-600 uppercase tracking-wider block mb-2 flex items-center gap-1">
-                                                            <CheckCircle className="w-3 h-3" /> Resolutions
+                                                    <div className="bg-mint/30 border border-mint/50 p-5 rounded-[1.5rem] shadow-sm">
+                                                        <span className="text-[10px] font-black text-black/60 tracking-widest uppercase block mb-2 flex items-center gap-1">
+                                                            <CheckCircle className="w-3 h-3 text-mint stroke-[3]" /> Resolutions
                                                         </span>
-                                                        <p className="text-sm text-text-primary font-medium">{log.resolutions}</p>
+                                                        <p className="text-base text-black font-bold leading-relaxed">{log.resolutions}</p>
                                                     </div>
                                                 )}
                                             </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
-import { Menu, PlusSquare } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 export const Layout: React.FC = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -18,12 +18,11 @@ export const Layout: React.FC = () => {
 
             <main className="flex-1 flex flex-col relative overflow-hidden">
                 {/* Mobile Header */}
-                <header className="md:hidden flex items-center justify-between p-4 bg-surface border-b border-border/50 z-20 sticky top-0">
+                <header className="md:hidden flex items-center justify-between p-4 bg-white/40 backdrop-blur-md border-b border-white/50 z-20 sticky top-0">
                     <div className="flex items-center">
-                        <div className="bg-text-primary text-surface p-1 rounded-md mr-2">
-                            <PlusSquare className="w-4 h-4" />
+                        <div className="bg-black text-white p-2 rounded-xl mr-3 shadow-sm flex items-center justify-center">
+                            <span className="font-black text-lg italic leading-none pr-0.5">sf.</span>
                         </div>
-                        <h1 className="text-lg font-bold tracking-tight">MediControl</h1>
                     </div>
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}

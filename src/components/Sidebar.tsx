@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CalendarDays, CalendarRange, FileBarChart, Settings, LogOut, PlusSquare, ShieldCheck, UserCog, X } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, CalendarRange, FileBarChart, Settings, LogOut, ShieldCheck, UserCog, X } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../context/AuthContext';
 
@@ -32,16 +32,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             )}
             <aside
                 className={clsx(
-                    "fixed md:static inset-y-0 left-0 z-50 w-72 md:w-64 bg-surface md:m-4 rounded-r-3xl md:rounded-3xl shadow-2xl md:shadow-sm flex flex-col h-full md:h-[calc(100vh-2rem)] text-text-primary transition-transform duration-300 ease-in-out",
+                    "fixed md:static inset-y-0 left-0 z-50 w-72 md:w-64 bg-surface/40 backdrop-blur-2xl border border-white/50 md:m-4 rounded-r-[2rem] md:rounded-[2rem] shadow-xl flex flex-col h-full md:h-[calc(100vh-2rem)] text-text-primary transition-transform duration-300 ease-in-out",
                     isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
                 )}
             >
-                <div className="h-20 flex items-center justify-between px-6 md:px-8 border-b border-border/10 md:border-none">
+                <div className="h-24 flex items-center justify-between px-6 md:px-8 border-b border-black/5 md:border-none">
                     <div className="flex items-center">
-                        <div className="bg-text-primary text-surface p-1.5 rounded-lg mr-3 shadow-sm">
-                            <PlusSquare className="w-5 h-5" />
+                        <div className="bg-black text-white p-2 rounded-2xl mr-3 shadow-md flex items-center justify-center">
+                            <span className="font-black text-xl italic leading-none pr-1">sf.</span>
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight">MediControl</h1>
                     </div>
                     {/* Mobile close button */}
                     <button
@@ -60,10 +59,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                                 key={item.name}
                                 to={item.path}
                                 className={({ isActive }) => clsx(
-                                    'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium',
+                                    'flex items-center gap-3 px-5 py-3.5 rounded-full transition-all duration-300 font-bold',
                                     isActive
-                                        ? 'bg-surface shadow-[0_4px_12px_rgba(0,0,0,0.05)] text-text-primary'
-                                        : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'
+                                        ? 'bg-black shadow-lg shadow-black/20 text-white translate-x-1'
+                                        : 'text-text-secondary hover:bg-white/40 hover:text-black'
                                 )}
                             >
                                 <Icon className="w-5 h-5" />
@@ -73,30 +72,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     })}
                 </nav>
 
-                <div className="px-6 py-4">
-                    <div className="bg-gradient-to-br from-secondary-500 to-primary-500 rounded-2xl p-5 text-white shadow-lg shadow-primary-500/20 mb-4">
-                        <h3 className="font-bold text-lg mb-1">MediControl PRO</h3>
-                        <p className="text-xs text-white/90 mb-4 font-medium leading-relaxed">
+                <div className="px-6 py-6 pb-8">
+                    <div className="bg-gradient-to-br from-[#DDCBF5] to-[#7AFFA1] rounded-[1.5rem] p-5 text-black shadow-lg mb-6 border border-white/60">
+                        <h3 className="font-black text-xl mb-1 tracking-tight">MediControl PRO</h3>
+                        <p className="text-xs text-black/80 mb-5 font-bold leading-relaxed">
                             Full hospital management features. Access analytics, schedules, KPIs, and reports.
                         </p>
-                        <button className="w-full bg-white text-text-primary font-bold text-sm py-2 rounded-xl shadow-sm hover:shadow transition-shadow">
+                        <button className="w-full bg-black text-white font-black text-sm py-3 rounded-full shadow-md hover:scale-105 transition-transform">
                             Get PRO
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-3 mb-4 px-2 py-3 bg-surface-hover rounded-xl border border-border/50">
-                        <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
+                    <div className="flex items-center gap-4 mb-5 px-4 py-4 bg-white/40 rounded-full border border-white/60 shadow-sm backdrop-blur-md">
+                        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white shadow-inner">
                             {user?.role === 'admin' ? <ShieldCheck className="w-5 h-5" /> : <UserCog className="w-5 h-5" />}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-text-primary truncate">{user?.name}</p>
-                            <p className="text-xs text-text-secondary truncate capitalize">{user?.role.replace('_', ' ')}</p>
+                            <p className="text-sm font-black text-black truncate">{user?.name}</p>
+                            <p className="text-xs font-bold text-black/60 truncate capitalize">{user?.role.replace('_', ' ')}</p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => { logout(); onClose(); }}
-                        className="flex items-center gap-3 px-2 py-3 w-full text-text-secondary hover:text-red-600 hover:bg-red-50 rounded-xl transition-all font-medium group"
+                        className="flex items-center gap-3 px-4 py-3 w-full text-text-secondary hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all font-bold group"
                     >
                         <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span>Log out</span>
