@@ -74,7 +74,7 @@ export const WeeklyComparison: React.FC = () => {
     const renderTrend = (valueA: number, valueB: number, reverseColors: boolean = false) => {
         if (valueA === 0 && valueB === 0) {
             return (
-                <div className="flex items-center gap-1 text-black/50 text-[10px] tracking-widest uppercase font-black bg-white/50 border border-white/60 px-3 py-1 rounded-full shadow-sm backdrop-blur-md">
+                <div className="flex items-center gap-1 text-black/50 text-[10px] tracking-widest uppercase font-bold bg-white/50 border border-white/60 px-3 py-1 rounded-full shadow-sm backdrop-blur-md">
                     <Minus className="w-3 h-3 stroke-[3]" /> 0%
                 </div>
             );
@@ -96,7 +96,7 @@ export const WeeklyComparison: React.FC = () => {
         }
 
         return (
-            <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-[10px] tracking-widest uppercase font-black ${textColor} ${bgClass} backdrop-blur-md`}>
+            <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-[10px] tracking-widest uppercase font-bold ${textColor} ${bgClass} backdrop-blur-md`}>
                 {isPositive && <ArrowUpRight className="w-3 h-3 stroke-[3]" />}
                 {isNegative && <ArrowDownRight className="w-3 h-3 stroke-[3]" />}
                 {(!isPositive && !isNegative) && <Minus className="w-3 h-3 stroke-[3]" />}
@@ -105,7 +105,7 @@ export const WeeklyComparison: React.FC = () => {
         );
     };
 
-    const inputClasses = "w-full bg-white/50 border border-white/60 rounded-full px-5 py-3 text-black font-bold focus:border-black/20 focus:bg-white outline-none transition-all shadow-sm backdrop-blur-md";
+    const inputClasses = "w-full bg-white/50 border border-white/60 rounded-full px-5 py-3 text-black font-semibold focus:border-black/20 focus:bg-white outline-none transition-all shadow-sm backdrop-blur-md";
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -114,16 +114,16 @@ export const WeeklyComparison: React.FC = () => {
                 {/* Period A */}
                 <div className="bg-white/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-sm border border-white/60">
                     <div className="flex items-center gap-4 mb-8 pb-6 border-b border-black/5">
-                        <div className="w-10 h-10 rounded-full bg-white/60 border border-white flex items-center justify-center text-black font-black shadow-sm tracking-tighter">A</div>
-                        <h3 className="text-2xl font-black text-black tracking-tight">Base Period</h3>
+                        <div className="w-10 h-10 rounded-full bg-white/60 border border-white flex items-center justify-center text-black font-bold shadow-sm tracking-tighter">A</div>
+                        <h3 className="text-2xl font-bold text-black tracking-tight">Base Period</h3>
                     </div>
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-black/60">Start Date</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-black/60">Start Date</label>
                             <input type="date" value={periodAStart} onChange={e => setPeriodAStart(e.target.value)} className={inputClasses} />
                         </div>
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-black/60">End Date</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-black/60">End Date</label>
                             <input type="date" value={periodAEnd} onChange={e => setPeriodAEnd(e.target.value)} className={inputClasses} />
                         </div>
                     </div>
@@ -132,16 +132,16 @@ export const WeeklyComparison: React.FC = () => {
                 {/* Period B */}
                 <div className="bg-white/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-sm border border-white/60">
                     <div className="flex items-center gap-4 mb-8 pb-6 border-b border-black/5">
-                        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white font-black shadow-sm tracking-tighter">B</div>
-                        <h3 className="text-2xl font-black text-black tracking-tight">Comparison Period</h3>
+                        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white font-bold shadow-sm tracking-tighter">B</div>
+                        <h3 className="text-2xl font-bold text-black tracking-tight">Comparison Period</h3>
                     </div>
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-black/60">Start Date</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-black/60">Start Date</label>
                             <input type="date" value={periodBStart} onChange={e => setPeriodBStart(e.target.value)} className={inputClasses} />
                         </div>
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-black/60">End Date</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-black/60">End Date</label>
                             <input type="date" value={periodBEnd} onChange={e => setPeriodBEnd(e.target.value)} className={inputClasses} />
                         </div>
                     </div>
@@ -152,22 +152,22 @@ export const WeeklyComparison: React.FC = () => {
             {(!statsA || !statsB) ? (
                 <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] p-16 text-center shadow-sm border border-white/60">
                     <CalendarRange className="w-16 h-16 text-black/20 mx-auto mb-6 stroke-[1.5]" />
-                    <h3 className="text-2xl font-black text-black mb-2 tracking-tight">Select Dates to Compare</h3>
-                    <p className="text-black/60 font-bold">Please select complete start and end dates for both Period A and Period B to view the comparison.</p>
+                    <h3 className="text-2xl font-bold text-black mb-2 tracking-tight">Select Dates to Compare</h3>
+                    <p className="text-black/60 font-semibold">Please select complete start and end dates for both Period A and Period B to view the comparison.</p>
                 </div>
             ) : (
                 <div className="space-y-8">
                     {/* Overall Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                         <div className="bg-white/50 backdrop-blur-xl p-8 rounded-[2rem] shadow-sm border border-white/60 flex flex-col justify-between hover:-translate-y-1 transition-transform">
-                            <div className="flex items-center gap-2 text-black/60 font-black mb-6 text-[10px] uppercase tracking-widest">
+                            <div className="flex items-center gap-2 text-black/60 font-bold mb-6 text-[10px] uppercase tracking-widest">
                                 <Activity className="w-4 h-4 inline-block -mt-1 mr-1 text-mint stroke-[3]" />
                                 Investigations
                             </div>
                             <div className="flex justify-between items-end">
                                 <div>
-                                    <div className="text-4xl font-black text-black tracking-tighter">{statsB.totals.investigations}</div>
-                                    <div className="text-sm text-black/50 font-bold mt-1">vs {statsA.totals.investigations}</div>
+                                    <div className="text-4xl font-bold text-black tracking-tighter">{statsB.totals.investigations}</div>
+                                    <div className="text-sm text-black/50 font-semibold mt-1">vs {statsA.totals.investigations}</div>
                                 </div>
                                 {renderTrend(statsA.totals.investigations, statsB.totals.investigations)}
                             </div>
@@ -175,42 +175,42 @@ export const WeeklyComparison: React.FC = () => {
 
                         <div className="bg-white/50 backdrop-blur-xl p-8 rounded-[2rem] shadow-sm border border-white/60 flex flex-col justify-between hover:-translate-y-1 transition-transform relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-mint/20 rounded-bl-full pointer-events-none"></div>
-                            <div className="flex items-center gap-2 text-black/60 font-black mb-6 text-[10px] uppercase tracking-widest relative z-10">
+                            <div className="flex items-center gap-2 text-black/60 font-bold mb-6 text-[10px] uppercase tracking-widest relative z-10">
                                 <CreditCard className="w-4 h-4 inline-block -mt-1 mr-1 text-mint stroke-[3]" />
                                 Revenue
                             </div>
                             <div className="flex justify-between items-end relative z-10">
                                 <div>
-                                    <div className="text-4xl font-black text-black tracking-tighter">₦{(statsB.totals.revenue / 1000).toFixed(1)}k</div>
-                                    <div className="text-sm text-black/50 font-bold mt-1">vs ₦{(statsA.totals.revenue / 1000).toFixed(1)}k</div>
+                                    <div className="text-4xl font-bold text-black tracking-tighter">₦{(statsB.totals.revenue / 1000).toFixed(1)}k</div>
+                                    <div className="text-sm text-black/50 font-semibold mt-1">vs ₦{(statsA.totals.revenue / 1000).toFixed(1)}k</div>
                                 </div>
                                 {renderTrend(statsA.totals.revenue, statsB.totals.revenue)}
                             </div>
                         </div>
 
                         <div className="bg-white/50 backdrop-blur-xl p-8 rounded-[2rem] shadow-sm border border-white/60 flex flex-col justify-between hover:-translate-y-1 transition-transform">
-                            <div className="flex items-center gap-2 text-black/60 font-black mb-6 text-[10px] uppercase tracking-widest">
+                            <div className="flex items-center gap-2 text-black/60 font-bold mb-6 text-[10px] uppercase tracking-widest">
                                 <Layers className="w-4 h-4 inline-block -mt-1 mr-1 text-peach stroke-[3]" />
                                 Total Film
                             </div>
                             <div className="flex justify-between items-end">
                                 <div>
-                                    <div className="text-4xl font-black text-black tracking-tighter">{statsB.totals.film10x12 + statsB.totals.film14x17}</div>
-                                    <div className="text-sm text-black/50 font-bold mt-1">vs {statsA.totals.film10x12 + statsA.totals.film14x17}</div>
+                                    <div className="text-4xl font-bold text-black tracking-tighter">{statsB.totals.film10x12 + statsB.totals.film14x17}</div>
+                                    <div className="text-sm text-black/50 font-semibold mt-1">vs {statsA.totals.film10x12 + statsA.totals.film14x17}</div>
                                 </div>
                                 {renderTrend(statsA.totals.film10x12 + statsA.totals.film14x17, statsB.totals.film10x12 + statsB.totals.film14x17, true)}
                             </div>
                         </div>
 
                         <div className="bg-white/50 backdrop-blur-xl p-8 rounded-[2rem] shadow-sm border border-white/60 flex flex-col justify-between hover:-translate-y-1 transition-transform">
-                            <div className="flex items-center gap-2 text-black/60 font-black mb-6 text-[10px] uppercase tracking-widest">
+                            <div className="flex items-center gap-2 text-black/60 font-bold mb-6 text-[10px] uppercase tracking-widest">
                                 <Droplets className="w-4 h-4 inline-block -mt-1 mr-1 text-yellow stroke-[3]" />
                                 Total Contrast (ML)
                             </div>
                             <div className="flex justify-between items-end">
                                 <div>
-                                    <div className="text-4xl font-black text-black tracking-tighter">{statsB.totals.contrastML}</div>
-                                    <div className="text-sm text-black/50 font-bold mt-1">vs {statsA.totals.contrastML}</div>
+                                    <div className="text-4xl font-bold text-black tracking-tighter">{statsB.totals.contrastML}</div>
+                                    <div className="text-sm text-black/50 font-semibold mt-1">vs {statsA.totals.contrastML}</div>
                                 </div>
                                 {renderTrend(statsA.totals.contrastML, statsB.totals.contrastML, true)}
                             </div>
@@ -222,7 +222,7 @@ export const WeeklyComparison: React.FC = () => {
                         {/* Investigations by Modality */}
                         <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/60">
                             <div className="p-8 border-b border-black/5 bg-white/40">
-                                <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
+                                <h3 className="text-xl font-bold text-black flex items-center gap-2 tracking-tight">
                                     <Activity className="w-5 h-5 text-mint stroke-[3]" /> Investigations by Modality
                                 </h3>
                             </div>
@@ -230,10 +230,10 @@ export const WeeklyComparison: React.FC = () => {
                                 <table className="w-full text-left text-sm">
                                     <thead className="bg-black/5 text-black/60">
                                         <tr>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px]">Modality</th>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-center">Period A</th>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-center">Period B</th>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Trend</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px]">Modality</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px] text-center">Period A</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px] text-center">Period B</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px] text-right">Trend</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-black/5">
@@ -243,9 +243,9 @@ export const WeeklyComparison: React.FC = () => {
                                             if (valA === 0 && valB === 0) return null;
                                             return (
                                                 <tr key={m.id} className="hover:bg-white/30 transition-colors">
-                                                    <td className="px-8 py-5 font-black text-black">{m.name}</td>
-                                                    <td className="px-8 py-5 text-center font-bold text-black/60">{valA}</td>
-                                                    <td className="px-8 py-5 text-center font-black text-black">{valB}</td>
+                                                    <td className="px-8 py-5 font-bold text-black">{m.name}</td>
+                                                    <td className="px-8 py-5 text-center font-semibold text-black/60">{valA}</td>
+                                                    <td className="px-8 py-5 text-center font-bold text-black">{valB}</td>
                                                     <td className="px-8 py-5 flex justify-end">{renderTrend(valA, valB)}</td>
                                                 </tr>
                                             );
@@ -258,7 +258,7 @@ export const WeeklyComparison: React.FC = () => {
                         {/* Revenue by Modality (₦) */}
                         <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/60">
                             <div className="p-8 border-b border-black/5 bg-white/40">
-                                <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
+                                <h3 className="text-xl font-bold text-black flex items-center gap-2 tracking-tight">
                                     <CreditCard className="w-5 h-5 text-mint stroke-[3]" /> Revenue by Modality (₦)
                                 </h3>
                             </div>
@@ -266,10 +266,10 @@ export const WeeklyComparison: React.FC = () => {
                                 <table className="w-full text-left text-sm">
                                     <thead className="bg-black/5 text-black/60">
                                         <tr>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px]">Modality</th>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Period A</th>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Period B</th>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Trend</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px]">Modality</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px] text-right">Period A</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px] text-right">Period B</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px] text-right">Trend</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-black/5">
@@ -279,9 +279,9 @@ export const WeeklyComparison: React.FC = () => {
                                             if (valA === 0 && valB === 0) return null;
                                             return (
                                                 <tr key={m.id} className="hover:bg-white/30 transition-colors">
-                                                    <td className="px-8 py-5 font-black text-black">{m.name}</td>
-                                                    <td className="px-8 py-5 text-right font-bold text-black/60">{valA.toLocaleString()}</td>
-                                                    <td className="px-8 py-5 text-right font-black text-black">{valB.toLocaleString()}</td>
+                                                    <td className="px-8 py-5 font-bold text-black">{m.name}</td>
+                                                    <td className="px-8 py-5 text-right font-semibold text-black/60">{valA.toLocaleString()}</td>
+                                                    <td className="px-8 py-5 text-right font-bold text-black">{valB.toLocaleString()}</td>
                                                     <td className="px-8 py-5 flex justify-end">{renderTrend(valA, valB)}</td>
                                                 </tr>
                                             );
@@ -294,7 +294,7 @@ export const WeeklyComparison: React.FC = () => {
                         {/* Contrast Usage (ML) */}
                         <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/60">
                             <div className="p-8 border-b border-black/5 bg-white/40">
-                                <h3 className="text-xl font-black text-black flex items-center gap-2 tracking-tight">
+                                <h3 className="text-xl font-bold text-black flex items-center gap-2 tracking-tight">
                                     <Droplets className="w-5 h-5 text-yellow stroke-[3]" /> Contrast Usage (ML)
                                 </h3>
                             </div>
@@ -302,10 +302,10 @@ export const WeeklyComparison: React.FC = () => {
                                 <table className="w-full text-left text-sm">
                                     <thead className="bg-black/5 text-black/60">
                                         <tr>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px]">Contrast Type</th>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-center">Period A</th>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-center">Period B</th>
-                                            <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-right">Trend</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px]">Contrast Type</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px] text-center">Period A</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px] text-center">Period B</th>
+                                            <th className="px-8 py-5 font-bold uppercase tracking-widest text-[10px] text-right">Trend</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-black/5">
@@ -315,9 +315,9 @@ export const WeeklyComparison: React.FC = () => {
                                             if (valA === 0 && valB === 0) return null;
                                             return (
                                                 <tr key={c.id} className="hover:bg-white/30 transition-colors">
-                                                    <td className="px-8 py-5 font-black text-black">{c.name}</td>
-                                                    <td className="px-8 py-5 text-center font-bold text-black/60">{valA}</td>
-                                                    <td className="px-8 py-5 text-center font-black text-black">{valB}</td>
+                                                    <td className="px-8 py-5 font-bold text-black">{c.name}</td>
+                                                    <td className="px-8 py-5 text-center font-semibold text-black/60">{valA}</td>
+                                                    <td className="px-8 py-5 text-center font-bold text-black">{valB}</td>
                                                     <td className="px-8 py-5 flex justify-end">{renderTrend(valA, valB, true)}</td>
                                                 </tr>
                                             );

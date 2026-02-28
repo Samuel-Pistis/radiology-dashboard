@@ -28,7 +28,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle }) => {
     return (
         <div className={`rounded-[2.5rem] p-6 md:p-8 shadow-sm transition-transform duration-300 relative overflow-hidden flex flex-col justify-center ${bgClass}`}>
             <div className="flex justify-between items-center mb-6">
-                <p className="text-black/70 font-bold text-sm uppercase tracking-widest bg-black/5 px-4 py-1.5 rounded-full inline-block">
+                <p className="text-black/70 font-semibold text-sm uppercase tracking-widest bg-black/5 px-4 py-1.5 rounded-full inline-block">
                     {title}
                 </p>
                 <div className="p-2.5 rounded-full bg-white/40 text-black shadow-sm mr-2">
@@ -36,10 +36,10 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle }) => {
                 </div>
             </div>
             <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold opacity-60 mb-1">{title.includes('Revenue') ? '₦' : ''}</span>
-                <h3 className="text-[3.5rem] font-black tracking-tighter leading-none">{value}</h3>
+                <span className="text-3xl font-semibold opacity-60 mb-1">{title.includes('Revenue') ? '₦' : ''}</span>
+                <h3 className="text-[3.5rem] font-bold tracking-tighter leading-none">{value}</h3>
                 {subtitle && (
-                    <span className="text-xs font-bold text-black/50 tracking-wider uppercase ml-2">
+                    <span className="text-xs font-semibold text-black/50 tracking-wider uppercase ml-2">
                         {subtitle}
                     </span>
                 )}
@@ -122,11 +122,11 @@ export const Dashboard: React.FC = () => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
             <div className="flex justify-between items-center mb-10">
                 <h2 className="text-[2.5rem] font-medium tracking-tight text-black">
-                    <span className="opacity-40 font-bold">←</span> Dashboard
+                    <span className="opacity-40 font-semibold">←</span> Dashboard
                 </h2>
                 <div className="flex gap-4">
-                    <button className="bg-white/50 backdrop-blur-md px-6 py-2.5 rounded-full font-bold text-sm shadow-sm border border-white/60">Issue Report</button>
-                    <button className="bg-white/50 backdrop-blur-md px-6 py-2.5 rounded-full font-bold text-sm shadow-sm border border-white/60">Edit Metrics</button>
+                    <button className="bg-white/50 backdrop-blur-md px-6 py-2.5 rounded-full font-semibold text-sm shadow-sm border border-white/60">Issue Report</button>
+                    <button className="bg-white/50 backdrop-blur-md px-6 py-2.5 rounded-full font-semibold text-sm shadow-sm border border-white/60">Edit Metrics</button>
                 </div>
             </div>
 
@@ -152,7 +152,7 @@ export const Dashboard: React.FC = () => {
 
                 {/* Film Consumption Stacked Bar */}
                 <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-                    <h3 className="text-2xl font-black mb-6 md:mb-8 text-black tracking-tight">Film Consumption</h3>
+                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-black tracking-tight">Film Consumption</h3>
                     {filmData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
                             <p>No film data available.</p>
@@ -177,8 +177,8 @@ export const Dashboard: React.FC = () => {
                 {/* Contrast Usage Line Chart */}
                 <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm lg:col-span-2">
                     <div className="flex justify-between items-center mb-6 md:mb-8">
-                        <h3 className="text-2xl font-black text-black tracking-tight">Contrast Volume</h3>
-                        <div className="hidden sm:block px-5 py-2.5 bg-white/50 rounded-full text-xs font-bold border border-white/60 text-black shadow-sm uppercase tracking-wider">
+                        <h3 className="text-2xl font-bold text-black tracking-tight">Contrast Volume</h3>
+                        <div className="hidden sm:block px-5 py-2.5 bg-white/50 rounded-full text-xs font-semibold border border-white/60 text-black shadow-sm uppercase tracking-wider">
                             Last 30 Days
                         </div>
                     </div>
@@ -214,7 +214,7 @@ export const Dashboard: React.FC = () => {
 
                 {/* Revenue Comparison Bar Chart */}
                 <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm lg:col-span-2 mt-4">
-                    <h3 className="text-2xl font-black mb-6 md:mb-8 text-black tracking-tight">Weekly Revenue</h3>
+                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-black tracking-tight">Weekly Revenue</h3>
                     {revenueComparisonData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
                             <p>No revenue comparison data available.</p>

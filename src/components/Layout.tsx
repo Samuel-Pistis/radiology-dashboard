@@ -21,7 +21,7 @@ export const Layout: React.FC = () => {
                 <header className="md:hidden flex items-center justify-between p-4 bg-white/40 backdrop-blur-md border-b border-white/50 z-20 sticky top-0">
                     <div className="flex items-center">
                         <div className="bg-black text-white p-2 rounded-xl mr-3 shadow-sm flex items-center justify-center">
-                            <span className="font-black text-lg italic leading-none pr-0.5">sf.</span>
+                            <span className="font-bold text-lg italic leading-none pr-0.5">sf.</span>
                         </div>
                     </div>
                     <button

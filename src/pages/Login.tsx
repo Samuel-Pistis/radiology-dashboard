@@ -35,7 +35,7 @@ export const Login: React.FC = () => {
                         </div>
                     </div>
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold tracking-tight text-text-primary mb-2">MediControl Secure</h1>
+                        <h1 className="text-2xl font-semibold tracking-tight text-text-primary mb-2">MediControl Secure</h1>
                         <p className="text-text-secondary text-sm">Please select your demo role to continue</p>
                     </div>
                 </div>
