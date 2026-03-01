@@ -63,7 +63,7 @@ const RadiographerActivityForm: React.FC = () => {
         const volumeToAdd = vol !== undefined ? vol : (typeof contrastVolume === 'number' ? contrastVolume : 0);
         if (volumeToAdd <= 0 || !selectedContrastType) return;
 
-        const typeObj = activeContrastTypes.find((c: any) => c.id === selectedContrastType);
+        const typeObj = activeContrastTypes.find((c: { id: string; name: string }) => c.id === selectedContrastType);
         if (!typeObj) return;
 
         setContrastEntries(prev => [
@@ -103,7 +103,7 @@ const RadiographerActivityForm: React.FC = () => {
         };
 
         try {
-            await addStaffLog(log as any); // Using as any since StaffLog might need exact match
+            await addStaffLog(log);
             alert("Shift logged successfully!");
             // Reset form
             setProcedures({});
@@ -112,7 +112,7 @@ const RadiographerActivityForm: React.FC = () => {
             setContrastEntries([]);
             setFilmsPrinted(0);
             setIssues('');
-        } catch (e) {
+        } catch {
             alert("Failed to save log.");
         }
     };
@@ -232,7 +232,7 @@ const RadiographerActivityForm: React.FC = () => {
                                 onChange={(e) => setSelectedContrastType(e.target.value)}
                             >
                                 {activeContrastTypes.length === 0 && <option value="" disabled>No contrast types configured</option>}
-                                {activeContrastTypes.map((c: any) => (
+                                {activeContrastTypes.map((c: { id: string; name: string }) => (
                                     <option key={c.id} value={c.id}>{c.name}</option>
                                 ))}
                             </select>
@@ -372,7 +372,10 @@ const RadiographerActivityForm: React.FC = () => {
 
 export const AdminPerformanceDashboard: React.FC = () => {
     const { staffLogs, modalities } = useAppContext();
-    const [dateRange, setDateRange] = useState<'this_week' | 'this_month' | 'last_30'>('last_30');
+    const [dateRange, setDateRange] = useState<'this_week' | 'this_month' | 'last_30' | 'custom'>('last_30');
+    // Custom Date Range State
+    const [customStartDate, setCustomStartDate] = useState<string>('');
+    const [customEndDate, setCustomEndDate] = useState<string>('');
 
     // Table Sorting State
     const [sortColumn, setSortColumn] = useState<'name' | 'procedures' | 'avgDaily' | 'repeatRate' | 'contrast' | 'films' | 'lastActive'>('procedures');
@@ -396,11 +399,31 @@ export const AdminPerformanceDashboard: React.FC = () => {
             case 'last_30':
                 pastDate.setDate(today.getDate() - 30);
                 break;
+            case 'custom':
+                if (customStartDate && customEndDate) {
+                    const start = new Date(customStartDate).getTime();
+                    // Set end time to end of day to include full day logs
+                    const end = new Date(customEndDate).setHours(23, 59, 59, 999);
+                    return staffLogs.filter(log => {
+                        const logTime = new Date(log.date).getTime();
+                        return logTime >= start && logTime <= end;
+                    });
+                } else if (customStartDate) {
+                    const start = new Date(customStartDate).getTime();
+                    return staffLogs.filter(log => new Date(log.date).getTime() >= start);
+                } else if (customEndDate) {
+                    const end = new Date(customEndDate).setHours(23, 59, 59, 999);
+                    return staffLogs.filter(log => new Date(log.date).getTime() <= end);
+                }
+                break; // If custom but no dates, return all by default or fall through to next logic
         }
 
-        const filterTime = pastDate.getTime();
-        return staffLogs.filter(log => new Date(log.date).getTime() >= filterTime);
-    }, [staffLogs, dateRange]);
+        if (dateRange !== 'custom') {
+            const filterTime = pastDate.getTime();
+            return staffLogs.filter(log => new Date(log.date).getTime() >= filterTime);
+        }
+        return staffLogs; // fallback
+    }, [staffLogs, dateRange, customStartDate, customEndDate]);
 
     // Top Stats Calculations
     const totalProcedures = useMemo(() => filteredLogs.reduce((sum, log) => sum + log.total_procedures, 0), [filteredLogs]);
@@ -421,7 +444,7 @@ export const AdminPerformanceDashboard: React.FC = () => {
 
     // Anomaly Detection Algorithm
     const anomalies = useMemo(() => {
-        const flags: { id: string, staffName: string, type: 'danger' | 'warning', message: string, icon: any }[] = [];
+        const flags: { id: string, staffName: string, type: 'danger' | 'warning', message: string, icon: React.ElementType }[] = [];
 
         if (filteredLogs.length === 0) return flags;
 
@@ -430,11 +453,11 @@ export const AdminPerformanceDashboard: React.FC = () => {
             if (!acc[log.staff_id]) acc[log.staff_id] = { name: log.staff_name, logs: [] };
             acc[log.staff_id].logs.push(log);
             return acc;
-        }, {} as Record<string, { name: string, logs: any[] }>);
+        }, {} as Record<string, { name: string, logs: typeof filteredLogs }>);
 
         // Department averages
         const avgProcsPerStaff = totalProcedures / Object.keys(staffGroups).length;
-        const avgContrastVol = filteredLogs.reduce((sum, log) => sum + (log.contrast_administered?.reduce((s: number, e: any) => s + e.volume, 0) || 0), 0) / filteredLogs.length;
+        const avgContrastVol = filteredLogs.reduce((sum, log) => sum + (log.contrast_administered?.reduce((s: number, e: { volume: number }) => s + e.volume, 0) || 0), 0) / filteredLogs.length;
 
         Object.entries(staffGroups).forEach(([staffId, data]) => {
             const logs = data.logs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -461,7 +484,7 @@ export const AdminPerformanceDashboard: React.FC = () => {
 
             // 4. High Contrast Usage per shift
             const staffActiveDays = logs.length;
-            const staffTotalContrast = logs.reduce((sum, log) => sum + (log.contrast_administered?.reduce((s: number, e: any) => s + e.volume, 0) || 0), 0);
+            const staffTotalContrast = logs.reduce((sum, log) => sum + (log.contrast_administered?.reduce((s: number, e: { volume: number }) => s + e.volume, 0) || 0), 0);
             const staffAvgContrastPerDay = staffActiveDays > 0 ? staffTotalContrast / staffActiveDays : 0;
 
             if (staffAvgContrastPerDay > (avgContrastVol * 2) && avgContrastVol > 0) {
@@ -491,7 +514,7 @@ export const AdminPerformanceDashboard: React.FC = () => {
             const s = acc[log.staff_id];
             s.totalProcedures += log.total_procedures || 0;
             s.totalRepeats += log.total_repeats || 0;
-            s.totalContrast += log.contrast_administered?.reduce((sum: number, c: any) => sum + c.volume, 0) || 0;
+            s.totalContrast += log.contrast_administered?.reduce((sum: number, c: { volume: number }) => sum + c.volume, 0) || 0;
             s.totalFilms += log.films_printed || 0;
             s.activeDays.add(log.date);
 
@@ -499,7 +522,16 @@ export const AdminPerformanceDashboard: React.FC = () => {
                 s.lastActiveDate = log.date;
             }
             return acc;
-        }, {} as Record<string, any>)).map((s: any) => {
+        }, {} as Record<string, {
+            staffId: string;
+            name: string;
+            totalProcedures: number;
+            totalRepeats: number;
+            totalContrast: number;
+            totalFilms: number;
+            activeDays: Set<string>;
+            lastActiveDate: string;
+        }>)).map((s) => {
             const repeatRate = s.totalProcedures > 0 ? (s.totalRepeats / s.totalProcedures) * 100 : 0;
             const avgDaily = s.activeDays.size > 0 ? s.totalProcedures / s.activeDays.size : 0;
 
@@ -526,9 +558,9 @@ export const AdminPerformanceDashboard: React.FC = () => {
         });
 
         // Sorting
-        return summaries.sort((a: any, b: any) => {
-            let valA = a[sortColumn];
-            let valB = b[sortColumn];
+        return summaries.sort((a, b) => {
+            let valA = a[sortColumn as keyof typeof a];
+            let valB = b[sortColumn as keyof typeof b];
 
             if (sortColumn === 'lastActive') {
                 valA = a.daysSinceActive;
@@ -595,12 +627,34 @@ export const AdminPerformanceDashboard: React.FC = () => {
                     <select
                         className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-primary shadow-sm"
                         value={dateRange}
-                        onChange={(e) => setDateRange(e.target.value as any)}
+                        onChange={(e) => setDateRange(e.target.value as 'this_week' | 'this_month' | 'last_30' | 'custom')}
                     >
                         <option value="this_week">This Week</option>
                         <option value="this_month">This Month</option>
                         <option value="last_30">Last 30 Days</option>
+                        <option value="custom">Custom Range</option>
                     </select>
+
+                    {dateRange === 'custom' && (
+                        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2">
+                            <input
+                                type="date"
+                                className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-sm font-medium outline-none focus:border-primary shadow-sm h-10 w-36"
+                                value={customStartDate}
+                                onChange={(e) => setCustomStartDate(e.target.value)}
+                                placeholder="Start"
+                            />
+                            <span className="text-gray-400">-</span>
+                            <input
+                                type="date"
+                                className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-sm font-medium outline-none focus:border-primary shadow-sm h-10 w-36"
+                                value={customEndDate}
+                                onChange={(e) => setCustomEndDate(e.target.value)}
+                                placeholder="End"
+                            />
+                        </div>
+                    )}
+
                     <Button variant="secondary" icon={Download} onClick={handleExportCSV}>Export CSV</Button>
                 </div>
             </div>
@@ -682,7 +736,7 @@ export const AdminPerformanceDashboard: React.FC = () => {
                                     Object.entries(log.procedures_performed || {}).forEach(([modId, count]) => {
                                         const numCount = count as number;
                                         if (numCount > 0) {
-                                            const mName = modalities.find((m: any) => m.id === modId)?.name || modId;
+                                            const mName = modalities.find((m: { id: string; name: string }) => m.id === modId)?.name || modId;
                                             acc[mName] = (acc[mName] || 0) + numCount;
                                         }
                                     });
@@ -788,6 +842,26 @@ export const AdminPerformanceDashboard: React.FC = () => {
                                                                     <div className="text-sm text-text-muted">No procedure data logged</div>
                                                                 )}
                                                             </div>
+
+                                                            {/* Comparison Text */}
+                                                            {avgDailyPerStaff > 0 && (
+                                                                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
+                                                                    <span className="text-text-muted">Avg Daily Procedures:</span>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="font-bold text-text-primary">{staff.avgDaily.toFixed(1)}</span>
+                                                                        {(() => {
+                                                                            const diff = staff.avgDaily - avgDailyPerStaff;
+                                                                            const pctDiff = Math.abs((diff / avgDailyPerStaff) * 100).toFixed(0);
+                                                                            if (diff > 0) {
+                                                                                return <span className="text-success font-medium bg-success/10 px-2 py-0.5 rounded-full">{pctDiff}% above avg</span>;
+                                                                            } else if (diff < 0) {
+                                                                                return <span className="text-warning-700 font-medium bg-warning/10 px-2 py-0.5 rounded-full">{pctDiff}% below avg</span>;
+                                                                            }
+                                                                            return <span className="text-text-muted font-medium bg-gray-100 px-2 py-0.5 rounded-full">Average</span>;
+                                                                        })()}
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </td>
