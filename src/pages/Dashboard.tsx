@@ -1,51 +1,13 @@
 import React, { useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { ArrowUpRight } from 'lucide-react';
+
 import { calculateTotalInvestigations, calculateTotalContrastML, calculateTotalRevenue } from '../utils/calculations';
 import {
     BarChart, Bar, LineChart, Line, XAxis, YAxis,
     CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
-interface StatCardProps {
-    title: string;
-    value: string | number;
-    subtitle?: string;
-}
-
-const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle }) => {
-    let borderClass = 'border-l-primary';
-
-    if (title.includes('Revenue')) {
-        borderClass = 'border-l-success';
-    } else if (title.includes('Contrast')) {
-        borderClass = 'border-l-warning';
-    } else if (title.includes('Investigations')) {
-        borderClass = 'border-l-accent-indigo';
-    }
-
-    return (
-        <div className={`rad-stat-card ${borderClass} flex flex-col justify-center`}>
-            <div className="flex justify-between items-center mb-4">
-                <p className="text-text-secondary font-medium text-sm">
-                    {title}
-                </p>
-                <div className="p-2 rounded-lg bg-surface text-text-muted">
-                    <ArrowUpRight className="w-4 h-4" />
-                </div>
-            </div>
-            <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-2xl font-medium text-text-muted">{title.includes('Revenue') ? '₦' : ''}</span>
-                <h3 className="text-3xl font-bold text-text-primary tracking-tight">{value}</h3>
-            </div>
-            {subtitle && (
-                <span className="text-sm font-medium text-text-muted">
-                    {subtitle}
-                </span>
-            )}
-        </div>
-    );
-};
+import { PageHeader, StatCard, Card, Button } from '@/components/ui';
 
 const COLORS = ['#0D9488', '#6366F1', '#F59E0B', '#10B981', '#111827', '#6B7280'];
 
@@ -119,38 +81,42 @@ export const Dashboard: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-            <div className="flex justify-between items-center mb-10">
-                <h2 className="text-[2.5rem] font-medium tracking-tight text-text-primary">
-                    <span className="opacity-40 font-semibold">←</span> Dashboard
-                </h2>
-                <div className="flex gap-4">
-                    <button className="rad-btn-primary">Issue Report</button>
-                    <button className="px-4 py-2 rounded-lg font-medium text-text-primary bg-surface border border-border hover:bg-gray-100 transition-colors">Edit Metrics</button>
-                </div>
-            </div>
-
+            <PageHeader
+                title={<><span className="opacity-40 font-semibold">←</span> Dashboard</>}
+                actions={
+                    <>
+                        <Button variant="primary">Issue Report</Button>
+                        <Button variant="secondary">Edit Metrics</Button>
+                    </>
+                }
+            />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard
-                    title="Total Investigations"
+                    label="Total Investigations"
                     value={totalInvestigations}
-                    subtitle="Logged entries"
+                    accentColor="border-l-accent-indigo"
+                    trend={{ direction: 'neutral', value: 0, label: "Logged entries" }}
                 />
                 <StatCard
-                    title="Contrast Used (ML)"
+                    label="Contrast Used"
                     value={totalContrastML}
-                    subtitle="Total volume"
+                    unit="ML"
+                    accentColor="border-l-warning"
+                    trend={{ direction: 'neutral', value: 0, label: "Total volume" }}
                 />
                 <StatCard
-                    title="Total Revenue (₦)"
+                    label="Total Revenue"
                     value={totalRevenue.toLocaleString()}
-                    subtitle="Collected fees"
+                    unit="₦"
+                    accentColor="border-l-success"
+                    trend={{ direction: 'neutral', value: 0, label: "Collected fees" }}
                 />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* Revenue Comparison Bar Chart */}
-                <div className="rad-card">
+                <Card>
                     <h3 className="text-2xl font-bold mb-6 md:mb-8 text-text-primary tracking-tight">Weekly Revenue</h3>
                     {revenueComparisonData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
@@ -171,10 +137,10 @@ export const Dashboard: React.FC = () => {
                             </ResponsiveContainer>
                         </div>
                     )}
-                </div>
+                </Card>
 
                 {/* Contrast Usage Line Chart */}
-                <div className="rad-card lg:col-span-2">
+                <Card className="lg:col-span-2">
                     <div className="flex justify-between items-center mb-6 md:mb-8">
                         <h3 className="text-2xl font-bold text-text-primary tracking-tight">Contrast Volume</h3>
                         <div className="hidden sm:block px-5 py-2 rounded-lg text-xs font-semibold border border-border bg-surface text-text-primary shadow-sm">
@@ -209,10 +175,10 @@ export const Dashboard: React.FC = () => {
                             </ResponsiveContainer>
                         </div>
                     )}
-                </div>
+                </Card>
 
                 {/* Film Consumption Stacked Bar */}
-                <div className="rad-card lg:col-span-2 mt-4">
+                <Card className="lg:col-span-2 mt-4">
                     <h3 className="text-2xl font-bold mb-6 md:mb-8 text-text-primary tracking-tight">Film Consumption</h3>
                     {filmData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
@@ -233,7 +199,7 @@ export const Dashboard: React.FC = () => {
                             </ResponsiveContainer>
                         </div>
                     )}
-                </div>
+                </Card>
 
             </div>
         </div>

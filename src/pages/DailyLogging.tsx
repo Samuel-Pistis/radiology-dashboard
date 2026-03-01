@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Activity, CheckCircle, Save, FileText, PieChart as PieChartIcon, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
+import { PageHeader, Tabs, Card, Input, Select, Button, StatCard } from '@/components/ui';
 import type { ShiftRecord, DailyContrastRecord, ContrastItemData } from '../types';
 
 export const DailyLogging: React.FC = () => {
@@ -208,7 +209,7 @@ export const DailyLogging: React.FC = () => {
     }, [shifts]);
 
 
-    const inputClasses = "rad-input";
+
 
     const getShiftIcon = (name: string) => {
         if (name === 'morning') return <div className="w-6 h-6 rounded bg-primary-100 flex items-center justify-center text-primary-500 font-semibold text-xs shadow-sm">☀</div>;
@@ -390,10 +391,10 @@ export const DailyLogging: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-            <div>
-                <h2 className="text-3xl font-semibold tracking-tight text-text-primary">Daily Logging</h2>
-                <p className="text-text-secondary mt-1">Record daily activity and shift-based contrast usage.</p>
-            </div>
+            <PageHeader
+                title="Daily Logging"
+                description="Record daily activity and shift-based contrast usage."
+            />
 
             {successMessage && (
                 <div className="p-4 bg-green-50/80 border border-green-200 text-green-700 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
@@ -402,85 +403,58 @@ export const DailyLogging: React.FC = () => {
                 </div>
             )}
 
-            <div className="flex overflow-x-auto hide-scrollbar space-x-2 border-b border-surface-hover/50 pb-px">
-                <button
-                    onClick={() => setActiveTab('activity')}
-                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'activity' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
-                        }`}
-                >
-                    <Activity className="w-5 h-5" />
-                    Activity Log
-                </button>
-                <button
-                    onClick={() => setActiveTab('contrast')}
-                    className={`flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 font-semibold transition-colors border-b-2 whitespace-nowrap ${activeTab === 'contrast' ? 'border-primary-500 text-primary-600 bg-primary-50/50 rounded-t-xl' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-hover/30 rounded-t-xl'
-                        }`}
-                >
-                    <PieChartIcon className="w-5 h-5" />
-                    Contrast Log
-                </button>
-            </div>
+            <Tabs
+                items={[
+                    { label: 'Activity Log', value: 'activity', icon: <Activity className="w-5 h-5" /> },
+                    { label: 'Contrast Log', value: 'contrast', icon: <PieChartIcon className="w-5 h-5" /> }
+                ]}
+                activeValue={activeTab}
+                onChange={(value) => setActiveTab(value as any)}
+            />
 
             {activeTab === 'activity' && (
                 <form onSubmit={handleActivitySubmit} className="space-y-8 animate-in fade-in relative">
                     {/* General Information */}
-                    <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm border border-surface-hover/20">
+                    <Card>
                         <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-text-primary">
-                            <FileText className="w-6 h-6 text-primary-500" />
+                            <FileText className="w-6 h-6 text-primary" />
                             General Information
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-text-secondary">Date</label>
-                                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required className={inputClasses} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-text-secondary">Modality</label>
-                                <select value={modalityId} onChange={(e) => setModalityId(e.target.value)} required className={inputClasses}>
-                                    <option value="" disabled>Select Modality</option>
-                                    {modalities.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-text-secondary">Location (Optional)</label>
-                                <select value={locationId} onChange={(e) => setLocationId(e.target.value)} className={inputClasses}>
-                                    <option value="">None</option>
-                                    {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-                                </select>
-                            </div>
+                            <Input label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+                            <Select label="Modality" value={modalityId} onChange={(e) => setModalityId(e.target.value)} required>
+                                <option value="" disabled>Select Modality</option>
+                                {modalities.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                            </Select>
+                            <Select label="Location (Optional)" value={locationId} onChange={(e) => setLocationId(e.target.value)}>
+                                <option value="">None</option>
+                                {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                            </Select>
                         </div>
-                    </div>
+                    </Card>
 
-                    {/* Activity & Film Usage */}
-                    <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm border border-surface-hover/20">
+                    <Card>
                         <h3 className="text-xl font-semibold mb-6 text-text-primary">Investigations & Film Usage</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-text-secondary">Total Investigations</label>
-                                <input type="number" min="0" value={totalInvestigations} onChange={(e) => setTotalInvestigations(Number(e.target.value))} required className={inputClasses} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-text-secondary">Film 10x12 Used</label>
-                                <input type="number" min="0" value={film10x12} onChange={(e) => setFilm10x12(Number(e.target.value))} className={inputClasses} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-text-secondary">Film 14x17 Used</label>
-                                <input type="number" min="0" value={film14x17} onChange={(e) => setFilm14x17(Number(e.target.value))} className={inputClasses} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-text-secondary">Revenue Amount</label>
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary font-medium">₦</span>
-                                    <input type="number" min="0" value={revenue} onChange={(e) => setRevenue(Number(e.target.value))} className={`${inputClasses} pl-10`} />
-                                </div>
-                            </div>
+                            <Input label="Total Investigations" type="number" min="0" value={totalInvestigations} onChange={(e) => setTotalInvestigations(Number(e.target.value))} required />
+                            <Input label="Film 10x12 Used" type="number" min="0" value={film10x12} onChange={(e) => setFilm10x12(Number(e.target.value))} />
+                            <Input label="Film 14x17 Used" type="number" min="0" value={film14x17} onChange={(e) => setFilm14x17(Number(e.target.value))} />
+                            <Input
+                                label="Revenue Amount"
+                                type="number"
+                                min="0"
+                                value={revenue}
+                                onChange={(e) => setRevenue(Number(e.target.value))}
+                                leftIcon={<span className="text-text-secondary font-medium">₦</span>}
+                                className="pl-10"
+                            />
                         </div>
-                    </div>
+                    </Card>
 
                     <div className="pt-2 flex justify-end">
-                        <button type="submit" className="rad-btn-primary px-10 py-4 w-full md:w-auto shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer text-lg">
+                        <Button type="submit" size="lg" className="w-full md:w-auto">
                             Save Activity Log
-                        </button>
+                        </Button>
                     </div>
                 </form>
             )}
@@ -535,26 +509,10 @@ export const DailyLogging: React.FC = () => {
 
                     {/* Top Stat Cards matching screenshot directly */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-                        <div className="rad-stat-card border-l-primary flex flex-col justify-center">
-                            <h2 className="text-[3rem] font-bold text-text-primary tracking-tighter leading-none mb-1">{totalDayReceived}</h2>
-                            <p className="text-[10px] font-medium text-text-muted mb-3 tracking-wide">mls</p>
-                            <p className="text-xs font-semibold text-text-secondary">Total Received</p>
-                        </div>
-                        <div className="rad-stat-card border-l-success flex flex-col justify-center relative overflow-hidden">
-                            <h2 className="text-[3rem] font-bold text-text-primary tracking-tighter leading-none mb-1 z-10">{totalDayConsumed}</h2>
-                            <p className="text-[10px] font-medium text-text-muted mb-3 tracking-wide z-10">mls</p>
-                            <p className="text-xs font-semibold text-text-secondary z-10">Total Consumed</p>
-                        </div>
-                        <div className="rad-stat-card border-l-warning flex flex-col justify-center">
-                            <h2 className="text-[3rem] font-bold text-text-primary tracking-tighter leading-none mb-1">{totalRemaining}</h2>
-                            <p className="text-[10px] font-medium text-text-muted mb-3 tracking-wide">mls</p>
-                            <p className="text-xs font-semibold text-text-secondary">Remaining Stock</p>
-                        </div>
-                        <div className="rad-stat-card border-l-accent-indigo flex flex-col justify-center">
-                            <h2 className="text-[3rem] font-bold text-text-primary tracking-tighter leading-none mb-1">{contrastTypes.length}</h2>
-                            <p className="text-[10px] font-medium text-text-muted mb-3 tracking-wide">tracked</p>
-                            <p className="text-xs font-semibold text-text-secondary">Contrast Types</p>
-                        </div>
+                        <StatCard accentColor="primary" label="Total Received" value={totalDayReceived} unit="mls" />
+                        <StatCard accentColor="success" label="Total Consumed" value={totalDayConsumed} unit="mls" />
+                        <StatCard accentColor="warning" label="Remaining Stock" value={totalRemaining} unit="mls" />
+                        <StatCard accentColor="indigo" label="Contrast Types" value={contrastTypes.length} unit="tracked" />
                     </div>
 
                     <div className="grid grid-cols-1 xl:grid-cols-10 gap-8">
@@ -565,9 +523,9 @@ export const DailyLogging: React.FC = () => {
                             {renderShiftCard('night', 'Night', '7pm - 8am')}
 
                             <div className="pt-2">
-                                <button onClick={handleContrastSubmit} className="flex justify-center items-center gap-2 w-full bg-black text-white px-6 md:px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 shadow-md hover:scale-[1.02] cursor-pointer">
-                                    <Save className="w-5 h-5 stroke-[2.5]" /> <span className="hidden sm:inline">Save Daily Contrast Records</span><span className="sm:hidden">Save Records</span>
-                                </button>
+                                <Button onClick={handleContrastSubmit} size="lg" icon={Save} className="w-full">
+                                    <span className="hidden sm:inline">Save Daily Contrast Records</span><span className="sm:hidden">Save Records</span>
+                                </Button>
                             </div>
                         </div>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Trash2, Plus } from 'lucide-react';
-
+import { PageHeader, Card, Input, Button } from '@/components/ui';
 export const Settings: React.FC = () => {
     const { modalities, addModality, removeModality } = useAppContext();
     const [newModalityName, setNewModalityName] = useState('');
@@ -15,30 +15,30 @@ export const Settings: React.FC = () => {
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div>
-                <h2 className="text-3xl font-semibold tracking-tight">Settings</h2>
-                <p className="text-text-secondary mt-1">Manage system configurations and options.</p>
-            </div>
+            <PageHeader
+                title="Settings"
+                description="Manage system configurations and options."
+            />
 
-            <div className="rad-card p-8">
+            <Card className="p-8">
                 <h3 className="text-2xl font-bold mb-6 text-text-primary tracking-tight">Modality Management</h3>
 
                 <form onSubmit={handleAddModality} className="flex flex-col sm:flex-row gap-3 mb-6">
-                    <input
+                    <Input
                         type="text"
                         value={newModalityName}
                         onChange={(e) => setNewModalityName(e.target.value)}
                         placeholder="New Modality Name..."
-                        className="rad-input flex-1 px-6 py-4"
+                        className="flex-1"
                     />
-                    <button
+                    <Button
                         type="submit"
                         disabled={!newModalityName.trim()}
-                        className="justify-center rad-btn-primary px-8 py-4 flex items-center gap-2 transition-all duration-300 shadow-md hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                        icon={Plus}
+                        size="md" // lg size is not strictly required and we only have basic sizes
                     >
-                        <Plus className="w-5 h-5 stroke-[3]" />
                         Add Modality
-                    </button>
+                    </Button>
                 </form>
 
                 <div className="space-y-3">
@@ -59,7 +59,7 @@ export const Settings: React.FC = () => {
                         ))
                     )}
                 </div>
-            </div>
+            </Card>
         </div>
     );
 };

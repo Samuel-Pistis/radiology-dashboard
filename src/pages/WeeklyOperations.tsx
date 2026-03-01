@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { CalendarRange, CheckCircle, AlertTriangle, CreditCard, Activity, Layers, Droplets } from 'lucide-react';
+import { PageHeader, Card, Input, Button } from '@/components/ui';
 
 export const WeeklyOperations: React.FC = () => {
     const { modalities, contrastTypes, addWeeklyOpsLog, weeklyOpsLogs, activityLogs, contrastRecords } = useAppContext();
@@ -101,10 +102,10 @@ export const WeeklyOperations: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-            <div>
-                <h2 className="text-3xl font-semibold tracking-tight text-text-primary">Weekly Operations</h2>
-                <p className="text-text-secondary mt-1">Log and review weekly turnaround times, challenges, resolutions, and revenue.</p>
-            </div>
+            <PageHeader
+                title="Weekly Operations"
+                description="Log and review weekly turnaround times, challenges, resolutions, and revenue."
+            />
 
             {successMessage && (
                 <div className="p-4 bg-secondary-500/10 border border-secondary-500/20 text-secondary-500 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
@@ -114,7 +115,7 @@ export const WeeklyOperations: React.FC = () => {
             )}
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] p-8 shadow-sm border border-white/60 h-fit">
+                <Card className="h-fit p-8">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8 border-b border-border pb-6">
                         <div className="p-4 bg-primary/10 rounded-xl text-primary w-fit shadow-sm">
                             <CalendarRange className="w-8 h-8 stroke-[2.5]" />
@@ -124,14 +125,20 @@ export const WeeklyOperations: React.FC = () => {
 
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-text-secondary tracking-widest pl-2">Start Date</label>
-                                <input type="date" value={weekStartDate} onChange={(e) => setWeekStartDate(e.target.value)} required className={inputClasses} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-text-secondary tracking-widest pl-2">End Date</label>
-                                <input type="date" value={weekEndDate} onChange={(e) => setWeekEndDate(e.target.value)} required className={inputClasses} />
-                            </div>
+                            <Input
+                                label="Start Date"
+                                type="date"
+                                value={weekStartDate}
+                                onChange={(e) => setWeekStartDate(e.target.value)}
+                                required
+                            />
+                            <Input
+                                label="End Date"
+                                type="date"
+                                value={weekEndDate}
+                                onChange={(e) => setWeekEndDate(e.target.value)}
+                                required
+                            />
                         </div>
 
                         {/* Auto-Calculated Weekly Totals Display */}
@@ -261,12 +268,12 @@ export const WeeklyOperations: React.FC = () => {
                         </div>
 
                         <div className="pt-6 flex justify-end border-t border-border text-right">
-                            <button type="submit" className="rad-btn-primary px-10 py-4 shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer w-full md:w-auto text-lg">
+                            <Button type="submit" size="lg" className="w-full md:w-auto">
                                 Save Weekly Log
-                            </button>
+                            </Button>
                         </div>
                     </form>
-                </div>
+                </Card>
 
                 <div className="space-y-6">
                     <h3 className="text-3xl font-bold mb-8 px-2 text-text-primary tracking-tight">Recent Logs</h3>

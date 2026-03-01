@@ -1,0 +1,65 @@
+import React from 'react';
+import { cn } from '@/lib/utils';
+
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    label?: string;
+    helperText?: string;
+    error?: string;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
+}
+
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+    ({ className, label, helperText, error, leftIcon, rightIcon, id, ...props }, ref) => {
+
+        // Generate an ID if one wasn't provided, to link label and input
+        const inputId = id || React.useId();
+
+        return (
+            <div className="flex flex-col w-full">
+                {label && (
+                    <label htmlFor={inputId} className="mb-1.5 text-sm font-semibold text-text-primary flex items-center gap-2">
+                        {label}
+                    </label>
+                )}
+
+                <div className="relative flex items-center">
+                    {leftIcon && (
+                        <div className="absolute left-3 text-text-muted flex items-center justify-center pointer-events-none w-5 h-5 [&>svg]:w-5 [&>svg]:h-5 [&>svg]:stroke-[2.5]">
+                            {leftIcon}
+                        </div>
+                    )}
+
+                    <input
+                        id={inputId}
+                        ref={ref}
+                        className={cn(
+                            'w-full rounded-lg border bg-white px-3 py-2 text-text-primary font-medium outline-none transition-all focus:ring-2 disabled:cursor-not-allowed disabled:bg-surface disabled:opacity-50',
+                            error
+                                ? 'border-danger focus:border-danger focus:ring-danger/20'
+                                : 'border-border focus:border-primary focus:ring-primary/20 hover:border-text-muted/50',
+                            leftIcon && 'pl-10',
+                            rightIcon && 'pr-10',
+                            className
+                        )}
+                        {...props}
+                    />
+
+                    {rightIcon && (
+                        <div className="absolute right-3 text-text-muted flex items-center justify-center pointer-events-none w-5 h-5 [&>svg]:w-5 [&>svg]:h-5 [&>svg]:stroke-[2.5]">
+                            {rightIcon}
+                        </div>
+                    )}
+                </div>
+
+                {(helperText || error) && (
+                    <p className={cn("mt-1.5 text-xs font-medium", error ? "text-danger" : "text-text-muted")}>
+                        {error || helperText}
+                    </p>
+                )}
+            </div>
+        );
+    }
+);
+
+Input.displayName = 'Input';
