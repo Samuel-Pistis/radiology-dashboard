@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState, StaffLog, EquipmentLog, HandoverNote } from '../types';
+import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState, StaffLog, EquipmentLog, HandoverNote, ActivityLog } from '../types';
 
 interface AppContextType extends AppState {
     isLoading: boolean;
     addModality: (modality: Modality) => Promise<void>;
     removeModality: (id: string) => Promise<void>;
     addActivityLog: (log: DailyActivityLog) => Promise<void>;
+    saveShiftActivityLog: (log: ActivityLog) => Promise<void>;
     saveContrastRecord: (record: DailyContrastRecord) => Promise<void>;
     addWeeklyOpsLog: (log: WeeklyOperationsLog) => Promise<void>;
     addStaffLog: (log: StaffLog) => Promise<void>;
@@ -42,6 +43,7 @@ const defaultState: AppState = {
         { id: '4', name: 'MRI Contrast' },
     ],
     activityLogs: [],
+    shiftActivityLogs: [],
     contrastRecords: [],
     weeklyOpsLogs: [],
     staffLogs: [],
@@ -65,6 +67,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     { data: locations },
                     { data: contrastTypes },
                     { data: activityLogs },
+                    { data: shiftActivityLogs },
                     { data: contrastRecords },
                     { data: weeklyOpsLogs },
                     { data: staffLogs },
@@ -75,6 +78,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     supabase.from('locations').select('*'),
                     supabase.from('contrast_types').select('*'),
                     supabase.from('daily_activity_logs').select('*'),
+                    supabase.from('activity_logs').select('*'),
                     supabase.from('daily_contrast_records').select('*'),
                     supabase.from('weekly_operations_logs').select('*'),
                     supabase.from('staff_logs').select('*'),
@@ -113,6 +117,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     filmSizes: defaultState.filmSizes, // Static in frontend for now
                     contrastTypes: finalContrastTypes,
                     activityLogs: mappedActivityLogs,
+                    shiftActivityLogs: shiftActivityLogs || [],
                     contrastRecords: contrastRecords || [],
                     weeklyOpsLogs: mappedWeeklyOpsLogs,
                     staffLogs: staffLogs || [],
@@ -169,6 +174,40 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setState(prev => ({ ...prev, activityLogs: [...prev.activityLogs, log] }));
         } catch (error) {
             console.error('Error adding activity log:', error);
+            throw error;
+        }
+    };
+
+    const saveShiftActivityLog = async (log: ActivityLog) => {
+        try {
+            const { error } = await supabase.from('activity_logs').upsert([{
+                id: log.id,
+                centre_id: log.centre_id,
+                date: log.date,
+                shift: log.shift,
+                logged_by: log.logged_by,
+                logged_by_name: log.logged_by_name,
+                investigations: log.investigations,
+                films: log.films,
+                challenges: log.challenges,
+                resolutions: log.resolutions
+            }], { onConflict: 'centre_id,date,shift' });
+
+            if (error) throw error;
+
+            setState(prev => {
+                const existingIndex = prev.shiftActivityLogs.findIndex(
+                    r => r.date === log.date && r.shift === log.shift && r.centre_id === log.centre_id
+                );
+                if (existingIndex >= 0) {
+                    const newLogs = [...prev.shiftActivityLogs];
+                    newLogs[existingIndex] = log;
+                    return { ...prev, shiftActivityLogs: newLogs };
+                }
+                return { ...prev, shiftActivityLogs: [...prev.shiftActivityLogs, log] };
+            });
+        } catch (error) {
+            console.error('Error saving shift activity log:', error);
             throw error;
         }
     };
@@ -293,6 +332,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             addModality,
             removeModality,
             addActivityLog,
+            saveShiftActivityLog,
             saveContrastRecord,
             addWeeklyOpsLog,
             addStaffLog,

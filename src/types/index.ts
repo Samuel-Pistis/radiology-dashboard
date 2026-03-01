@@ -84,6 +84,7 @@ export interface AppState {
     filmSizes: FilmSize[];
     contrastTypes: ContrastType[];
     activityLogs: DailyActivityLog[];
+    shiftActivityLogs: ActivityLog[];
     contrastRecords: DailyContrastRecord[];
     weeklyOpsLogs: WeeklyOperationsLog[];
     staffLogs: StaffLog[];

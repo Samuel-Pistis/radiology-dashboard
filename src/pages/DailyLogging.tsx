@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { Activity, CheckCircle, Save, FileText, PieChart as PieChartIcon, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Activity, CheckCircle, Save, PieChart as PieChartIcon, ChevronLeft, ChevronRight, Calendar, AlertCircle } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
-import { PageHeader, Tabs, Card, Input, Select, Button, StatCard } from '@/components/ui';
+import { PageHeader, Tabs, Card, Button, StatCard } from '@/components/ui';
+import { formatNaira } from '@/lib/utils';
 import type { ShiftRecord, DailyContrastRecord, ContrastItemData } from '../types';
 
 export const DailyLogging: React.FC = () => {
-    const { modalities, locations, contrastTypes, addActivityLog, saveContrastRecord, contrastRecords } = useAppContext();
+    const { modalities, filmSizes, contrastTypes, saveShiftActivityLog, shiftActivityLogs, saveContrastRecord, contrastRecords } = useAppContext();
+    const { user } = useAuth();
 
     const [activeTab, setActiveTab] = useState<'activity' | 'contrast'>('contrast'); // Default to contrast for testing
     const [successMessage, setSuccessMessage] = useState('');
@@ -17,35 +20,100 @@ export const DailyLogging: React.FC = () => {
     };
 
     // === ACTIVITY LOGGING STATE ===
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-    const [modalityId, setModalityId] = useState('');
-    const [locationId, setLocationId] = useState('');
-    const [totalInvestigations, setTotalInvestigations] = useState(0);
-    const [film10x12, setFilm10x12] = useState(0);
-    const [film14x17, setFilm14x17] = useState(0);
-    const [revenue, setRevenue] = useState(0);
+    const [activityDate, setActivityDate] = useState(new Date().toISOString().split('T')[0]);
+    const [activityDateOffset, setActivityDateOffset] = useState(0);
+    const [activityShift, setActivityShift] = useState<'Morning' | 'Afternoon' | 'Night'>('Morning');
 
-    const handleActivitySubmit = (e: React.FormEvent) => {
+    const [investigations, setInvestigations] = useState<Record<string, { count: number, revenue: number }>>({});
+    const [films, setFilms] = useState<Record<string, number>>({});
+
+    const [challenges, setChallenges] = useState('');
+    const [resolutions, setResolutions] = useState('');
+
+    const activityVisibleDates = useMemo(() => {
+        const dates = [];
+        const today = new Date();
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() + activityDateOffset - i);
+            dates.push(d);
+        }
+        return dates;
+    }, [activityDateOffset]);
+
+    useEffect(() => {
+        const existingLog = shiftActivityLogs.find(log => log.date === activityDate && log.shift === activityShift);
+        if (existingLog) {
+            setInvestigations(existingLog.investigations || {});
+            setFilms(existingLog.films || {});
+            setChallenges(existingLog.challenges || '');
+            setResolutions(existingLog.resolutions || '');
+        } else {
+            setInvestigations({});
+            setFilms({});
+            setChallenges('');
+            setResolutions('');
+        }
+    }, [activityDate, activityShift, shiftActivityLogs]);
+
+    const handleInvestigationChange = (modalityId: string, field: 'count' | 'revenue', value: number) => {
+        setInvestigations(prev => ({
+            ...prev,
+            [modalityId]: {
+                ...prev[modalityId],
+                count: prev[modalityId]?.count || 0,
+                revenue: prev[modalityId]?.revenue || 0,
+                [field]: isNaN(value) ? 0 : value
+            }
+        }));
+    };
+
+    const handleFilmChange = (sizeId: string, value: number) => {
+        setFilms(prev => ({
+            ...prev,
+            [sizeId]: isNaN(value) ? 0 : value
+        }));
+    };
+
+    const handleActivitySubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!modalityId) return;
 
-        addActivityLog({
+        await saveShiftActivityLog({
             id: `act-${Date.now()}`,
-            date,
-            modalityId,
-            locationId: locationId || undefined,
-            totalInvestigations,
-            film10x12Used: film10x12,
-            film14x17Used: film14x17,
-            revenueAmount: revenue,
+            centre_id: 'default-centre', // NOTE: In future, get this from user context
+            date: activityDate,
+            shift: activityShift,
+            logged_by: user?.id || 'unknown',
+            logged_by_name: user?.name || 'Unknown User',
+            investigations,
+            films,
+            challenges,
+            resolutions
         });
 
-        setTotalInvestigations(0);
-        setFilm10x12(0);
-        setFilm14x17(0);
-        setRevenue(0);
         showSuccess('Activity log saved successfully!');
     };
+
+    const clearActivityForm = () => {
+        setInvestigations({});
+        setFilms({});
+        setChallenges('');
+        setResolutions('');
+    };
+
+    // Calculate Totals
+    const totalActivityInvestigations = useMemo(() => Object.values(investigations).reduce((sum, item) => sum + (item.count || 0), 0), [investigations]);
+    const totalActivityRevenue = useMemo(() => Object.values(investigations).reduce((sum, item) => sum + (item.revenue || 0), 0), [investigations]);
+    const totalActivityFilms = useMemo(() => Object.values(films).reduce((sum, val) => sum + (val || 0), 0), [films]);
+
+    const activityPieData = useMemo(() => {
+        const colors = ['#0D9488', '#10B981', '#F59E0B', '#6366F1', '#111827'];
+        return modalities.map((m, i) => ({
+            name: m.name,
+            value: investigations[m.id]?.count || 0,
+            fill: colors[i % colors.length]
+        })).filter(d => d.value > 0);
+    }, [investigations, modalities]);
 
     // === CONTRAST TRACKER STATE ===
     const [contrastDate, setContrastDate] = useState(new Date().toISOString().split('T')[0]);
@@ -413,50 +481,251 @@ export const DailyLogging: React.FC = () => {
             />
 
             {activeTab === 'activity' && (
-                <form onSubmit={handleActivitySubmit} className="space-y-8 animate-in fade-in relative">
-                    {/* General Information */}
-                    <Card>
-                        <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-text-primary">
-                            <FileText className="w-6 h-6 text-primary" />
-                            General Information
-                        </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <Input label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-                            <Select label="Modality" value={modalityId} onChange={(e) => setModalityId(e.target.value)} required>
-                                <option value="" disabled>Select Modality</option>
-                                {modalities.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                            </Select>
-                            <Select label="Location (Optional)" value={locationId} onChange={(e) => setLocationId(e.target.value)}>
-                                <option value="">None</option>
-                                {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-                            </Select>
+                <div className="animate-in fade-in space-y-8">
+                    {/* Header Controls */}
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-8 mt-2">
+                        <div className="flex flex-col">
+                            <h3 className="text-xs font-semibold text-text-secondary tracking-wider mb-1">Activity Log</h3>
+                            <h2 className="text-2xl font-bold text-text-primary">Shift Activity Record</h2>
+                            <p className="text-text-secondary font-medium mt-1">
+                                {new Date(activityDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
+                            </p>
                         </div>
-                    </Card>
 
-                    <Card>
-                        <h3 className="text-xl font-semibold mb-6 text-text-primary">Investigations & Film Usage</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <Input label="Total Investigations" type="number" min="0" value={totalInvestigations} onChange={(e) => setTotalInvestigations(Number(e.target.value))} required />
-                            <Input label="Film 10x12 Used" type="number" min="0" value={film10x12} onChange={(e) => setFilm10x12(Number(e.target.value))} />
-                            <Input label="Film 14x17 Used" type="number" min="0" value={film14x17} onChange={(e) => setFilm14x17(Number(e.target.value))} />
-                            <Input
-                                label="Revenue Amount"
-                                type="number"
-                                min="0"
-                                value={revenue}
-                                onChange={(e) => setRevenue(Number(e.target.value))}
-                                leftIcon={<span className="text-text-secondary font-medium">₦</span>}
-                                className="pl-10"
-                            />
+                        <div className="flex items-center gap-1 md:gap-2">
+                            <button onClick={() => setActivityDateOffset(prev => prev - 7)} className="p-1.5 md:p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover/50 rounded-full transition-colors">
+                                <ChevronLeft className="w-5 h-5 opacity-40" />
+                            </button>
+
+                            <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar">
+                                {activityVisibleDates.map(d => {
+                                    const dateStr = d.toISOString().split('T')[0];
+                                    const isSelected = dateStr === activityDate;
+                                    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+                                    const dayNum = d.getDate();
+
+                                    return (
+                                        <button
+                                            key={dateStr}
+                                            type="button"
+                                            onClick={() => setActivityDate(dateStr)}
+                                            className={`flex flex-col items-center justify-center min-w-[3.5rem] py-2 rounded-2xl transition-all ${isSelected ? 'bg-primary text-white shadow-md' : 'text-text-secondary hover:bg-surface-hover/60 hover:text-text-primary'}`}
+                                        >
+                                            <span className={`text-[10px] font-semibold tracking-wider mb-1 ${isSelected ? 'text-white/80' : 'text-text-secondary/80'}`}>{dayName}</span>
+                                            <span className={`text-lg font-bold leading-none ${isSelected ? 'text-white' : 'text-text-primary'}`}>{dayNum}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <button onClick={() => setActivityDateOffset(prev => prev + 7)} className="p-1.5 md:p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover/50 rounded-full transition-colors">
+                                <ChevronRight className="w-5 h-5 opacity-40" />
+                            </button>
+
+                            <div className="ml-1 md:ml-3 pl-3 md:pl-5 border-l-2 border-surface-hover/50 flex items-center h-12">
+                                <Calendar className="w-5 h-5 md:w-6 md:h-6 text-text-secondary opacity-60" />
+                            </div>
                         </div>
-                    </Card>
-
-                    <div className="pt-2 flex justify-end">
-                        <Button type="submit" size="lg" className="w-full md:w-auto">
-                            Save Activity Log
-                        </Button>
                     </div>
-                </form>
+
+                    {/* Shift Buttons */}
+                    <div className="flex gap-4 p-1.5 bg-surface-hover rounded-xl w-fit">
+                        {['Morning', 'Afternoon', 'Night'].map((shift) => (
+                            <button
+                                key={shift}
+                                type="button"
+                                onClick={() => setActivityShift(shift as any)}
+                                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${activityShift === shift ? 'bg-white text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white/50'}`}
+                            >
+                                {shift} {shift === 'Morning' ? '(8am-4pm)' : shift === 'Afternoon' ? '(4pm-12am)' : '(12am-8am)'}
+                            </button>
+                        ))}
+                    </div>
+
+                    <form onSubmit={handleActivitySubmit} className="grid grid-cols-1 xl:grid-cols-10 gap-8 relative">
+                        {/* Form Area */}
+                        <div className="xl:col-span-7 space-y-6">
+
+                            <Card className="p-0 overflow-hidden">
+                                <div className="p-6 border-b border-border bg-surface/30">
+                                    <h3 className="text-xl font-semibold text-text-primary flex items-center gap-2">
+                                        <Activity className="w-5 h-5 text-primary" />
+                                        Investigations & Revenue
+                                    </h3>
+                                </div>
+                                <div className="p-6 overflow-x-auto">
+                                    <table className="w-full text-left border-collapse min-w-[500px]">
+                                        <thead>
+                                            <tr>
+                                                <th className="p-3 border-b text-sm font-semibold text-text-secondary">Modality</th>
+                                                <th className="p-3 border-b text-sm font-semibold text-text-secondary">Investigations</th>
+                                                <th className="p-3 border-b text-sm font-semibold text-text-secondary">Revenue (₦)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {modalities.map(m => (
+                                                <tr key={m.id} className="border-b border-surface-hover last:border-0 hover:bg-surface/50 transition-colors">
+                                                    <td className="p-3 font-medium text-text-primary">{m.name}</td>
+                                                    <td className="p-3">
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={investigations[m.id]?.count || ''}
+                                                            onChange={e => handleInvestigationChange(m.id, 'count', parseInt(e.target.value))}
+                                                            className="w-full min-h-[44px] px-3 rounded-lg border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                                            placeholder="0"
+                                                        />
+                                                    </td>
+                                                    <td className="p-3">
+                                                        <div className="relative">
+                                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted font-medium">₦</span>
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={investigations[m.id]?.revenue || ''}
+                                                                onChange={e => handleInvestigationChange(m.id, 'revenue', parseInt(e.target.value))}
+                                                                className="w-full min-h-[44px] pl-8 pr-3 rounded-lg border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                                                placeholder="0"
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            <tr className="bg-surface/50">
+                                                <td className="p-4 font-bold text-text-primary border-t border-border">Totals</td>
+                                                <td className="p-4 font-bold text-primary border-t border-border">{totalActivityInvestigations}</td>
+                                                <td className="p-4 font-bold text-success border-t border-border">{formatNaira(totalActivityRevenue)}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Card>
+
+                            <Card className="p-0 overflow-hidden">
+                                <div className="p-6 border-b border-border bg-surface/30">
+                                    <h3 className="text-lg font-semibold text-text-primary">Film Consumption</h3>
+                                </div>
+                                <div className="p-6">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {filmSizes.map(f => (
+                                            <div key={f.id} className="space-y-2">
+                                                <label className="text-sm font-medium text-text-secondary">{f.name}</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={films[f.name] || ''}
+                                                    onChange={e => handleFilmChange(f.name, parseInt(e.target.value))}
+                                                    className="w-full min-h-[44px] px-3 rounded-lg border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                                    placeholder="0"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-6 pt-4 border-t border-border flex justify-between items-center text-sm">
+                                        <span className="font-medium text-text-secondary">Total Films Used</span>
+                                        <span className="font-bold text-lg text-text-primary">{totalActivityFilms}</span>
+                                    </div>
+                                </div>
+                            </Card>
+
+                            <Card className="p-0 overflow-hidden">
+                                <div className="p-6 border-b border-border bg-surface/30">
+                                    <h3 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+                                        <AlertCircle className="w-5 h-5 text-warning" />
+                                        Shift Challenges & Resolutions
+                                    </h3>
+                                </div>
+                                <div className="p-6 space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-text-secondary">Challenges Encountered</label>
+                                        <textarea
+                                            value={challenges}
+                                            onChange={e => setChallenges(e.target.value)}
+                                            rows={2}
+                                            className="w-full p-3 rounded-lg border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-y"
+                                            placeholder="e.g. Server downtime delayed 2 patients..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-text-secondary">Resolutions / Actions Taken</label>
+                                        <textarea
+                                            value={resolutions}
+                                            onChange={e => setResolutions(e.target.value)}
+                                            rows={2}
+                                            className="w-full p-3 rounded-lg border border-border focus:border-success focus:ring-1 focus:ring-success outline-none transition-all resize-y"
+                                            placeholder="e.g. Switched to backup server, called IT..."
+                                        />
+                                    </div>
+                                </div>
+                            </Card>
+
+                            <div className="pt-2 flex justify-end gap-3">
+                                <Button type="button" variant="secondary" onClick={clearActivityForm} className="w-full md:w-auto">
+                                    Clear Form
+                                </Button>
+                                <Button type="submit" size="lg" icon={Save} className="w-full md:w-auto">
+                                    Save Activity Log
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Summary Sidebar */}
+                        <div className="xl:col-span-3">
+                            <div className="bg-white/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-sm border border-white/60 sticky top-6">
+                                <h3 className="text-sm font-bold text-text-secondary tracking-widest mb-8">Shift Summary</h3>
+
+                                <div className="relative h-56 w-full mb-10">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={activityPieData.length > 0 ? activityPieData : [{ name: 'Empty', value: 1, fill: '#E5E7EB' }]}
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={70}
+                                                outerRadius={90}
+                                                dataKey="value"
+                                                stroke="none"
+                                            >
+                                                {activityPieData.length > 0
+                                                    ? activityPieData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)
+                                                    : <Cell fill="#E5E7EB" fillOpacity={0.5} />
+                                                }
+                                            </Pie>
+                                            {activityPieData.length > 0 && <RechartsTooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', padding: '8px 12px' }} />}
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center -mt-2">
+                                        <span className="text-[2.5rem] font-bold text-text-primary tracking-tighter leading-none">{totalActivityInvestigations}</span>
+                                        <span className="text-[10px] font-semibold text-text-muted mt-1 tracking-wider uppercase">Total Scans</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 mb-8">
+                                    {activityPieData.map((d, i) => (
+                                        <div key={i} className="flex justify-between items-center text-sm font-bold">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: d.fill }}></div>
+                                                <span className="text-text-primary">{d.name}</span>
+                                            </div>
+                                            <span className="text-text-primary">{d.value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="border-t border-surface-hover/50 pt-6 pb-6 space-y-3">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-text-secondary font-medium tracking-wide">Total Revenue</span>
+                                        <span className="font-bold text-success tracking-wide">{formatNaira(totalActivityRevenue)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-text-secondary font-medium tracking-wide">Films Consumed</span>
+                                        <span className="font-bold text-text-primary tracking-wide">{totalActivityFilms}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             )}
 
             {activeTab === 'contrast' && (

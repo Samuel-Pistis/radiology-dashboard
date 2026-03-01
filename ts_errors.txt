@@ -1,0 +1,4 @@
+﻿src/pages/DailyLogging.tsx(4,39): error TS6133: 'FileText' is declared but its value is never read.
+src/pages/DailyLogging.tsx(6,34): error TS6133: 'Input' is declared but its value is never read.
+src/pages/DailyLogging.tsx(6,41): error TS6133: 'Select' is declared but its value is never read.
+src/pages/DailyLogging.tsx(11,25): error TS6133: 'locations' is declared but its value is never read.
