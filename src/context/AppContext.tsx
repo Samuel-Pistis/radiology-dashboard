@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState } from '../types';
+import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState, StaffLog, EquipmentLog, HandoverNote } from '../types';
 
 interface AppContextType extends AppState {
     isLoading: boolean;
@@ -9,6 +9,11 @@ interface AppContextType extends AppState {
     addActivityLog: (log: DailyActivityLog) => Promise<void>;
     saveContrastRecord: (record: DailyContrastRecord) => Promise<void>;
     addWeeklyOpsLog: (log: WeeklyOperationsLog) => Promise<void>;
+    addStaffLog: (log: StaffLog) => Promise<void>;
+    addEquipmentLog: (log: EquipmentLog) => Promise<void>;
+    updateEquipmentLog: (id: string, updates: Partial<EquipmentLog>) => Promise<void>;
+    addHandoverNote: (note: HandoverNote) => Promise<void>;
+    acknowledgeHandoverNote: (id: string, userId: string) => Promise<void>;
 }
 
 const defaultState: AppState = {
@@ -39,6 +44,9 @@ const defaultState: AppState = {
     activityLogs: [],
     contrastRecords: [],
     weeklyOpsLogs: [],
+    staffLogs: [],
+    equipmentLogs: [],
+    handoverNotes: [],
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -58,14 +66,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     { data: contrastTypes },
                     { data: activityLogs },
                     { data: contrastRecords },
-                    { data: weeklyOpsLogs }
+                    { data: weeklyOpsLogs },
+                    { data: staffLogs },
+                    { data: equipmentLogs },
+                    { data: handoverNotes }
                 ] = await Promise.all([
                     supabase.from('modalities').select('*'),
                     supabase.from('locations').select('*'),
                     supabase.from('contrast_types').select('*'),
                     supabase.from('daily_activity_logs').select('*'),
                     supabase.from('daily_contrast_records').select('*'),
-                    supabase.from('weekly_operations_logs').select('*')
+                    supabase.from('weekly_operations_logs').select('*'),
+                    supabase.from('staff_logs').select('*'),
+                    supabase.from('equipment_logs').select('*'),
+                    supabase.from('handover_notes').select('*')
                 ]);
 
                 // Map database columns back to camelCase frontend models
@@ -101,6 +115,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     activityLogs: mappedActivityLogs,
                     contrastRecords: contrastRecords || [],
                     weeklyOpsLogs: mappedWeeklyOpsLogs,
+                    staffLogs: staffLogs || [],
+                    equipmentLogs: equipmentLogs || [],
+                    handoverNotes: handoverNotes || [],
                 });
             } catch (error) {
                 console.error('Error fetching data from Supabase:', error);
@@ -201,6 +218,74 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
     };
 
+    const addStaffLog = async (log: StaffLog) => {
+        try {
+            const { error } = await supabase.from('staff_logs').insert([log]);
+            if (error) throw error;
+            setState(prev => ({ ...prev, staffLogs: [...prev.staffLogs, log] }));
+        } catch (error) {
+            console.error('Error adding staff log:', error);
+            throw error;
+        }
+    };
+
+    const addEquipmentLog = async (log: EquipmentLog) => {
+        try {
+            const { error } = await supabase.from('equipment_logs').insert([log]);
+            if (error) throw error;
+            setState(prev => ({ ...prev, equipmentLogs: [...prev.equipmentLogs, log] }));
+        } catch (error) {
+            console.error('Error adding equipment log:', error);
+            throw error;
+        }
+    };
+
+    const updateEquipmentLog = async (id: string, updates: Partial<EquipmentLog>) => {
+        try {
+            const { error } = await supabase.from('equipment_logs').update(updates).eq('id', id);
+            if (error) throw error;
+            setState(prev => ({
+                ...prev,
+                equipmentLogs: prev.equipmentLogs.map(log => log.id === id ? { ...log, ...updates } : log)
+            }));
+        } catch (error) {
+            console.error('Error updating equipment log:', error);
+            throw error;
+        }
+    };
+
+    const addHandoverNote = async (note: HandoverNote) => {
+        try {
+            const { error } = await supabase.from('handover_notes').insert([note]);
+            if (error) throw error;
+            setState(prev => ({ ...prev, handoverNotes: [...prev.handoverNotes, note] }));
+        } catch (error) {
+            console.error('Error adding handover note:', error);
+            throw error;
+        }
+    };
+
+    const acknowledgeHandoverNote = async (id: string, userId: string) => {
+        try {
+            const now = new Date().toISOString();
+            const { error } = await supabase.from('handover_notes')
+                .update({ acknowledged: true, acknowledged_by: userId, acknowledged_at: now })
+                .eq('id', id);
+            if (error) throw error;
+            setState(prev => ({
+                ...prev,
+                handoverNotes: prev.handoverNotes.map(note =>
+                    note.id === id
+                        ? { ...note, acknowledged: true, acknowledged_by: userId, acknowledged_at: now }
+                        : note
+                )
+            }));
+        } catch (error) {
+            console.error('Error acknowledging handover note:', error);
+            throw error;
+        }
+    };
+
     return (
         <AppContext.Provider value={{
             ...state,
@@ -210,6 +295,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             addActivityLog,
             saveContrastRecord,
             addWeeklyOpsLog,
+            addStaffLog,
+            addEquipmentLog,
+            updateEquipmentLog,
+            addHandoverNote,
+            acknowledgeHandoverNote,
         }}>
             {children}
         </AppContext.Provider>

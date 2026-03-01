@@ -33,18 +33,17 @@ export const Login: React.FC = () => {
                         </div>
                     </div>
                     <div className="text-center">
-                        <h1 className="text-2xl font-semibold tracking-tight text-text-primary mb-2">RadPadi Secure</h1>
-                        <p className="text-text-secondary text-sm">Please select your demo role to continue</p>
+                        <h1 className="text-2xl font-semibold tracking-tight text-text-primary mb-2">RadPadi</h1>
+                        <p className="text-text-secondary text-sm">Radiology Management System</p>
                     </div>
                 </div>
-
                 <div className="space-y-4">
                     <button
                         onClick={() => handleLogin('admin')}
                         disabled={isLoading !== null}
                         className={`w-full group flex items-center p-4 rounded-xl border transition-all duration-300 ${isLoading === 'admin'
-                            ? 'bg-primary/5 border-primary/30'
-                            : 'bg-white border-border hover:border-primary/40 hover:shadow-sm hover:bg-primary/5'
+                            ? 'bg-primary/5 border-primary/30 border-l-4 border-l-primary'
+                            : 'bg-white border-border hover:border-border hover:shadow-sm hover:border-l-4 hover:border-l-primary'
                             }`}
                     >
                         <div className="bg-primary/10 text-primary p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform">
@@ -65,8 +64,8 @@ export const Login: React.FC = () => {
                         onClick={() => handleLogin('radiology_user')}
                         disabled={isLoading !== null}
                         className={`w-full group flex items-center p-4 rounded-xl border transition-all duration-300 ${isLoading === 'radiology_user'
-                            ? 'bg-primary/5 border-primary/30'
-                            : 'bg-white border-border hover:border-primary/40 hover:shadow-sm hover:bg-primary/5'
+                            ? 'bg-primary/5 border-primary/30 border-l-4 border-l-primary'
+                            : 'bg-white border-border hover:border-border hover:shadow-sm hover:border-l-4 hover:border-l-primary'
                             }`}
                     >
                         <div className="bg-primary/10 text-primary p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform">

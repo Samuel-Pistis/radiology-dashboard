@@ -86,4 +86,133 @@ export interface AppState {
     activityLogs: DailyActivityLog[];
     contrastRecords: DailyContrastRecord[];
     weeklyOpsLogs: WeeklyOperationsLog[];
+    staffLogs: StaffLog[];
+    equipmentLogs: EquipmentLog[];
+    handoverNotes: HandoverNote[];
+}
+
+export interface Centre {
+    id: string;
+    name: string;
+    address?: string;
+    contact_info?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface Profile {
+    id: string;
+    email: string;
+    display_name: string;
+    role: UserRole;
+    centre_id?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface CentreSettings {
+    id: string;
+    centre_id: string;
+    modalities: any;
+    contrast_types: any;
+    film_sizes: any;
+    shifts: any;
+    contrast_alerts: any;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface ActivityLog {
+    id: string;
+    centre_id: string;
+    date: string;
+    shift: string;
+    logged_by: string;
+    logged_by_name: string;
+    investigations: any;
+    films: any;
+    challenges?: string;
+    resolutions?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface ContrastLog {
+    id: string;
+    centre_id: string;
+    date: string;
+    shift: string;
+    logged_by: string;
+    logged_by_name: string;
+    entries: any;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface WeeklyLog {
+    id: string;
+    centre_id: string;
+    start_date: string;
+    end_date: string;
+    logged_by: string;
+    investigations_summary: any;
+    films_summary: any;
+    contrast_summary: any;
+    revenue_summary: any;
+    challenges?: string;
+    resolutions?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface StaffLog {
+    id: string;
+    centre_id: string;
+    date: string;
+    staff_id: string;
+    staff_name: string;
+    shift: string;
+    procedures_performed: any;
+    total_procedures: number;
+    repeats: any;
+    total_repeats: number;
+    repeat_rate: number;
+    contrast_administered: any;
+    films_printed: number;
+    issues_encountered?: string;
+    issues_resolved?: string;
+    notes?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface EquipmentLog {
+    id: string;
+    centre_id: string;
+    modality: string;
+    start_time: string;
+    end_time?: string;
+    is_ongoing: boolean;
+    reason_category?: string;
+    description?: string;
+    resolution?: string;
+    logged_by: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface HandoverNote {
+    id: string;
+    centre_id: string;
+    date: string;
+    from_shift: string;
+    to_shift: string;
+    flagged_by: string;
+    flagged_by_name: string;
+    category?: string;
+    message: string;
+    acknowledged: boolean;
+    acknowledged_by?: string;
+    acknowledged_at?: string;
+    created_at?: string;
 }
