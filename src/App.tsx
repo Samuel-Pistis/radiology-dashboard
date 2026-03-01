@@ -37,7 +37,7 @@ const AppRoutes = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center">
         <Activity className="w-12 h-12 text-primary-500 animate-pulse mb-4" />
-        <p className="text-text-secondary font-medium tracking-wide">Connecting to MediControl Secure Database...</p>
+        <p className="text-text-secondary font-medium tracking-wide">Connecting to RadPadi Secure Database...</p>
       </div>
     );
   }

@@ -13,20 +13,21 @@ export const Layout: React.FC = () => {
     }, [location.pathname]);
 
     return (
-        <div className="flex h-screen overflow-hidden bg-background relative selection:bg-primary-500/30">
+        <div className="flex h-screen overflow-hidden bg-surface relative selection:bg-primary/30">
             <Sidebar isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
 
             <main className="flex-1 flex flex-col relative overflow-hidden">
                 {/* Mobile Header */}
-                <header className="md:hidden flex items-center justify-between p-4 bg-white/40 backdrop-blur-md border-b border-white/50 z-20 sticky top-0">
-                    <Link to="/" className="flex items-center">
-                        <div className="bg-black text-white p-2 rounded-xl mr-3 shadow-sm flex items-center justify-center">
-                            <span className="font-bold text-lg italic leading-none pr-0.5">sf.</span>
+                <header className="md:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200 z-20 sticky top-0">
+                    <Link to="/" className="flex items-center gap-2">
+                        <div className="bg-primary text-white p-2 rounded-xl flex items-center justify-center shadow-sm">
+                            <span className="font-bold text-lg leading-none">RP</span>
                         </div>
+                        <span className="font-bold text-lg tracking-tight text-gray-900">RadPadi</span>
                     </Link>
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}
-                        className="p-2 -mr-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-xl transition-colors"
+                        className="p-2 -mr-2 text-text-secondary hover:text-text-primary hover:bg-gray-100 rounded-xl transition-colors"
                         aria-label="Open menu"
                     >
                         <Menu className="w-6 h-6" />

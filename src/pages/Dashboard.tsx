@@ -14,41 +14,40 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle }) => {
-    let bgClass = 'bg-white/40 border border-white/60 text-black backdrop-blur-2xl';
+    let borderClass = 'border-l-primary';
 
-    // Use the reference image colors for different stat cards
     if (title.includes('Revenue')) {
-        bgClass = 'bg-mint text-black border border-mint/50 shadow-[0_0_20px_rgba(122,255,161,0.3)]';
+        borderClass = 'border-l-success';
     } else if (title.includes('Contrast')) {
-        bgClass = 'bg-yellow text-black border border-yellow/50 shadow-[0_0_20px_rgba(255,248,124,0.3)]';
+        borderClass = 'border-l-warning';
     } else if (title.includes('Investigations')) {
-        bgClass = 'bg-white/60 text-black border border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.4)] backdrop-blur-2xl';
+        borderClass = 'border-l-accent-indigo';
     }
 
     return (
-        <div className={`rounded-[2.5rem] p-6 md:p-8 shadow-sm transition-transform duration-300 relative overflow-hidden flex flex-col justify-center ${bgClass}`}>
-            <div className="flex justify-between items-center mb-6">
-                <p className="text-black/70 font-semibold text-sm uppercase tracking-widest bg-black/5 px-4 py-1.5 rounded-full inline-block">
+        <div className={`rad-stat-card ${borderClass} flex flex-col justify-center`}>
+            <div className="flex justify-between items-center mb-4">
+                <p className="text-text-secondary font-medium text-sm">
                     {title}
                 </p>
-                <div className="p-2.5 rounded-full bg-white/40 text-black shadow-sm mr-2">
-                    <ArrowUpRight className="w-5 h-5 stroke-[3]" />
+                <div className="p-2 rounded-lg bg-surface text-text-muted">
+                    <ArrowUpRight className="w-4 h-4" />
                 </div>
             </div>
-            <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-semibold opacity-60 mb-1">{title.includes('Revenue') ? '₦' : ''}</span>
-                <h3 className="text-[3.5rem] font-bold tracking-tighter leading-none">{value}</h3>
-                {subtitle && (
-                    <span className="text-xs font-semibold text-black/50 tracking-wider uppercase ml-2">
-                        {subtitle}
-                    </span>
-                )}
+            <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-2xl font-medium text-text-muted">{title.includes('Revenue') ? '₦' : ''}</span>
+                <h3 className="text-3xl font-bold text-text-primary tracking-tight">{value}</h3>
             </div>
+            {subtitle && (
+                <span className="text-sm font-medium text-text-muted">
+                    {subtitle}
+                </span>
+            )}
         </div>
     );
 };
 
-const COLORS = ['#7AFFA1', '#FFF87C', '#DDCBF5', '#FFA27D', '#000000', '#A0AEC0'];
+const COLORS = ['#0D9488', '#6366F1', '#F59E0B', '#10B981', '#111827', '#6B7280'];
 
 export const Dashboard: React.FC = () => {
     const { activityLogs, contrastRecords, weeklyOpsLogs, modalities, contrastTypes } = useAppContext();
@@ -121,12 +120,12 @@ export const Dashboard: React.FC = () => {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
             <div className="flex justify-between items-center mb-10">
-                <h2 className="text-[2.5rem] font-medium tracking-tight text-black">
+                <h2 className="text-[2.5rem] font-medium tracking-tight text-text-primary">
                     <span className="opacity-40 font-semibold">←</span> Dashboard
                 </h2>
                 <div className="flex gap-4">
-                    <button className="bg-white/50 backdrop-blur-md px-6 py-2.5 rounded-full font-semibold text-sm shadow-sm border border-white/60">Issue Report</button>
-                    <button className="bg-white/50 backdrop-blur-md px-6 py-2.5 rounded-full font-semibold text-sm shadow-sm border border-white/60">Edit Metrics</button>
+                    <button className="rad-btn-primary">Issue Report</button>
+                    <button className="px-4 py-2 rounded-lg font-medium text-text-primary bg-surface border border-border hover:bg-gray-100 transition-colors">Edit Metrics</button>
                 </div>
             </div>
 
@@ -151,8 +150,8 @@ export const Dashboard: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* Revenue Comparison Bar Chart */}
-                <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-black tracking-tight">Weekly Revenue</h3>
+                <div className="rad-card">
+                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-text-primary tracking-tight">Weekly Revenue</h3>
                     {revenueComparisonData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
                             <p>No revenue comparison data available.</p>
@@ -166,8 +165,8 @@ export const Dashboard: React.FC = () => {
                                     <YAxis stroke="#94a3b8" tick={{ fill: '#64748B' }} axisLine={false} tickLine={false} />
                                     <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={chartTooltipStyle} />
                                     <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                                    <Bar dataKey="Last Week" fill="#DDCBF5" radius={[4, 4, 0, 0]} barSize={30} />
-                                    <Bar dataKey="This Week" fill="#FFA27D" radius={[4, 4, 0, 0]} barSize={30} />
+                                    <Bar dataKey="Last Week" fill="#E5E7EB" radius={[4, 4, 0, 0]} barSize={30} />
+                                    <Bar dataKey="This Week" fill="#0D9488" radius={[4, 4, 0, 0]} barSize={30} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -175,10 +174,10 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Contrast Usage Line Chart */}
-                <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm lg:col-span-2">
+                <div className="rad-card lg:col-span-2">
                     <div className="flex justify-between items-center mb-6 md:mb-8">
-                        <h3 className="text-2xl font-bold text-black tracking-tight">Contrast Volume</h3>
-                        <div className="hidden sm:block px-5 py-2.5 bg-white/50 rounded-full text-xs font-semibold border border-white/60 text-black shadow-sm uppercase tracking-wider">
+                        <h3 className="text-2xl font-bold text-text-primary tracking-tight">Contrast Volume</h3>
+                        <div className="hidden sm:block px-5 py-2 rounded-lg text-xs font-semibold border border-border bg-surface text-text-primary shadow-sm">
                             Last 30 Days
                         </div>
                     </div>
@@ -213,8 +212,8 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Film Consumption Stacked Bar */}
-                <div className="bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-6 md:p-8 shadow-sm lg:col-span-2 mt-4">
-                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-black tracking-tight">Film Consumption</h3>
+                <div className="rad-card lg:col-span-2 mt-4">
+                    <h3 className="text-2xl font-bold mb-6 md:mb-8 text-text-primary tracking-tight">Film Consumption</h3>
                     {filmData.length === 0 ? (
                         <div className="py-12 text-center text-text-secondary">
                             <p>No film data available.</p>
@@ -228,8 +227,8 @@ export const Dashboard: React.FC = () => {
                                     <YAxis stroke="#94a3b8" tick={{ fill: '#64748B' }} axisLine={false} tickLine={false} />
                                     <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={chartTooltipStyle} />
                                     <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                                    <Bar dataKey="10x12" stackId="a" fill="#DDCBF5" radius={[0, 0, 4, 4]} barSize={40} />
-                                    <Bar dataKey="14x17" stackId="a" fill="#7AFFA1" radius={[4, 4, 0, 0]} barSize={40} />
+                                    <Bar dataKey="10x12" stackId="a" fill="#6366F1" radius={[0, 0, 4, 4]} barSize={40} />
+                                    <Bar dataKey="14x17" stackId="a" fill="#4F46E5" radius={[4, 4, 0, 0]} barSize={40} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>

@@ -120,13 +120,13 @@ export const WeeklyReportGenerator: React.FC = () => {
 
     const totalPeriodRevenue = modalityStats.reduce((sum, s) => sum + s.revenue, 0);
 
-    const inputClasses = "w-full bg-white/50 border border-white/60 rounded-full px-5 py-3 text-black font-semibold focus:border-black/20 focus:bg-white outline-none transition-all shadow-sm backdrop-blur-md";
+    const inputClasses = "w-full bg-white/50 border border-white/60 rounded-full px-5 py-3 text-text-primary font-semibold focus:border-black/20 focus:bg-white outline-none transition-all shadow-sm backdrop-blur-md";
 
     return (
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-sm border border-white/60">
                 <div className="space-y-3">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 flex items-center gap-2">
+                    <label className="text-[10px] font-bold tracking-widest text-text-secondary flex items-center gap-2">
                         <CalendarRange className="w-4 h-4 text-mint stroke-[3]" /> Start Date
                     </label>
                     <input
@@ -137,7 +137,7 @@ export const WeeklyReportGenerator: React.FC = () => {
                     />
                 </div>
                 <div className="space-y-3">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 flex items-center gap-2">
+                    <label className="text-[10px] font-bold tracking-widest text-text-secondary flex items-center gap-2">
                         <CalendarRange className="w-4 h-4 text-mint stroke-[3]" /> End Date
                     </label>
                     <input
@@ -153,7 +153,7 @@ export const WeeklyReportGenerator: React.FC = () => {
                 <button
                     onClick={handleExportCSV}
                     disabled={!isDataAvailable}
-                    className="flex items-center gap-2 px-8 py-4 rounded-full bg-white/50 border border-white/60 hover:bg-white text-black font-bold shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+                    className="flex items-center gap-2 px-8 py-4 rounded-full bg-white/50 border border-white/60 hover:bg-white text-text-primary font-bold shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
                 >
                     <FileText className="w-5 h-5 stroke-[2.5]" />
                     Export CSV
@@ -169,16 +169,16 @@ export const WeeklyReportGenerator: React.FC = () => {
             </div>
 
             {!isDataAvailable ? (
-                <div className="text-center py-16 text-black/50 bg-white/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/60 shadow-sm">
+                <div className="text-center py-16 text-text-muted bg-white/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/60 shadow-sm">
                     <FileBarChart className="w-16 h-16 mx-auto mb-6 text-black/20 stroke-[1.5]" />
-                    <p className="font-bold text-2xl text-black tracking-tight mb-2">No data available for the selected dates</p>
+                    <p className="font-bold text-2xl text-text-primary tracking-tight mb-2">No data available for the selected dates</p>
                     <p className="font-semibold">Change the start and end dates to see report data.</p>
                 </div>
             ) : (
                 <div className="bg-white/40 backdrop-blur-3xl p-10 rounded-[2.5rem] shadow-sm border border-white/60 mt-4 overflow-x-auto" ref={reportRef}>
                     <div className="text-center mb-10 border-b border-black/5 pb-8">
-                        <h2 className="text-3xl font-bold tracking-tight text-black">Weekly Operations Summary</h2>
-                        <p className="text-black/60 mt-2 font-semibold bg-white/50 inline-block px-4 py-1.5 rounded-full border border-white/60">
+                        <h2 className="text-3xl font-bold tracking-tight text-text-primary">Weekly Operations Summary</h2>
+                        <p className="text-text-secondary mt-2 font-semibold bg-white/50 inline-block px-4 py-1.5 rounded-full border border-white/60">
                             {startDate ? new Date(startDate).toLocaleDateString() : 'Start'} to {endDate ? new Date(endDate).toLocaleDateString() : 'End'}
                         </p>
                     </div>
@@ -186,27 +186,27 @@ export const WeeklyReportGenerator: React.FC = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                         {/* Modality Stats */}
                         <div className="bg-white/50 rounded-[2rem] p-8 border border-white/60 shadow-sm">
-                            <h3 className="text-xl font-bold mb-6 text-black tracking-tight">Investigations & Revenue</h3>
+                            <h3 className="text-xl font-bold mb-6 text-text-primary tracking-tight">Investigations & Revenue</h3>
                             <table className="w-full text-left text-sm">
                                 <thead>
-                                    <tr className="border-b border-black/5 text-black/60">
-                                        <th className="pb-4 font-bold uppercase tracking-widest text-[10px]">Modality</th>
-                                        <th className="pb-4 font-bold uppercase tracking-widest text-[10px] text-center">Inv.</th>
-                                        <th className="pb-4 font-bold uppercase tracking-widest text-[10px] text-right">Revenue (₦)</th>
+                                    <tr className="border-b border-black/5 text-text-secondary">
+                                        <th className="pb-4 font-bold tracking-widest text-[10px]">Modality</th>
+                                        <th className="pb-4 font-bold tracking-widest text-[10px] text-center">Inv.</th>
+                                        <th className="pb-4 font-bold tracking-widest text-[10px] text-right">Revenue (₦)</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-black/5">
                                     {modalityStats.map(stat => (
-                                        <tr key={stat.name} className="text-black">
-                                            <td className="py-5 font-bold text-black">{stat.name}</td>
+                                        <tr key={stat.name} className="text-text-primary">
+                                            <td className="py-5 font-bold text-text-primary">{stat.name}</td>
                                             <td className="py-5 text-center font-semibold">{stat.investigations}</td>
-                                            <td className="py-5 text-right font-bold text-black">₦{stat.revenue.toLocaleString()}</td>
+                                            <td className="py-5 text-right font-bold text-text-primary">₦{stat.revenue.toLocaleString()}</td>
                                         </tr>
                                     ))}
-                                    <tr className="font-bold text-black bg-mint/20">
+                                    <tr className="font-bold text-text-primary bg-mint/20">
                                         <td className="py-5 px-4 rounded-l-full">Total</td>
                                         <td className="py-5 text-center px-4">{modalityStats.reduce((sum, s) => sum + s.investigations, 0)}</td>
-                                        <td className="py-5 text-right px-4 text-black rounded-r-full">₦{totalPeriodRevenue.toLocaleString()}</td>
+                                        <td className="py-5 text-right px-4 text-text-primary rounded-r-full">₦{totalPeriodRevenue.toLocaleString()}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -215,29 +215,29 @@ export const WeeklyReportGenerator: React.FC = () => {
                         {/* Film & Contrast */}
                         <div className="space-y-8">
                             <div className="bg-white/50 rounded-[2rem] p-8 border border-white/60 shadow-sm">
-                                <h3 className="text-xl font-bold mb-6 text-black tracking-tight">Film Consumption</h3>
+                                <h3 className="text-xl font-bold mb-6 text-text-primary tracking-tight">Film Consumption</h3>
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="bg-white/60 border border-white rounded-[1.5rem] p-6 text-center shadow-sm">
-                                        <div className="text-[10px] font-bold uppercase tracking-widest text-black/60 mb-2">10x12 Used</div>
-                                        <div className="text-4xl font-bold text-black tracking-tighter">{modalityStats.reduce((sum, s) => sum + s.film10x12, 0)}</div>
+                                        <div className="text-[10px] font-bold tracking-widest text-text-secondary mb-2">10x12 Used</div>
+                                        <div className="text-4xl font-bold text-text-primary tracking-tighter">{modalityStats.reduce((sum, s) => sum + s.film10x12, 0)}</div>
                                     </div>
                                     <div className="bg-white/60 border border-white rounded-[1.5rem] p-6 text-center shadow-sm">
-                                        <div className="text-[10px] font-bold uppercase tracking-widest text-black/60 mb-2">14x17 Used</div>
-                                        <div className="text-4xl font-bold text-black tracking-tighter">{modalityStats.reduce((sum, s) => sum + s.film14x17, 0)}</div>
+                                        <div className="text-[10px] font-bold tracking-widest text-text-secondary mb-2">14x17 Used</div>
+                                        <div className="text-4xl font-bold text-text-primary tracking-tighter">{modalityStats.reduce((sum, s) => sum + s.film14x17, 0)}</div>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="bg-white/50 rounded-[2rem] p-8 border border-white/60 shadow-sm">
-                                <h3 className="text-xl font-bold mb-6 text-black tracking-tight">Total Contrast Used (ML)</h3>
+                                <h3 className="text-xl font-bold mb-6 text-text-primary tracking-tight">Total Contrast Used (ML)</h3>
                                 {contrastStats.length === 0 ? (
-                                    <p className="text-sm font-semibold text-black/50">No contrast data.</p>
+                                    <p className="text-sm font-semibold text-text-muted">No contrast data.</p>
                                 ) : (
                                     <div className="flex flex-wrap gap-3">
                                         {contrastStats.map(c => (
                                             <div key={c.name} className="bg-white/60 border border-white px-5 py-3 rounded-full flex items-center gap-3 shadow-sm">
-                                                <span className="text-sm font-semibold text-black/60">{c.name}:</span>
-                                                <span className="text-lg font-bold text-black">{c.ml}</span>
+                                                <span className="text-sm font-semibold text-text-secondary">{c.name}:</span>
+                                                <span className="text-lg font-bold text-text-primary">{c.ml}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -249,25 +249,25 @@ export const WeeklyReportGenerator: React.FC = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                         {/* Challenges & Resolutions */}
                         <div className="bg-white/50 rounded-[2rem] p-8 border border-white/60 lg:col-span-3 flex flex-col shadow-sm">
-                            <h3 className="text-xl font-bold mb-6 text-black tracking-tight">Challenges & Resolutions</h3>
+                            <h3 className="text-xl font-bold mb-6 text-text-primary tracking-tight">Challenges & Resolutions</h3>
                             <div className="flex-1 space-y-4 overflow-y-auto max-h-64 pr-2">
                                 {periodWeeklyLogs.filter(log => log.challenges || log.resolutions).length === 0 ? (
-                                    <p className="text-sm font-semibold text-black/50 py-4">No operational challenges recorded for this period.</p>
+                                    <p className="text-sm font-semibold text-text-muted py-4">No operational challenges recorded for this period.</p>
                                 ) : (
                                     periodWeeklyLogs.map(log => (
                                         (log.challenges || log.resolutions) && (
                                             <div key={log.id} className="p-6 bg-white/60 border border-white rounded-[1.5rem] text-sm shadow-sm">
-                                                <div className="inline-block bg-black/5 px-4 py-1.5 rounded-full text-[10px] text-black/70 mb-4 font-bold uppercase tracking-widest">{log.weekStartDate} to {log.weekEndDate}</div>
+                                                <div className="inline-block bg-black/5 px-4 py-1.5 rounded-full text-[10px] text-text-secondary mb-4 font-bold tracking-widest">{log.weekStartDate} to {log.weekEndDate}</div>
                                                 {log.challenges && (
                                                     <div className="mb-4 bg-peach/30 p-4 rounded-xl">
-                                                        <span className="font-bold text-peach tracking-widest uppercase text-[10px] block mb-2">Issue:</span>
-                                                        <p className="text-black font-semibold text-base leading-relaxed">{log.challenges}</p>
+                                                        <span className="font-bold text-peach tracking-widest text-[10px] block mb-2">Issue:</span>
+                                                        <p className="text-text-primary font-semibold text-base leading-relaxed">{log.challenges}</p>
                                                     </div>
                                                 )}
                                                 {log.resolutions && (
                                                     <div className="bg-mint/30 p-4 rounded-xl">
-                                                        <span className="font-bold text-black/60 tracking-widest uppercase text-[10px] block mb-2">Resolution:</span>
-                                                        <p className="text-black font-semibold text-base leading-relaxed">{log.resolutions}</p>
+                                                        <span className="font-bold text-text-secondary tracking-widest text-[10px] block mb-2">Resolution:</span>
+                                                        <p className="text-text-primary font-semibold text-base leading-relaxed">{log.resolutions}</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -278,8 +278,8 @@ export const WeeklyReportGenerator: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="text-center pt-8 border-t border-black/5 text-[10px] uppercase tracking-widest font-bold text-black/40">
-                        Generated by MediControl Management System on {new Date().toLocaleDateString()}
+                    <div className="text-center pt-8 border-t border-black/5 text-[10px] tracking-widest font-bold text-text-muted">
+                        Generated by RadPadi Management System on {new Date().toLocaleDateString()}
                     </div>
                 </div>
             )}

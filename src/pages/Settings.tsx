@@ -20,8 +20,8 @@ export const Settings: React.FC = () => {
                 <p className="text-text-secondary mt-1">Manage system configurations and options.</p>
             </div>
 
-            <div className="bg-white/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/60 p-8 shadow-sm">
-                <h3 className="text-2xl font-bold mb-6 text-black tracking-tight">Modality Management</h3>
+            <div className="rad-card p-8">
+                <h3 className="text-2xl font-bold mb-6 text-text-primary tracking-tight">Modality Management</h3>
 
                 <form onSubmit={handleAddModality} className="flex flex-col sm:flex-row gap-3 mb-6">
                     <input
@@ -29,12 +29,12 @@ export const Settings: React.FC = () => {
                         value={newModalityName}
                         onChange={(e) => setNewModalityName(e.target.value)}
                         placeholder="New Modality Name..."
-                        className="flex-1 bg-white/50 border-2 border-transparent rounded-full px-6 py-4 text-black font-semibold focus:outline-none focus:border-black/20 focus:bg-white shadow-sm transition-all placeholder:text-black/40"
+                        className="rad-input flex-1 px-6 py-4"
                     />
                     <button
                         type="submit"
                         disabled={!newModalityName.trim()}
-                        className="justify-center bg-black hover:bg-black/80 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-all duration-300 shadow-md hover:scale-105 active:scale-95"
+                        className="justify-center rad-btn-primary px-8 py-4 flex items-center gap-2 transition-all duration-300 shadow-md hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Plus className="w-5 h-5 stroke-[3]" />
                         Add Modality
@@ -46,11 +46,11 @@ export const Settings: React.FC = () => {
                         <p className="text-text-secondary text-center py-4">No modalities defined.</p>
                     ) : (
                         modalities.map(modality => (
-                            <div key={modality.id} className="flex items-center justify-between bg-white/50 border border-white/60 p-5 rounded-3xl group hover:border-black/20 hover:bg-white/70 transition-all shadow-sm">
-                                <span className="font-semibold text-black text-lg">{modality.name}</span>
+                            <div key={modality.id} className="flex items-center justify-between bg-surface border border-border p-5 rounded-2xl group hover:border-border/80 transition-all shadow-sm">
+                                <span className="font-semibold text-text-primary text-lg">{modality.name}</span>
                                 <button
                                     onClick={() => removeModality(modality.id)}
-                                    className="text-black/40 hover:text-red-500 p-2 rounded-full hover:bg-red-500/10 transition-colors"
+                                    className="text-text-muted hover:text-red-500 p-2 rounded-full hover:bg-red-500/10 transition-colors"
                                     title="Remove Modality"
                                 >
                                     <Trash2 className="w-5 h-5 stroke-[2.5]" />

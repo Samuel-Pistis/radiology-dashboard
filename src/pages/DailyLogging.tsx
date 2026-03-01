@@ -178,9 +178,9 @@ export const DailyLogging: React.FC = () => {
         const night = shifts.night.items.reduce((s, i) => s + (i.amountConsumedMls || 0), 0);
 
         return [
-            { name: 'Morning', value: morning, fill: '#31A5F5' },
-            { name: 'Afternoon', value: afternoon, fill: '#49CBA4' },
-            { name: 'Night', value: night, fill: '#0F172A' }
+            { name: 'Morning', value: morning, fill: '#0D9488' },
+            { name: 'Afternoon', value: afternoon, fill: '#10B981' },
+            { name: 'Night', value: night, fill: '#111827' }
         ].filter(d => d.value > 0);
     }, [shifts]);
 
@@ -208,7 +208,7 @@ export const DailyLogging: React.FC = () => {
     }, [shifts]);
 
 
-    const inputClasses = "w-full bg-white/40 border-2 border-transparent rounded-full px-5 py-3 text-black font-semibold focus:border-black/20 focus:bg-white/60 outline-none transition-all shadow-sm placeholder:text-black/40 backdrop-blur-md";
+    const inputClasses = "rad-input";
 
     const getShiftIcon = (name: string) => {
         if (name === 'morning') return <div className="w-6 h-6 rounded bg-primary-100 flex items-center justify-center text-primary-500 font-semibold text-xs shadow-sm">☀</div>;
@@ -226,8 +226,8 @@ export const DailyLogging: React.FC = () => {
                     <div className="flex items-center gap-4">
                         {getShiftIcon(shiftName)}
                         <div className="text-left">
-                            <h4 className="font-bold text-2xl text-black tracking-tight leading-none">
-                                {title} Shift <span className="text-sm font-semibold text-black/50 ml-2 tracking-wide">({timeRange})</span>
+                            <h4 className="font-bold text-2xl text-text-primary tracking-tight leading-none">
+                                {title} Shift <span className="text-sm font-semibold text-text-muted ml-2 tracking-wide">({timeRange})</span>
                             </h4>
                         </div>
                     </div>
@@ -239,17 +239,17 @@ export const DailyLogging: React.FC = () => {
                             {/* HTML Table Header */}
                             <thead>
                                 <tr>
-                                    <th className="p-4 text-left font-bold text-sm text-black/60 uppercase tracking-widest bg-black/5 rounded-tl-3xl border-b border-black/5">Row Type</th>
+                                    <th className="p-4 text-left font-medium text-sm text-text-secondary bg-surface border-b border-border">Row Type</th>
                                     {contrastTypes.map(c => (
-                                        <th key={c.id} className="p-4 text-center font-bold text-sm text-black bg-black/5 border-b border-black/5 border-l border-white/30 truncate max-w-[100px]">
+                                        <th key={c.id} className="p-4 text-center font-medium text-sm text-text-primary bg-surface border-b border-border border-l max-w-[100px]">
                                             {c.name}
                                         </th>
                                     ))}
                                 </tr>
                                 <tr>
-                                    <th className="p-2 border-b border-black/5"></th>
+                                    <th className="p-2 border-b border-border bg-surface"></th>
                                     {contrastTypes.map(c => (
-                                        <th key={`sub-${c.id}`} className="p-3 border-b border-black/5 border-l border-white/30 text-[10px] font-semibold text-black/50 uppercase tracking-widest">
+                                        <th key={`sub-${c.id}`} className="p-3 border-b border-border border-l bg-surface text-xs font-medium text-text-muted tracking-wide">
                                             <div className="grid grid-cols-2 gap-2">
                                                 <span className="text-center">Total (mls)</span>
                                                 <span className="text-center">Bottles</span>
@@ -263,16 +263,16 @@ export const DailyLogging: React.FC = () => {
                             <tbody>
                                 {/* 1. Received Row */}
                                 <tr className="border-b border-black/5 hover:bg-white/30 transition-colors">
-                                    <td className="p-4 text-sm font-semibold text-black">
-                                        Total Qty Received <br /><span className="text-[10px] font-semibold text-black/40 uppercase tracking-wider">({isMorning ? 'Start stock' : 'Carried over + Additional'})</span>
+                                    <td className="p-4 text-sm font-semibold text-text-primary">
+                                        Total Qty Received <br /><span className="text-[10px] font-semibold text-text-muted tracking-wider">({isMorning ? 'Start stock' : 'Carried over + Additional'})</span>
                                     </td>
                                     {contrastTypes.map(c => {
                                         const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
                                         return (
                                             <td key={`rec-${c.id}`} className="p-3 border-l border-white/30">
                                                 <div className="grid grid-cols-2 gap-2">
-                                                    <input type="number" min="0" value={item.totalReceivedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedMls', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm ${!isMorning ? 'opacity-50 cursor-not-allowed' : ''}`} placeholder="0" />
-                                                    <input type="number" min="0" value={item.totalReceivedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedBottles', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm ${!isMorning ? 'opacity-50 cursor-not-allowed' : ''}`} placeholder="0" />
+                                                    <input type="number" min="0" value={item.totalReceivedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedMls', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-text-primary focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm ${!isMorning ? 'opacity-50 cursor-not-allowed' : ''}`} placeholder="0" />
+                                                    <input type="number" min="0" value={item.totalReceivedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'totalReceivedBottles', parseInt(e.target.value) || 0)} readOnly={!isMorning} className={`w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-text-primary focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm ${!isMorning ? 'opacity-50 cursor-not-allowed' : ''}`} placeholder="0" />
                                                 </div>
                                             </td>
                                         );
@@ -282,16 +282,16 @@ export const DailyLogging: React.FC = () => {
                                 {/* 2. Additional Row */}
                                 {!isMorning && (
                                     <tr className="border-b border-black/5 hover:bg-white/30 transition-colors">
-                                        <td className="p-4 text-sm font-semibold text-black">
-                                            <span className="text-mint font-bold text-lg mr-1">+</span> Additional Stock <br /><span className="text-[10px] font-semibold text-black/40 uppercase tracking-wider">(Extra received this shift)</span>
+                                        <td className="p-4 text-sm font-semibold text-text-primary">
+                                            <span className="text-mint font-bold text-lg mr-1">+</span> Additional Stock <br /><span className="text-[10px] font-semibold text-text-muted tracking-wider">(Extra received this shift)</span>
                                         </td>
                                         {contrastTypes.map(c => {
                                             const item = shiftData.items.find(i => i.contrastTypeId === c.id)!;
                                             return (
                                                 <td key={`add-${c.id}`} className="p-3 border-l border-white/30">
                                                     <div className="grid grid-cols-2 gap-2">
-                                                        <input type="number" min="0" value={item.additionalStockMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockMls', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
-                                                        <input type="number" min="0" value={item.additionalStockBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockBottles', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
+                                                        <input type="number" min="0" value={item.additionalStockMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockMls', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-text-primary focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
+                                                        <input type="number" min="0" value={item.additionalStockBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'additionalStockBottles', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-text-primary focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
                                                     </div>
                                                 </td>
                                             );
@@ -301,7 +301,7 @@ export const DailyLogging: React.FC = () => {
 
                                 {/* 3. Consumption Row */}
                                 <tr className="border-b border-black/5 hover:bg-white/30 transition-colors">
-                                    <td className="p-4 text-sm font-semibold text-black">
+                                    <td className="p-4 text-sm font-semibold text-text-primary">
                                         Total Consumption
                                     </td>
                                     {contrastTypes.map(c => {
@@ -309,8 +309,8 @@ export const DailyLogging: React.FC = () => {
                                         return (
                                             <td key={`cons-${c.id}`} className="p-3 border-l border-white/30">
                                                 <div className="grid grid-cols-2 gap-2">
-                                                    <input type="number" min="0" value={item.amountConsumedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedMls', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
-                                                    <input type="number" min="0" value={item.amountConsumedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedBottles', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-black focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
+                                                    <input type="number" min="0" value={item.amountConsumedMls || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedMls', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-text-primary focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
+                                                    <input type="number" min="0" value={item.amountConsumedBottles || ''} onChange={(e) => handleShiftItemChange(shiftName, c.id, 'amountConsumedBottles', parseInt(e.target.value) || 0)} className="w-full bg-white/50 border-2 border-transparent rounded-full px-2 py-2 text-center text-sm font-bold text-text-primary focus:bg-white focus:border-black/20 outline-none transition-all shadow-sm" placeholder="0" />
                                                 </div>
                                             </td>
                                         );
@@ -346,7 +346,7 @@ export const DailyLogging: React.FC = () => {
                             return (
                                 <div key={`prog-${c.id}`} className="space-y-2">
                                     <div className="flex justify-between items-end">
-                                        <span className="text-xs font-semibold text-text-primary uppercase tracking-wide">{c.name}</span>
+                                        <span className="text-xs font-semibold text-text-primary tracking-wide">{c.name}</span>
                                         <span className="text-[10px] font-semibold text-text-secondary">{percent}%</span>
                                     </div>
                                     <div className="h-2 w-full bg-surface-hover/80 rounded-full overflow-hidden">
@@ -364,17 +364,17 @@ export const DailyLogging: React.FC = () => {
                     {/* Sign Off Row */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 pb-2 border-t border-black/5 mx-6">
                         <div className="bg-white/40 rounded-[1.5rem] p-5 border border-white/60 shadow-sm backdrop-blur-md">
-                            <label className="text-sm font-bold text-black/60 uppercase tracking-widest flex items-center gap-2 mb-3"><div className="w-3 h-3 rounded-full bg-mint" /> Handed Over To</label>
-                            <input type="text" placeholder="Enter staff name" value={shiftData.handedOverTo} onChange={e => updateShiftDetails(shiftName, 'handedOverTo', e.target.value)} className="w-full bg-transparent border-b-2 border-black/10 pb-2 text-lg outline-none focus:border-black transition-colors font-semibold text-black placeholder:text-black/30 placeholder:font-medium" />
+                            <label className="text-sm font-bold text-text-secondary tracking-widest flex items-center gap-2 mb-3"><div className="w-3 h-3 rounded-full bg-mint" /> Handed Over To</label>
+                            <input type="text" placeholder="Enter staff name" value={shiftData.handedOverTo} onChange={e => updateShiftDetails(shiftName, 'handedOverTo', e.target.value)} className="w-full bg-transparent border-b-2 border-black/10 pb-2 text-lg outline-none focus:border-black transition-colors font-semibold text-text-primary placeholder:text-text-muted placeholder:font-medium" />
                         </div>
                         <div className="bg-white/40 rounded-[1.5rem] p-5 border border-white/60 shadow-sm backdrop-blur-md">
-                            <label className="text-sm font-bold text-black/60 uppercase tracking-widest flex items-center gap-2 mb-3"><div className="w-3 h-3 rounded-sm bg-yellow" /> Calculated By</label>
-                            <input type="text" placeholder="Enter staff name" value={shiftData.calculatedBy} onChange={e => updateShiftDetails(shiftName, 'calculatedBy', e.target.value)} className="w-full bg-transparent border-b-2 border-black/10 pb-2 text-lg outline-none focus:border-black transition-colors font-semibold text-black placeholder:text-black/30 placeholder:font-medium" />
+                            <label className="text-sm font-bold text-text-secondary tracking-widest flex items-center gap-2 mb-3"><div className="w-3 h-3 rounded-sm bg-yellow" /> Calculated By</label>
+                            <input type="text" placeholder="Enter staff name" value={shiftData.calculatedBy} onChange={e => updateShiftDetails(shiftName, 'calculatedBy', e.target.value)} className="w-full bg-transparent border-b-2 border-black/10 pb-2 text-lg outline-none focus:border-black transition-colors font-semibold text-text-primary placeholder:text-text-muted placeholder:font-medium" />
                         </div>
                         <div className="bg-black text-white rounded-[1.5rem] p-5 shadow-lg flex flex-col justify-center relative overflow-hidden group">
-                            <label className="text-sm font-bold text-white/60 uppercase tracking-widest flex items-center gap-2 mb-3 z-10"><div className="w-3 h-3 rounded-sm border-2 border-white/30" /> Verification</label>
+                            <label className="text-sm font-bold text-white/60 tracking-widest flex items-center gap-2 mb-3 z-10"><div className="w-3 h-3 rounded-sm border-2 border-white/30" /> Verification</label>
                             <label className="flex items-center gap-4 cursor-pointer z-10">
-                                <div className={`w-8 h-8 rounded-full border-[3px] flex items-center justify-center transition-colors ${shiftData.isVerified ? 'border-mint bg-mint text-black' : 'border-white/30 group-hover:border-white/50'}`}>
+                                <div className={`w-8 h-8 rounded-full border-[3px] flex items-center justify-center transition-colors ${shiftData.isVerified ? 'border-mint bg-mint text-text-primary' : 'border-white/30 group-hover:border-white/50'}`}>
                                     {shiftData.isVerified && <CheckCircle className="w-5 h-5 font-bold" />}
                                 </div>
                                 <input type="checkbox" checked={shiftData.isVerified} onChange={e => updateShiftDetails(shiftName, 'isVerified', e.target.checked)} className="hidden" />
@@ -478,7 +478,7 @@ export const DailyLogging: React.FC = () => {
                     </div>
 
                     <div className="pt-2 flex justify-end">
-                        <button type="submit" className="bg-black text-white px-10 py-4 rounded-full font-bold text-lg transition-all duration-300 w-full md:w-auto shadow-lg hover:scale-105 active:scale-95 cursor-pointer">
+                        <button type="submit" className="rad-btn-primary px-10 py-4 w-full md:w-auto shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer text-lg">
                             Save Activity Log
                         </button>
                     </div>
@@ -490,7 +490,7 @@ export const DailyLogging: React.FC = () => {
                     {/* Header Controls */}
                     <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-8 mt-2">
                         <div className="flex flex-col">
-                            <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1">BT Health & Diagnostics Centre</h3>
+                            <h3 className="text-xs font-semibold text-text-secondary tracking-wider mb-1">BT Health & Diagnostics Centre</h3>
                             <h2 className="text-2xl font-bold text-text-primary">Daily Contrast Consumption</h2>
                             <p className="text-text-secondary font-medium mt-1">
                                 {new Date(contrastDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -535,27 +535,25 @@ export const DailyLogging: React.FC = () => {
 
                     {/* Top Stat Cards matching screenshot directly */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-                        <div className="bg-white/40 backdrop-blur-3xl rounded-[2rem] p-6 shadow-sm border border-white/60 flex flex-col justify-center">
-                            <h2 className="text-[3rem] font-bold text-black tracking-tighter leading-none mb-1">{totalDayReceived}</h2>
-                            <p className="text-[10px] font-semibold text-black/50 mb-3 uppercase tracking-wider">mls</p>
-                            <p className="text-xs font-bold text-black">Total Received</p>
+                        <div className="rad-stat-card border-l-primary flex flex-col justify-center">
+                            <h2 className="text-[3rem] font-bold text-text-primary tracking-tighter leading-none mb-1">{totalDayReceived}</h2>
+                            <p className="text-[10px] font-medium text-text-muted mb-3 tracking-wide">mls</p>
+                            <p className="text-xs font-semibold text-text-secondary">Total Received</p>
                         </div>
-                        <div className="bg-mint text-black rounded-[2rem] p-6 shadow-sm flex flex-col justify-center relative overflow-hidden">
-                            {/* Decorative element like the screenshot */}
-                            <div className="absolute top-0 right-0 p-4 opacity-50"><PieChartIcon className="w-16 h-16 text-black/10" /></div>
-                            <h2 className="text-[3rem] font-bold text-black tracking-tighter leading-none mb-1 z-10">{totalDayConsumed}</h2>
-                            <p className="text-[10px] font-semibold text-black/70 mb-3 uppercase tracking-wider z-10">mls</p>
-                            <p className="text-xs font-bold text-black z-10">Total Consumed</p>
+                        <div className="rad-stat-card border-l-success flex flex-col justify-center relative overflow-hidden">
+                            <h2 className="text-[3rem] font-bold text-text-primary tracking-tighter leading-none mb-1 z-10">{totalDayConsumed}</h2>
+                            <p className="text-[10px] font-medium text-text-muted mb-3 tracking-wide z-10">mls</p>
+                            <p className="text-xs font-semibold text-text-secondary z-10">Total Consumed</p>
                         </div>
-                        <div className="bg-peach text-black rounded-[2rem] p-6 shadow-sm flex flex-col justify-center">
-                            <h2 className="text-[3rem] font-bold text-black tracking-tighter leading-none mb-1">{totalRemaining}</h2>
-                            <p className="text-[10px] font-semibold text-black/70 mb-3 uppercase tracking-wider">mls</p>
-                            <p className="text-xs font-bold text-black">Remaining Stock</p>
+                        <div className="rad-stat-card border-l-warning flex flex-col justify-center">
+                            <h2 className="text-[3rem] font-bold text-text-primary tracking-tighter leading-none mb-1">{totalRemaining}</h2>
+                            <p className="text-[10px] font-medium text-text-muted mb-3 tracking-wide">mls</p>
+                            <p className="text-xs font-semibold text-text-secondary">Remaining Stock</p>
                         </div>
-                        <div className="bg-lavender text-black rounded-[2rem] p-6 shadow-sm flex flex-col justify-center">
-                            <h2 className="text-[3rem] font-bold text-black tracking-tighter leading-none mb-1">{contrastTypes.length}</h2>
-                            <p className="text-[10px] font-semibold text-black/70 mb-3 uppercase tracking-wider">tracked</p>
-                            <p className="text-xs font-bold text-black">Contrast Types</p>
+                        <div className="rad-stat-card border-l-accent-indigo flex flex-col justify-center">
+                            <h2 className="text-[3rem] font-bold text-text-primary tracking-tighter leading-none mb-1">{contrastTypes.length}</h2>
+                            <p className="text-[10px] font-medium text-text-muted mb-3 tracking-wide">tracked</p>
+                            <p className="text-xs font-semibold text-text-secondary">Contrast Types</p>
                         </div>
                     </div>
 
@@ -576,7 +574,7 @@ export const DailyLogging: React.FC = () => {
                         {/* Daily Summary Sidebar (matching screenshot) */}
                         <div className="xl:col-span-3">
                             <div className="bg-white/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-sm border border-white/60 sticky top-6">
-                                <h3 className="text-sm font-bold text-black/60 uppercase tracking-widest mb-8">Daily Summary</h3>
+                                <h3 className="text-sm font-bold text-text-secondary tracking-widest mb-8">Daily Summary</h3>
 
                                 <div className="relative h-56 w-full mb-10">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -600,8 +598,8 @@ export const DailyLogging: React.FC = () => {
                                     </ResponsiveContainer>
                                     {/* Center Text inside Donut */}
                                     <div className="absolute inset-0 flex flex-col items-center justify-center mt-2">
-                                        <span className="text-[3.5rem] font-bold text-black tracking-tighter leading-none">{totalDayConsumed}</span>
-                                        <span className="text-[10px] font-semibold text-black/50 mt-1 uppercase tracking-wider">mls used</span>
+                                        <span className="text-[3.5rem] font-bold text-text-primary tracking-tighter leading-none">{totalDayConsumed}</span>
+                                        <span className="text-[10px] font-semibold text-text-muted mt-1 tracking-wider">mls used</span>
                                     </div>
                                 </div>
 
@@ -612,15 +610,15 @@ export const DailyLogging: React.FC = () => {
                                             + shifts.afternoon.items.find(item => item.contrastTypeId === c.id)!.amountConsumedMls
                                             + shifts.night.items.find(item => item.contrastTypeId === c.id)!.amountConsumedMls;
 
-                                        const colors = ['#000000', '#7AFFA1', '#FFF87C', '#DDCBF5', '#FFA27D'];
+                                        const colors = ['#0D9488', '#10B981', '#F59E0B', '#6366F1', '#111827'];
 
                                         return (
                                             <div key={`leg-${c.id}`} className="flex justify-between items-center text-sm font-bold">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: colors[i % colors.length] }}></div>
-                                                    <span className="text-black">{c.name}</span>
+                                                    <span className="text-text-primary">{c.name}</span>
                                                 </div>
-                                                <span className="text-black">{typeTotal}</span>
+                                                <span className="text-text-primary">{typeTotal}</span>
                                             </div>
                                         );
                                     })}
