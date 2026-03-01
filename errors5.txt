@@ -1,0 +1,3 @@
+﻿src/pages/staff-activity/StaffActivity.tsx(802,9): error TS1005: ')' expected.
+src/pages/staff-activity/StaffActivity.tsx(803,5): error TS1109: Expression expected.
+src/pages/staff-activity/StaffActivity.tsx(804,1): error TS1128: Declaration or statement expected.

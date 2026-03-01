@@ -1,0 +1,1 @@
+﻿src/pages/staff-activity/StaffActivity.tsx(812,1): error TS1005: '}' expected.

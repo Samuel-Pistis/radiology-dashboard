@@ -8,6 +8,7 @@ import { WeeklyOperations } from './pages/WeeklyOperations';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
 import { Login } from './pages/Login';
+import StaffActivity from './pages/staff-activity/StaffActivity';
 import { Activity } from 'lucide-react';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -54,6 +55,7 @@ const AppRoutes = () => {
           <Route index element={<Dashboard />} />
           <Route path="daily-logging" element={<DailyLogging />} />
           <Route path="weekly-operations" element={<WeeklyOperations />} />
+          <Route path="staff-activity" element={<StaffActivity />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
         </Route>

@@ -85,7 +85,9 @@ export interface AppState {
     contrastTypes: ContrastType[];
     activityLogs: DailyActivityLog[];
     shiftActivityLogs: ActivityLog[];
+    shiftContrastLogs: ContrastLog[];
     contrastRecords: DailyContrastRecord[];
+    centreSettings: CentreSettings | null;
     weeklyOpsLogs: WeeklyOperationsLog[];
     staffLogs: StaffLog[];
     equipmentLogs: EquipmentLog[];

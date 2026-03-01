@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { LayoutDashboard, CalendarDays, CalendarRange, FileBarChart, Settings, LogOut, ShieldCheck, UserCog, X } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, CalendarRange, FileBarChart, Settings, LogOut, ShieldCheck, UserCog, X, ClipboardList } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../context/AuthContext';
 
@@ -8,6 +8,7 @@ const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Daily Logging', path: '/daily-logging', icon: CalendarDays },
     { name: 'Weekly Operations', path: '/weekly-operations', icon: CalendarRange },
+    { name: 'Staff Activity', path: '/staff-activity', icon: ClipboardList },
     { name: 'Reports', path: '/reports', icon: FileBarChart },
     { name: 'Settings', path: '/settings', icon: Settings },
 ];
