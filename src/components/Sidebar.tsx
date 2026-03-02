@@ -48,12 +48,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     <button
                         onClick={onClose}
                         className="md:hidden p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl transition-colors"
+                        aria-label="Close navigation menu"
                     >
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
-                <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+                <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto" aria-label="Main navigation">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         return (

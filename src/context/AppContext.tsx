@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState, StaffLog, EquipmentLog, HandoverNote, ActivityLog, ContrastLog, Centre, CentreSettings, UserRole } from '../types';
+import { useToast } from './ToastContext';
 
 interface AppContextType extends AppState {
     isLoading: boolean;
@@ -67,6 +68,7 @@ import { supabase } from '../lib/supabase';
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [state, setState] = useState<AppState>(defaultState);
     const [isLoading, setIsLoading] = useState(true);
+    const { showToast } = useToast();
 
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -96,9 +98,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     supabase.from('centre_settings').select('*').single(), // Assuming 1 row per centre for now
                     supabase.from('weekly_operations_logs').select('*'),
                     supabase.from('staff_logs').select('*'),
-                    supabase.from('equipment_logs').select('*'),
+                    supabase.from('equipment_logs').select('id, centre_id, modality_id, modality_name, reason_category, description, resolution, start_time, end_time, is_ongoing, logged_by, logged_by_name, created_at'),
                     supabase.from('handover_notes').select('*'),
-                    supabase.from('profiles').select('*')
+                    supabase.from('profiles').select('id, email, display_name, role, centre_id, created_at, updated_at')
                 ]);
 
                 // Map database columns back to camelCase frontend models
@@ -166,7 +168,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setState(prev => ({ ...prev, modalities: [...prev.modalities, modality] }));
         } catch (error) {
             console.error('Error adding modality:', error);
-            throw error; // Let UI handle error toast if needed
+            showToast('Failed to add modality. Please try again.', 'error');
+            throw error;
         }
     };
 
@@ -177,6 +180,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setState(prev => ({ ...prev, modalities: prev.modalities.filter(m => m.id !== id) }));
         } catch (error) {
             console.error('Error removing modality:', error);
+            showToast('Failed to remove modality. Please try again.', 'error');
             throw error;
         }
     };
@@ -197,6 +201,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setState(prev => ({ ...prev, activityLogs: [...prev.activityLogs, log] }));
         } catch (error) {
             console.error('Error adding activity log:', error);
+            showToast('Failed to save activity log. Please try again.', 'error');
             throw error;
         }
     };
@@ -231,6 +236,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             });
         } catch (error) {
             console.error('Error saving shift activity log:', error);
+            showToast('Failed to save activity log. Check your connection.', 'error');
             throw error;
         }
     };
@@ -262,6 +268,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             });
         } catch (error) {
             console.error('Error saving shift contrast log:', error);
+            showToast('Failed to save contrast log. Check your connection.', 'error');
             throw error;
         }
     };
@@ -289,6 +296,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             });
         } catch (error) {
             console.error('Error saving contrast record:', error);
+            showToast('Failed to save contrast record. Please try again.', 'error');
             throw error;
         }
     };
@@ -319,6 +327,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             });
         } catch (error) {
             console.error('Error adding/updating weekly ops log:', error);
+            showToast('Failed to save weekly log. Please try again.', 'error');
             throw error;
         }
     };
@@ -330,6 +339,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setState(prev => ({ ...prev, weeklyOpsLogs: prev.weeklyOpsLogs.filter(log => log.id !== id) }));
         } catch (error) {
             console.error('Error deleting weekly ops log:', error);
+            showToast('Failed to delete log. Please try again.', 'error');
             throw error;
         }
     };
@@ -341,6 +351,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setState(prev => ({ ...prev, staffLogs: [...prev.staffLogs, log] }));
         } catch (error) {
             console.error('Error adding staff log:', error);
+            showToast('Failed to save staff log. Please try again.', 'error');
             throw error;
         }
     };
@@ -352,6 +363,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setState(prev => ({ ...prev, equipmentLogs: [...prev.equipmentLogs, log] }));
         } catch (error) {
             console.error('Error adding equipment log:', error);
+            showToast('Failed to log equipment downtime. Please try again.', 'error');
             throw error;
         }
     };
@@ -366,6 +378,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             }));
         } catch (error) {
             console.error('Error updating equipment log:', error);
+            showToast('Failed to update equipment log. Please try again.', 'error');
             throw error;
         }
     };
@@ -377,6 +390,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setState(prev => ({ ...prev, handoverNotes: [...prev.handoverNotes, note] }));
         } catch (error) {
             console.error('Error adding handover note:', error);
+            showToast('Failed to save handover note. Please try again.', 'error');
             throw error;
         }
     };
@@ -398,6 +412,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             }));
         } catch (error) {
             console.error('Error acknowledging handover note:', error);
+            showToast('Failed to acknowledge note. Please try again.', 'error');
             throw error;
         }
     };
@@ -408,6 +423,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             if (error) throw error;
         } catch (error) {
             console.error('Error updating centre:', error);
+            showToast('Failed to update centre profile. Please try again.', 'error');
             throw error;
         }
     };
@@ -420,6 +436,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setState(prev => ({ ...prev, centreSettings: { ...prev.centreSettings!, ...updates } }));
         } catch (error) {
             console.error('Error updating settings:', error);
+            showToast('Failed to save settings. Please try again.', 'error');
             throw error;
         }
     };
@@ -434,6 +451,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             }));
         } catch (error) {
             console.error('Error updating role:', error);
+            showToast('Failed to update staff role. Please try again.', 'error');
             throw error;
         }
     };

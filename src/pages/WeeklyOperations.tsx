@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
+import { useToast } from '../context/ToastContext';
 import { CalendarRange, CheckCircle, AlertTriangle, CreditCard, Activity, Layers, Droplets, Info, Edit2, Trash2, X } from 'lucide-react';
 import { PageHeader, Card, Input, Button } from '@/components/ui';
 
@@ -13,15 +14,17 @@ export const WeeklyOperations: React.FC = () => {
         activityLogs,
         contrastRecords
     } = useAppContext();
+    const { showToast } = useToast();
 
     // Form State
     const [loadedLogId, setLoadedLogId] = useState<string | null>(null);
     const [weekStartDate, setWeekStartDate] = useState('');
     const [weekEndDate, setWeekEndDate] = useState('');
+    const [dateError, setDateError] = useState('');
 
     // Mutable Data States
     const [investigationsState, setInvestigationsState] = useState<Record<string, number>>({});
-    const [filmState, setFilmState] = useState<Record<string, { f10x12: number, f14x17: number }>>({});
+    const [filmState, setFilmState] = useState<Record<string, { f10x12: number, f14x17: number }>>({})
     const [contrastState, setContrastState] = useState<Record<string, number>>({});
     const [revenueState, setRevenueState] = useState<Record<string, number>>({});
 
@@ -29,12 +32,8 @@ export const WeeklyOperations: React.FC = () => {
     const [resolutions, setResolutions] = useState('');
 
     const [autoPopulatedCount, setAutoPopulatedCount] = useState(0);
-    const [successMessage, setSuccessMessage] = useState('');
 
-    const showSuccess = (msg: string) => {
-        setSuccessMessage(msg);
-        setTimeout(() => setSuccessMessage(''), 3000);
-    };
+    const showSuccess = (msg: string) => showToast(msg, 'success');
 
     // Initialize Empty States
     const initializeEmptyStates = () => {
@@ -140,6 +139,7 @@ export const WeeklyOperations: React.FC = () => {
         setLoadedLogId(null);
         setWeekStartDate('');
         setWeekEndDate('');
+        setDateError('');
         setChallenges('');
         setResolutions('');
         setAutoPopulatedCount(0);
@@ -191,7 +191,7 @@ export const WeeklyOperations: React.FC = () => {
                 if (loadedLogId === id) handleClearForm();
             } catch (err) {
                 console.error("Delete failed", err);
-                alert("Failed to delete log");
+                // toast is shown by AppContext catch
             }
         }
     };
@@ -199,6 +199,13 @@ export const WeeklyOperations: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!weekStartDate || !weekEndDate) return;
+
+        // Validate date range
+        if (weekEndDate < weekStartDate) {
+            setDateError('End date must be on or after start date.');
+            return;
+        }
+        setDateError('');
 
         const revenue = modalities.map(m => ({
             modalityId: m.id,
@@ -222,7 +229,7 @@ export const WeeklyOperations: React.FC = () => {
             showSuccess(`Weekly Operations log ${loadedLogId ? 'updated' : 'saved'} successfully!`);
         } catch (error) {
             console.error(error);
-            alert("Error saving weekly log. Check console for details.");
+            // toast shown by AppContext catch
         }
     };
 
@@ -238,13 +245,6 @@ export const WeeklyOperations: React.FC = () => {
                 title="Weekly Operations"
                 description="Review auto-populated metrics for the week, make manual adjustments, and log operational challenges."
             />
-
-            {successMessage && (
-                <div className="p-4 bg-secondary-500/10 border border-secondary-500/20 text-secondary-500 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-                    <CheckCircle className="w-5 h-5" />
-                    {successMessage}
-                </div>
-            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* LEFT COLUMN: FORM (approx 60% on lg screens, taking 7 cols) */}
@@ -282,21 +282,29 @@ export const WeeklyOperations: React.FC = () => {
 
                         <form onSubmit={handleSubmit} className="space-y-10">
                             {/* DATE RANGE */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-5 bg-black/[0.02] rounded-3xl border border-black/5">
-                                <Input
-                                    label="Start Date"
-                                    type="date"
-                                    value={weekStartDate}
-                                    onChange={(e) => setWeekStartDate(e.target.value)}
-                                    required
-                                />
-                                <Input
-                                    label="End Date"
-                                    type="date"
-                                    value={weekEndDate}
-                                    onChange={(e) => setWeekEndDate(e.target.value)}
-                                    required
-                                />
+                            <div className="space-y-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-5 bg-black/[0.02] rounded-3xl border border-black/5">
+                                    <Input
+                                        label="Start Date"
+                                        type="date"
+                                        value={weekStartDate}
+                                        onChange={(e) => { setWeekStartDate(e.target.value); setDateError(''); }}
+                                        required
+                                    />
+                                    <Input
+                                        label="End Date"
+                                        type="date"
+                                        value={weekEndDate}
+                                        onChange={(e) => { setWeekEndDate(e.target.value); setDateError(''); }}
+                                        required
+                                    />
+                                </div>
+                                {dateError && (
+                                    <p className="text-xs font-semibold text-danger flex items-center gap-1.5 px-1">
+                                        <AlertTriangle className="w-3.5 h-3.5" />
+                                        {dateError}
+                                    </p>
+                                )}
                             </div>
 
                             {autoPopulatedCount > 0 && (

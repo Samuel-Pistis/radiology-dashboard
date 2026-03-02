@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 
@@ -21,24 +21,50 @@ export const Modal: React.FC<ModalProps> = ({
     maxWidth = 'md',
     className
 }) => {
-    // Handle escape key
+    const dialogRef = useRef<HTMLDivElement>(null);
+
+    const trapFocus = useCallback((e: KeyboardEvent) => {
+        if (!dialogRef.current) return;
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+            'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.key === 'Tab') {
+            if (e.shiftKey) {
+                if (document.activeElement === first) { e.preventDefault(); last?.focus(); }
+            } else {
+                if (document.activeElement === last) { e.preventDefault(); first?.focus(); }
+            }
+        }
+    }, []);
+
+    // Handle escape key and focus trap
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isOpen) {
                 onClose();
             }
+            trapFocus(e);
         };
 
         if (isOpen) {
             document.body.style.overflow = 'hidden';
             window.addEventListener('keydown', handleKeyDown);
+            // Move focus into modal
+            setTimeout(() => {
+                const focusable = dialogRef.current?.querySelector<HTMLElement>(
+                    'button,input,select,textarea,[tabindex]:not([tabindex="-1"])'
+                );
+                focusable?.focus();
+            }, 50);
         }
 
         return () => {
             document.body.style.overflow = 'unset';
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, trapFocus]);
 
     if (!isOpen) return null;
 
@@ -65,17 +91,20 @@ export const Modal: React.FC<ModalProps> = ({
                     maxWidthClasses[maxWidth],
                     className
                 )}
+                ref={dialogRef}
                 role="dialog"
                 aria-modal="true"
+                aria-labelledby="modal-title"
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-5 border-b border-border">
-                    <div className="text-xl font-bold text-text-primary">
+                    <div id="modal-title" className="text-xl font-bold text-text-primary">
                         {title}
                     </div>
                     <button
                         onClick={onClose}
                         className="text-text-muted hover:text-text-primary hover:bg-surface p-2 rounded-full transition-colors"
+                        aria-label="Close dialog"
                     >
                         <X className="w-5 h-5 stroke-[2.5]" />
                     </button>

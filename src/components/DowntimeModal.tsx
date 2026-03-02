@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
 import { AlertTriangle } from 'lucide-react';
@@ -36,6 +37,7 @@ export const DowntimeModal: React.FC<DowntimeModalProps> = ({
     const { modalities, addEquipmentLog } = useAppContext();
     const { user } = useAuth();
     const { centreId } = useCentre();
+    const { showToast } = useToast();
 
     const nowStr = toLocalDatetimeString(new Date());
 
@@ -47,12 +49,20 @@ export const DowntimeModal: React.FC<DowntimeModalProps> = ({
     const [description, setDescription] = useState('');
     const [resolution, setResolution] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+    const [timeError, setTimeError] = useState('');
 
     const selectedModality = modalities.find(m => m.id === modalityId);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!modalityId || !startTime) return;
+
+        // Validate end time is after start time when not ongoing
+        if (!isOngoing && endTime && endTime <= startTime) {
+            setTimeError('End time must be after start time.');
+            return;
+        }
+        setTimeError('');
 
         setIsSaving(true);
         try {
@@ -71,6 +81,7 @@ export const DowntimeModal: React.FC<DowntimeModalProps> = ({
                 logged_by_name: user?.name || 'Unknown User',
             };
             await addEquipmentLog(log);
+            showToast('Downtime event logged successfully.', 'success');
             // Reset form
             setDescription('');
             setResolution('');
@@ -80,6 +91,7 @@ export const DowntimeModal: React.FC<DowntimeModalProps> = ({
             onClose();
         } catch (err) {
             console.error('Error logging downtime:', err);
+            // toast shown by AppContext catch
         } finally {
             setIsSaving(false);
         }
@@ -179,10 +191,16 @@ export const DowntimeModal: React.FC<DowntimeModalProps> = ({
                                 type="datetime-local"
                                 value={endTime}
                                 min={startTime}
-                                onChange={e => setEndTime(e.target.value)}
+                                onChange={e => { setEndTime(e.target.value); setTimeError(''); }}
                                 className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm font-medium text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                             />
                         </div>
+                    )}
+                    {timeError && (
+                        <p className="text-xs font-semibold text-danger flex items-center gap-1.5 col-span-2">
+                            <AlertTriangle className="w-3.5 h-3.5" />
+                            {timeError}
+                        </p>
                     )}
                 </div>
 

@@ -9,3 +9,4 @@ export * from './Modal';
 export * from './Tabs';
 export * from './EmptyState';
 export * from './PageHeader';
+export * from './Skeleton';

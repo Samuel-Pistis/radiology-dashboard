@@ -70,3 +70,50 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-secondary);
 }
+
+/* ─── Print styles ──────────────────────────────────────────── */
+@media print {
+
+  /* Hide nav and interactive chrome */
+  aside,
+  header,
+  .no-print,
+  button:not(.print-visible),
+  [role="navigation"] {
+    display: none !important;
+  }
+
+  /* Expand content to fill the full page */
+  main {
+    width: 100% !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Reset overflow for all containers so charts render fully */
+  .flex-1,
+  [class*="overflow-hidden"] {
+    overflow: visible !important;
+  }
+
+  /* Flatten shadows and borders for paper */
+  .rad-card,
+  [class*="shadow"] {
+    box-shadow: none !important;
+    border: 1px solid #d1d5db !important;
+  }
+
+  /* Force white backgrounds */
+  body,
+  .bg-surface,
+  .bg-surface\/50,
+  .bg-white\/40 {
+    background: white !important;
+  }
+
+  /* Ensure page breaks don't split cards */
+  .rad-card,
+  .rad-stat-card {
+    page-break-inside: avoid;
+  }
+}
