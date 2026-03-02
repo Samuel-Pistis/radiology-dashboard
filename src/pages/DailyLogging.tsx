@@ -7,6 +7,7 @@ import { Activity, CheckCircle, Save, PieChart as PieChartIcon, ChevronLeft, Che
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import { HandoverBanner } from '../components/HandoverBanner';
 import { HandoverComposer } from '../components/HandoverComposer';
+import { DowntimeModal } from '../components/DowntimeModal';
 import type { PendingNote } from '../components/HandoverComposer';
 
 export const DailyLogging: React.FC = () => {
@@ -16,6 +17,7 @@ export const DailyLogging: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'activity' | 'contrast'>('contrast'); // Default to contrast for testing
     const [successMessage, setSuccessMessage] = useState('');
     const [pendingNotes, setPendingNotes] = useState<PendingNote[]>([]);
+    const [isDowntimeModalOpen, setIsDowntimeModalOpen] = useState(false);
 
     const showSuccess = (msg: string) => {
         setSuccessMessage(msg);
@@ -342,6 +344,15 @@ export const DailyLogging: React.FC = () => {
             <PageHeader
                 title="Daily Logging"
                 description="Record daily activity and shift-based contrast usage."
+                actions={
+                    <button
+                        onClick={() => setIsDowntimeModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-danger/10 hover:bg-danger/20 text-danger text-sm font-bold transition-colors border border-danger/20"
+                    >
+                        <AlertCircle className="w-4 h-4" />
+                        Report Downtime
+                    </button>
+                }
             />
 
             {successMessage && (
@@ -769,6 +780,11 @@ export const DailyLogging: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <DowntimeModal
+                isOpen={isDowntimeModalOpen}
+                onClose={() => setIsDowntimeModalOpen(false)}
+            />
         </div>
     );
 };

@@ -13,8 +13,10 @@ import { useNavigate } from 'react-router-dom';
 import { DataTable } from '@/components/ui/DataTable';
 import type { Column } from '@/components/ui/DataTable';
 
-import { Activity } from 'lucide-react';
+import { Activity, AlertOctagon } from 'lucide-react';
 import { HandoverTimeline } from '../components/HandoverTimeline';
+import { EquipmentStatusWidget } from '../components/EquipmentStatusWidget';
+import { DowntimeModal } from '../components/DowntimeModal';
 
 const COLORS = ['#0D9488', '#6366F1', '#F59E0B', '#10B981', '#111827', '#6B7280'];
 
@@ -34,6 +36,7 @@ export const Dashboard: React.FC = () => {
     const { activityLogs, contrastRecords, weeklyOpsLogs, modalities, contrastTypes, isLoading } = useAppContext();
     const navigate = useNavigate();
     const [dateRange, setDateRange] = useState<DateRangeFilter>('this_month');
+    const [isDowntimeModalOpen, setIsDowntimeModalOpen] = useState(false);
 
     // Filter Logic
     const filterLogsByDate = <T extends { date?: string, weekStartDate?: string }>(logs: T[]): T[] => {
@@ -203,16 +206,25 @@ export const Dashboard: React.FC = () => {
             <PageHeader
                 title="Dashboard"
                 actions={
-                    <Select
-                        value={dateRange}
-                        onChange={(e) => setDateRange(e.target.value as DateRangeFilter)}
-                        className="w-48 bg-white"
-                    >
-                        <option value="this_week">This Week</option>
-                        <option value="this_month">This Month</option>
-                        <option value="last_30_days">Last 30 Days</option>
-                        <option value="all_time">All Time</option>
-                    </Select>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setIsDowntimeModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-danger/10 hover:bg-danger/20 text-danger text-sm font-bold transition-colors border border-danger/20"
+                        >
+                            <AlertOctagon className="w-4 h-4" />
+                            Report Downtime
+                        </button>
+                        <Select
+                            value={dateRange}
+                            onChange={(e) => setDateRange(e.target.value as DateRangeFilter)}
+                            className="w-48 bg-white"
+                        >
+                            <option value="this_week">This Week</option>
+                            <option value="this_month">This Month</option>
+                            <option value="last_30_days">Last 30 Days</option>
+                            <option value="all_time">All Time</option>
+                        </Select>
+                    </div>
                 }
             />
 
@@ -350,8 +362,16 @@ export const Dashboard: React.FC = () => {
                 </Card>
             </div>
 
+            {/* Equipment Status Widget */}
+            <EquipmentStatusWidget />
+
             {/* Handover Timeline — Admin only, rendered by HandoverTimeline itself */}
             <HandoverTimeline />
+
+            <DowntimeModal
+                isOpen={isDowntimeModalOpen}
+                onClose={() => setIsDowntimeModalOpen(false)}
+            />
         </div>
     );
 };

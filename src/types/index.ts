@@ -206,16 +206,17 @@ export interface StaffLog {
 export interface EquipmentLog {
     id: string;
     centre_id: string;
-    modality: string;
+    modality_id: string;
+    modality_name: string;
+    reason_category: string;
+    description?: string;
+    resolution?: string;
     start_time: string;
     end_time?: string;
     is_ongoing: boolean;
-    reason_category?: string;
-    description?: string;
-    resolution?: string;
     logged_by: string;
+    logged_by_name: string;
     created_at?: string;
-    updated_at?: string;
 }
 
 export interface HandoverNote {
