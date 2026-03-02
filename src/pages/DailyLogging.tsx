@@ -5,13 +5,17 @@ import { PageHeader, Tabs, Card, Button, StatCard } from '@/components/ui';
 import { formatNaira } from '@/lib/utils';
 import { Activity, CheckCircle, Save, PieChart as PieChartIcon, ChevronLeft, ChevronRight, Calendar, AlertCircle } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
+import { HandoverBanner } from '../components/HandoverBanner';
+import { HandoverComposer } from '../components/HandoverComposer';
+import type { PendingNote } from '../components/HandoverComposer';
 
 export const DailyLogging: React.FC = () => {
-    const { modalities, filmSizes, saveShiftActivityLog, shiftActivityLogs, centreSettings, saveShiftContrastLog, shiftContrastLogs } = useAppContext();
+    const { modalities, filmSizes, saveShiftActivityLog, shiftActivityLogs, centreSettings, saveShiftContrastLog, shiftContrastLogs, addHandoverNote } = useAppContext();
     const { user } = useAuth();
 
     const [activeTab, setActiveTab] = useState<'activity' | 'contrast'>('contrast'); // Default to contrast for testing
     const [successMessage, setSuccessMessage] = useState('');
+    const [pendingNotes, setPendingNotes] = useState<PendingNote[]>([]);
 
     const showSuccess = (msg: string) => {
         setSuccessMessage(msg);
@@ -89,6 +93,26 @@ export const DailyLogging: React.FC = () => {
             challenges,
             resolutions
         });
+
+        // Save any pending handover notes
+        if (pendingNotes.length > 0) {
+            const nextShift = activityShift === 'Morning' ? 'Afternoon' : activityShift === 'Afternoon' ? 'Night' : 'Morning';
+            await Promise.all(pendingNotes.map(note =>
+                addHandoverNote({
+                    id: `hov-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                    centre_id: centreSettings?.centre_id || 'default-centre',
+                    date: activityDate,
+                    from_shift: activityShift,
+                    to_shift: nextShift,
+                    flagged_by: user?.id || 'unknown',
+                    flagged_by_name: user?.name || 'Unknown User',
+                    category: note.category,
+                    message: note.message,
+                    acknowledged: false,
+                })
+            ));
+            setPendingNotes([]);
+        }
 
         showSuccess('Activity log saved successfully!');
     };
@@ -327,6 +351,8 @@ export const DailyLogging: React.FC = () => {
                 </div>
             )}
 
+            <HandoverBanner currentShift={activeTab === 'activity' ? activityShift : contrastShift} />
+
             <Tabs
                 items={[
                     { label: 'Activity Log', value: 'activity', icon: <Activity className="w-5 h-5" /> },
@@ -513,6 +539,13 @@ export const DailyLogging: React.FC = () => {
                                         />
                                     </div>
                                 </div>
+                            </Card>
+
+                            <Card className="p-6">
+                                <HandoverComposer
+                                    onNotesChange={setPendingNotes}
+                                    shift={activityShift}
+                                />
                             </Card>
 
                             <div className="pt-2 flex justify-end gap-3">

@@ -14,6 +14,7 @@ import { DataTable } from '@/components/ui/DataTable';
 import type { Column } from '@/components/ui/DataTable';
 
 import { Activity } from 'lucide-react';
+import { HandoverTimeline } from '../components/HandoverTimeline';
 
 const COLORS = ['#0D9488', '#6366F1', '#F59E0B', '#10B981', '#111827', '#6B7280'];
 
@@ -348,6 +349,9 @@ export const Dashboard: React.FC = () => {
                     )}
                 </Card>
             </div>
+
+            {/* Handover Timeline — Admin only, rendered by HandoverTimeline itself */}
+            <HandoverTimeline />
         </div>
     );
 };

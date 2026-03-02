@@ -1,0 +1,32 @@
+﻿src/components/WeeklyReportGenerator.tsx(2,31): error TS2307: Cannot find module '../../context/AppContext' or its corresponding type declarations.
+src/components/WeeklyReportGenerator.tsx(14,42): error TS7006: Parameter 'log' implicitly has an 'any' type.
+src/components/WeeklyReportGenerator.tsx(53,60): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/components/WeeklyReportGenerator.tsx(53,65): error TS7006: Parameter 'rev' implicitly has an 'any' type.
+src/components/WeeklyReportGenerator.tsx(77,44): error TS7006: Parameter 'log' implicitly has an 'any' type.
+src/components/WeeklyReportGenerator.tsx(120,30): error TS2304: Cannot find name 'Activity'.
+src/components/WeeklyReportGenerator.tsx(168,53): error TS7006: Parameter 'm' implicitly has an 'any' type.
+src/components/WeeklyReportGenerator.tsx(170,77): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/components/WeeklyReportGenerator.tsx(198,60): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/pages/reports/ActivityReportTab.tsx(124,45): error TS2322: Type '(value: number) => [string, "Revenue"]' is not assignable to type 'Formatter<number, "Revenue"> & ((value: number, name: "Revenue", item: Payload<number, "Revenue">, index: number, payload: Payload<number, "Revenue">[]) => ReactNode | [...])'.
+  Type '(value: number) => [string, "Revenue"]' is not assignable to type 'Formatter<number, "Revenue">'.
+    Types of parameters 'value' and 'value' are incompatible.
+      Type 'number | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+src/pages/reports/ActivityReportTab.tsx(145,36): error TS2322: Type '({ header: string; accessorKey: string; sortable: boolean; align?: undefined; } | { header: string; accessorKey: (row: any) => Element; sortable?: undefined; align?: undefined; } | { header: string; accessorKey: string; sortable: boolean; align: "center"; } | { ...; })[]' is not assignable to type 'Column<DailyActivityLog>[]'.
+  Type '{ header: string; accessorKey: string; sortable: boolean; align?: undefined; } | { header: string; accessorKey: (row: any) => Element; sortable?: undefined; align?: undefined; } | { header: string; accessorKey: string; sortable: boolean; align: "center"; } | { ...; }' is not assignable to type 'Column<DailyActivityLog>'.
+    Type '{ header: string; accessorKey: string; sortable: boolean; align?: undefined; }' is not assignable to type 'Column<DailyActivityLog>'.
+      Types of property 'accessorKey' are incompatible.
+        Type 'string' is not assignable to type 'keyof DailyActivityLog | ((row: DailyActivityLog) => ReactNode)'.
+src/pages/reports/ContrastReportTab.tsx(4,20): error TS6133: 'CalendarRange' is declared but its value is never read.
+src/pages/reports/ContrastReportTab.tsx(56,82): error TS2304: Cannot find name 'c'.
+src/pages/reports/ContrastReportTab.tsx(177,36): error TS2322: Type '({ header: string; accessorKey: string; sortable: boolean; align?: undefined; } | { header: string; accessorKey: (row: any) => Element; sortable?: undefined; align?: undefined; } | { header: string; accessorKey: (row: any) => string; align: "center"; sortable?: undefined; } | { ...; })[]' is not assignable to type 'Column<{ id: string; date: string; typeName: string; received: number; consumed: number; netStock: number; isDiscrepancy: boolean; } | null>[]'.
+  Type '{ header: string; accessorKey: string; sortable: boolean; align?: undefined; } | { header: string; accessorKey: (row: any) => Element; sortable?: undefined; align?: undefined; } | { header: string; accessorKey: (row: any) => string; align: "center"; sortable?: undefined; } | { ...; }' is not assignable to type 'Column<{ id: string; date: string; typeName: string; received: number; consumed: number; netStock: number; isDiscrepancy: boolean; } | null>'.
+    Type '{ header: string; accessorKey: string; sortable: boolean; align?: undefined; }' is not assignable to type 'Column<{ id: string; date: string; typeName: string; received: number; consumed: number; netStock: number; isDiscrepancy: boolean; } | null>'.
+      Types of property 'accessorKey' are incompatible.
+        Type 'string' is not assignable to type '(row: { id: string; date: string; typeName: string; received: number; consumed: number; netStock: number; isDiscrepancy: boolean; } | null) => ReactNode'.
+src/pages/reports/PerformanceComparisonTab.tsx(3,35): error TS6133: 'Button' is declared but its value is never read.
+src/pages/reports/PerformanceComparisonTab.tsx(240,45): error TS2322: Type '(value: number) => [string, ""]' is not assignable to type 'Formatter<number, ""> & ((value: number, name: "", item: Payload<number, "">, index: number, payload: Payload<number, "">[]) => ReactNode | [...])'.
+  Type '(value: number) => [string, ""]' is not assignable to type 'Formatter<number, "">'.
+    Types of parameters 'value' and 'value' are incompatible.
+      Type 'number | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
