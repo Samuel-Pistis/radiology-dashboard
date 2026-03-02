@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState, StaffLog, EquipmentLog, HandoverNote, ActivityLog, ContrastLog } from '../types';
+import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState, StaffLog, EquipmentLog, HandoverNote, ActivityLog, ContrastLog, Centre, CentreSettings, UserRole } from '../types';
 
 interface AppContextType extends AppState {
     isLoading: boolean;
@@ -17,6 +17,10 @@ interface AppContextType extends AppState {
     updateEquipmentLog: (id: string, updates: Partial<EquipmentLog>) => Promise<void>;
     addHandoverNote: (note: HandoverNote) => Promise<void>;
     acknowledgeHandoverNote: (id: string, userId: string) => Promise<void>;
+    updateCentreProfile: (id: string, updates: Partial<Centre>) => Promise<void>;
+    updateCentreSettings: (updates: Partial<CentreSettings>) => Promise<void>;
+    updateStaffRole: (profileId: string, role: UserRole) => Promise<void>;
+    inviteUser: (email: string) => Promise<void>;
 }
 
 const defaultState: AppState = {
@@ -53,6 +57,7 @@ const defaultState: AppState = {
     staffLogs: [],
     equipmentLogs: [],
     handoverNotes: [],
+    staffProfiles: [],
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -78,7 +83,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     { data: weeklyOpsLogs },
                     { data: staffLogs },
                     { data: equipmentLogs },
-                    { data: handoverNotes }
+                    { data: handoverNotes },
+                    { data: profiles }
                 ] = await Promise.all([
                     supabase.from('modalities').select('*'),
                     supabase.from('locations').select('*'),
@@ -91,7 +97,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     supabase.from('weekly_operations_logs').select('*'),
                     supabase.from('staff_logs').select('*'),
                     supabase.from('equipment_logs').select('*'),
-                    supabase.from('handover_notes').select('*')
+                    supabase.from('handover_notes').select('*'),
+                    supabase.from('profiles').select('*')
                 ]);
 
                 // Map database columns back to camelCase frontend models
@@ -138,6 +145,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     staffLogs: staffLogs || [],
                     equipmentLogs: equipmentLogs || [],
                     handoverNotes: handoverNotes || [],
+                    staffProfiles: profiles || [],
                 });
             } catch (error) {
                 console.error('Error fetching data from Supabase:', error);
@@ -394,6 +402,47 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
     };
 
+    const updateCentreProfile = async (id: string, updates: Partial<Centre>) => {
+        try {
+            const { error } = await supabase.from('centres').update(updates).eq('id', id);
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error updating centre:', error);
+            throw error;
+        }
+    };
+
+    const updateCentreSettings = async (updates: Partial<CentreSettings>) => {
+        if (!state.centreSettings) return;
+        try {
+            const { error } = await supabase.from('centre_settings').update(updates).eq('id', state.centreSettings.id);
+            if (error) throw error;
+            setState(prev => ({ ...prev, centreSettings: { ...prev.centreSettings!, ...updates } }));
+        } catch (error) {
+            console.error('Error updating settings:', error);
+            throw error;
+        }
+    };
+
+    const updateStaffRole = async (profileId: string, role: UserRole) => {
+        try {
+            const { error } = await supabase.from('profiles').update({ role }).eq('id', profileId);
+            if (error) throw error;
+            setState(prev => ({
+                ...prev,
+                staffProfiles: prev.staffProfiles.map(p => p.id === profileId ? { ...p, role } : p)
+            }));
+        } catch (error) {
+            console.error('Error updating role:', error);
+            throw error;
+        }
+    };
+
+    const inviteUser = async (email: string) => {
+        console.log(`Invite link requested for ${email}`);
+        return Promise.resolve();
+    };
+
     return (
         <AppContext.Provider value={{
             ...state,
@@ -411,6 +460,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             updateEquipmentLog,
             addHandoverNote,
             acknowledgeHandoverNote,
+            updateCentreProfile,
+            updateCentreSettings,
+            updateStaffRole,
+            inviteUser,
         }}>
             {children}
         </AppContext.Provider>

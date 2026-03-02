@@ -25,6 +25,16 @@ export interface FilmSize {
 export interface ContrastType {
     id: string;
     name: string;
+    defaultVolumeMls?: number;
+    unitCost?: number;
+    minStockAlert?: number;
+}
+
+export interface Shift {
+    id: string;
+    name: string;
+    startTime: string; // "08:00"
+    endTime: string;   // "16:00"
 }
 
 export interface DailyActivityLog {
@@ -95,6 +105,7 @@ export interface AppState {
     staffLogs: StaffLog[];
     equipmentLogs: EquipmentLog[];
     handoverNotes: HandoverNote[];
+    staffProfiles: Profile[];
 }
 
 export interface Centre {
