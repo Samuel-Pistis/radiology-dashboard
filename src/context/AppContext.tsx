@@ -11,6 +11,7 @@ interface AppContextType extends AppState {
     saveShiftContrastLog: (log: ContrastLog) => Promise<void>;
     saveContrastRecord: (record: DailyContrastRecord) => Promise<void>;
     addWeeklyOpsLog: (log: WeeklyOperationsLog) => Promise<void>;
+    deleteWeeklyOpsLog: (id: string) => Promise<void>;
     addStaffLog: (log: StaffLog) => Promise<void>;
     addEquipmentLog: (log: EquipmentLog) => Promise<void>;
     updateEquipmentLog: (id: string, updates: Partial<EquipmentLog>) => Promise<void>;
@@ -111,7 +112,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     weekEndDate: log.week_end_date,
                     challenges: log.challenges,
                     resolutions: log.resolutions,
-                    revenue: log.revenue
+                    revenue: log.revenue,
+                    investigations: log.investigations,
+                    films: log.films,
+                    contrast: log.contrast
                 }));
 
                 const finalContrastTypes = (contrastTypes && contrastTypes.length > 0)
@@ -283,18 +287,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const addWeeklyOpsLog = async (log: WeeklyOperationsLog) => {
         try {
-            const { error } = await supabase.from('weekly_operations_logs').insert([{
+            const { error } = await supabase.from('weekly_operations_logs').upsert([{
                 id: log.id,
                 week_start_date: log.weekStartDate,
                 week_end_date: log.weekEndDate,
                 challenges: log.challenges,
                 resolutions: log.resolutions,
-                revenue: log.revenue as any
-            }]);
+                revenue: log.revenue as any,
+                investigations: log.investigations,
+                films: log.films,
+                contrast: log.contrast
+            }], { onConflict: 'id' });
             if (error) throw error;
-            setState(prev => ({ ...prev, weeklyOpsLogs: [...prev.weeklyOpsLogs, log] }));
+
+            setState(prev => {
+                const existingIndex = prev.weeklyOpsLogs.findIndex(r => r.id === log.id);
+                if (existingIndex >= 0) {
+                    const newLogs = [...prev.weeklyOpsLogs];
+                    newLogs[existingIndex] = log;
+                    return { ...prev, weeklyOpsLogs: newLogs };
+                }
+                return { ...prev, weeklyOpsLogs: [...prev.weeklyOpsLogs, log] };
+            });
         } catch (error) {
-            console.error('Error adding weekly ops log:', error);
+            console.error('Error adding/updating weekly ops log:', error);
+            throw error;
+        }
+    };
+
+    const deleteWeeklyOpsLog = async (id: string) => {
+        try {
+            const { error } = await supabase.from('weekly_operations_logs').delete().eq('id', id);
+            if (error) throw error;
+            setState(prev => ({ ...prev, weeklyOpsLogs: prev.weeklyOpsLogs.filter(log => log.id !== id) }));
+        } catch (error) {
+            console.error('Error deleting weekly ops log:', error);
             throw error;
         }
     };
@@ -378,6 +405,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             saveShiftContrastLog,
             saveContrastRecord,
             addWeeklyOpsLog,
+            deleteWeeklyOpsLog,
             addStaffLog,
             addEquipmentLog,
             updateEquipmentLog,

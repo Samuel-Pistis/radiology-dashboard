@@ -76,6 +76,9 @@ export interface WeeklyOperationsLog {
     challenges: string;
     resolutions: string;
     revenue: ModalityRevenue[]; // New revenue tracking
+    investigations?: any;
+    films?: any;
+    contrast?: any;
 }
 
 export interface AppState {
