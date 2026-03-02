@@ -5,6 +5,7 @@ export interface User {
     name: string;
     role: UserRole;
     email?: string;
+    centre_id?: string;
 }
 
 export interface Modality {
