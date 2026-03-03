@@ -1,17 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
-import { Card, DataTable, EmptyState, Badge, Input, Button } from '@/components/ui';
+import { Card, DataTable, EmptyState, Badge, Input } from '@/components/ui';
+import { ReportFilterBar } from '@/components/ui/ReportFilterBar';
+import { ChartCard } from '@/components/ui/ChartCard';
 import { Droplets, AlertTriangle } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-
-const CHART_COLORS = [
-    '#0D9488', // primary
-    '#6366F1', // indigo
-    '#F59E0B', // amber
-    '#EC4899', // pink
-    '#8B5CF6', // purple
-    '#10B981', // emerald
-];
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import {
+    CHART_PALETTE, AXIS_TICK_PROPS, TOOLTIP_CONTENT_STYLE,
+    TOOLTIP_LABEL_STYLE, LEGEND_WRAPPER_STYLE, GRID_PROPS,
+} from '@/lib/chartConfig';
 
 export const ContrastReportTab: React.FC = () => {
     const { contrastRecords, contrastTypes } = useAppContext();
@@ -26,16 +23,13 @@ export const ContrastReportTab: React.FC = () => {
         });
     }, [contrastRecords, startDate, endDate]);
 
-    // Data for Stacked Area Chart
     const chartData = useMemo(() => {
         const dateMap: Record<string, any> = {};
-
         filteredRecords.forEach(record => {
             if (!dateMap[record.date]) {
                 dateMap[record.date] = { date: record.date };
                 contrastTypes.forEach(c => dateMap[record.date][c.name] = 0);
             }
-
             contrastTypes.forEach(c => {
                 const mAmount = record.morning.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
                 const aAmount = record.afternoon.items.find(i => i.contrastTypeId === c.id)?.amountConsumedMls || 0;
@@ -43,22 +37,17 @@ export const ContrastReportTab: React.FC = () => {
                 dateMap[record.date][c.name] += (mAmount + aAmount + nAmount);
             });
         });
-
         return Object.values(dateMap).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     }, [filteredRecords, contrastTypes]);
 
-    // Data for Discrepancy Table
     const discrepancyData = useMemo(() => {
         return filteredRecords.flatMap(record => {
             return contrastTypes.map(cType => {
                 const mEntry = record.morning.items.find(i => i.contrastTypeId === cType.id) || { additionalStockMls: 0, amountConsumedMls: 0 };
                 const aEntry = record.afternoon.items.find(i => i.contrastTypeId === cType.id) || { additionalStockMls: 0, amountConsumedMls: 0 };
                 const nEntry = record.night.items.find(i => i.contrastTypeId === cType.id) || { additionalStockMls: 0, amountConsumedMls: 0 };
-
                 const totalReceived = mEntry.additionalStockMls + aEntry.additionalStockMls + nEntry.additionalStockMls;
                 const totalConsumed = mEntry.amountConsumedMls + aEntry.amountConsumedMls + nEntry.amountConsumedMls;
-
-                // Assuming we want to show all records, or just all records where there's consumption/received
                 if (totalReceived > 0 || totalConsumed > 0) {
                     return {
                         id: `${record.id}-${cType.id}`,
@@ -66,8 +55,8 @@ export const ContrastReportTab: React.FC = () => {
                         typeName: cType.name,
                         received: totalReceived,
                         consumed: totalConsumed,
-                        netStock: totalReceived - totalConsumed, // Negative means consumed > received Today (might be okay if carried over, but flag it)
-                        isDiscrepancy: totalConsumed > totalReceived
+                        netStock: totalReceived - totalConsumed,
+                        isDiscrepancy: totalConsumed > totalReceived,
                     };
                 }
                 return null;
@@ -88,44 +77,24 @@ export const ContrastReportTab: React.FC = () => {
                     {row.netStock > 0 ? '+' : ''}{row.netStock} ml
                 </div>
             ),
-            align: 'right' as const
-        }
+            align: 'right' as const,
+        },
     ];
-
-    // To highlight rows, we can just let the text colors do the work, or we can use custom row classes if DataTable supported it. 
-    // We added the alert triangle and text-danger.
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            {/* Filter Section */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/40 p-5 rounded-3xl border border-white/60 shadow-sm backdrop-blur-md">
-                <div>
-                    <h3 className="font-bold text-text-primary">Filter Contrast</h3>
-                    <p className="text-sm text-text-secondary">Select a date range to track consumption over time.</p>
+            <ReportFilterBar
+                title="Filter Contrast"
+                description="Select a date range to track consumption over time."
+                hasActiveFilter={!!(startDate || endDate)}
+                onClear={() => { setStartDate(''); setEndDate(''); }}
+            >
+                <div className="flex items-center gap-2">
+                    <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full sm:w-auto" />
+                    <span className="text-text-muted font-medium">to</span>
+                    <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-full sm:w-auto" />
                 </div>
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                        <Input
-                            type="date"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                            className="w-full sm:w-auto"
-                        />
-                        <span className="text-text-muted font-medium">to</span>
-                        <Input
-                            type="date"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                            className="w-full sm:w-auto"
-                        />
-                    </div>
-                    {(startDate || endDate) && (
-                        <Button variant="ghost" onClick={() => { setStartDate(''); setEndDate(''); }}>
-                            Clear
-                        </Button>
-                    )}
-                </div>
-            </div>
+            </ReportFilterBar>
 
             {filteredRecords.length === 0 ? (
                 <EmptyState
@@ -135,38 +104,28 @@ export const ContrastReportTab: React.FC = () => {
                 />
             ) : (
                 <>
-                    {/* Charts Row */}
-                    <Card className="p-6">
-                        <h4 className="font-bold text-text-primary mb-6">Contrast Consumption Trend (ML)</h4>
-                        <div className="h-96 w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                    <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#6B7280' }} tickLine={false} axisLine={false} />
-                                    <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} tickLine={false} axisLine={false} />
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                        labelStyle={{ color: '#6B7280', fontWeight: 'bold', marginBottom: '4px' }}
-                                    />
-                                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                                    {contrastTypes.map((c, index) => (
-                                        <Area
-                                            key={c.id}
-                                            type="monotone"
-                                            name={c.name}
-                                            dataKey={c.name}
-                                            stackId="1"
-                                            stroke={CHART_COLORS[index % CHART_COLORS.length]}
-                                            fill={CHART_COLORS[index % CHART_COLORS.length]}
-                                            fillOpacity={0.6}
-                                        />
-                                    ))}
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </Card>
+                    <ChartCard title="Contrast Consumption Trend (ML)" height={384}>
+                        <AreaChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                            <CartesianGrid {...GRID_PROPS} />
+                            <XAxis dataKey="date" {...AXIS_TICK_PROPS} />
+                            <YAxis {...AXIS_TICK_PROPS} />
+                            <Tooltip contentStyle={TOOLTIP_CONTENT_STYLE} labelStyle={TOOLTIP_LABEL_STYLE} />
+                            <Legend wrapperStyle={LEGEND_WRAPPER_STYLE} />
+                            {contrastTypes.map((c, index) => (
+                                <Area
+                                    key={c.id}
+                                    type="monotone"
+                                    name={c.name}
+                                    dataKey={c.name}
+                                    stackId="1"
+                                    stroke={CHART_PALETTE[index % CHART_PALETTE.length]}
+                                    fill={CHART_PALETTE[index % CHART_PALETTE.length]}
+                                    fillOpacity={0.6}
+                                />
+                            ))}
+                        </AreaChart>
+                    </ChartCard>
 
-                    {/* Data Table */}
                     <Card className="p-0 overflow-hidden">
                         <div className="p-5 border-b border-border bg-white/50 flex justify-between items-center">
                             <h4 className="font-bold text-text-primary tracking-tight">Stock Discrepancy Analysis</h4>
