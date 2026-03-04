@@ -16,13 +16,16 @@ export const Login: React.FC = () => {
         setError(null);
         setIsLoading(true);
         try {
-            const { error: loginError } = await login(email, password);
+            const sanitizedEmail = email.trim().toLowerCase();
+            const { error: loginError } = await login(sanitizedEmail, password);
             if (loginError) {
+                console.error("Supabase login rejection:", loginError);
                 setError(loginError);
             } else {
                 navigate('/');
             }
-        } catch {
+        } catch (err) {
+            console.error("Critical login flow catch:", err);
             setError('An unexpected error occurred. Please try again.');
         } finally {
             setIsLoading(false);
