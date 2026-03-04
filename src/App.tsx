@@ -44,6 +44,10 @@ const AppRoutes = () => {
       <div className="min-h-screen bg-surface flex flex-col items-center justify-center">
         <Activity className="w-12 h-12 text-primary animate-pulse mb-4" />
         <p className="text-text-secondary font-medium tracking-wide">Connecting to RadPadi Secure Database...</p>
+        <div className="flex gap-2 mt-4 text-xs font-mono text-text-muted opacity-50">
+          <span>DB: {isAppLoading ? 'WAITING' : 'OK'}</span> |
+          <span>AUTH: {isAuthLoading ? 'WAITING' : 'OK'}</span>
+        </div>
       </div>
     );
   }
