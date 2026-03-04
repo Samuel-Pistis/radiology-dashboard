@@ -15,19 +15,19 @@ interface ModalityStatusInfo {
 
 const STATUS_CONFIG: Record<ModalityStatus, { label: string; dot: string; text: string; bg: string }> = {
     operational: {
-        label: 'Operational',
+        label: 'operational',
         dot: 'bg-green-500',
         text: 'text-green-700',
         bg: 'bg-green-50 border-green-100',
     },
     down: {
-        label: 'Down',
+        label: 'down',
         dot: 'bg-red-500 animate-pulse',
         text: 'text-red-700',
         bg: 'bg-red-50 border-red-200',
     },
     recently_resolved: {
-        label: 'Recently Resolved',
+        label: 'recently resolved',
         dot: 'bg-amber-400',
         text: 'text-amber-700',
         bg: 'bg-amber-50 border-amber-100',
@@ -93,10 +93,10 @@ export const EquipmentStatusWidget: React.FC = () => {
                             <Activity className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-text-primary">Equipment Status</h3>
+                            <h3 className="text-xl font-bold text-text-primary">equipment status</h3>
                             {downCount > 0
                                 ? <p className="text-xs text-danger font-bold mt-0.5">{downCount} modality currently offline</p>
-                                : <p className="text-xs text-success font-bold mt-0.5">All modalities operational</p>
+                                : <p className="text-xs text-success font-bold mt-0.5">all modalities operational</p>
                             }
                         </div>
                     </div>
@@ -105,7 +105,7 @@ export const EquipmentStatusWidget: React.FC = () => {
                         className="flex items-center gap-2 px-4 py-2 rounded-xl bg-danger/10 hover:bg-danger/20 text-danger text-sm font-bold transition-colors border border-danger/20 shrink-0"
                     >
                         <Plus className="w-4 h-4" />
-                        Report Downtime
+                        report downtime
                     </button>
                 </div>
 
@@ -128,7 +128,7 @@ export const EquipmentStatusWidget: React.FC = () => {
                                     <div className={cn('w-3 h-3 rounded-full shrink-0', config.dot)} />
 
                                     {/* Name */}
-                                    <span className="font-semibold text-text-primary flex-1">{m.name}</span>
+                                    <span className="font-semibold text-text-primary flex-1">{m.name.toLowerCase()}</span>
 
                                     {/* Badge */}
                                     <span className={cn(
@@ -158,25 +158,25 @@ export const EquipmentStatusWidget: React.FC = () => {
                                         onClick={e => { e.stopPropagation(); handleReportForModality(m.id); }}
                                         className="shrink-0 text-xs font-bold text-text-muted hover:text-danger px-2 py-1 rounded-lg hover:bg-danger/10 transition-colors"
                                     >
-                                        + Log
+                                        + log
                                     </button>
                                 </div>
 
                                 {/* Expanded History */}
                                 {isExpanded && info.recentLogs.length > 0 && (
                                     <div className="px-6 pb-4 bg-surface/10 border-t border-border">
-                                        <p className="text-xs font-semibold text-text-muted uppercase tracking-wide pt-3 pb-2">Recent Events</p>
+                                        <p className="text-xs font-semibold text-text-muted tracking-wide pt-3 pb-2">recent events</p>
                                         <div className="space-y-2">
                                             {info.recentLogs.map(log => (
                                                 <div key={log.id} className="flex items-start gap-3 bg-white rounded-xl px-4 py-3 border border-border text-sm">
                                                     <div className={cn('w-2 h-2 rounded-full mt-1.5 shrink-0', log.is_ongoing ? 'bg-red-500' : 'bg-green-500')} />
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2 flex-wrap">
-                                                            <span className="font-semibold text-text-primary">{log.reason_category}</span>
+                                                            <span className="font-semibold text-text-primary">{log.reason_category.toLowerCase()}</span>
                                                             <span className="text-xs text-text-muted">· {durationLabel(log)}</span>
-                                                            {log.is_ongoing && <span className="text-xs font-bold text-danger">Ongoing</span>}
+                                                            {log.is_ongoing && <span className="text-xs font-bold text-danger">ongoing</span>}
                                                         </div>
-                                                        {log.description && <p className="text-xs text-text-muted mt-0.5 truncate">{log.description}</p>}
+                                                        {log.description && <p className="text-xs text-text-muted mt-0.5 truncate">{log.description.toLowerCase()}</p>}
                                                     </div>
                                                     <span className="text-xs text-text-muted shrink-0">
                                                         {new Date(log.start_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
