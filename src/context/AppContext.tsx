@@ -28,12 +28,11 @@ interface AppContextType extends AppState {
 const defaultState: AppState = {
     modalities: [
         { id: '1', name: 'MRI' },
-        { id: '2', name: 'CT SCAN' },
-        { id: '3', name: 'X-RAY' },
-        { id: '4', name: 'FLUORO' },
-        { id: '5', name: 'MAMMO' },
-        { id: '6', name: 'ULTRASOUND' },
-        { id: '7', name: 'DOPPLER' },
+        { id: '2', name: 'Computed Tomography (CT)' },
+        { id: '3', name: 'X-Ray' },
+        { id: '4', name: 'Fluoroscopy' },
+        { id: '5', name: 'Mammography' },
+        { id: '6', name: 'Ultrasound' },
     ],
     locations: [
         { id: '1', name: 'Upstairs' },
