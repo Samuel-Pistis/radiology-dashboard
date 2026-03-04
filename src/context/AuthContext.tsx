@@ -81,19 +81,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const login = async (email: string, password: string): Promise<{ error: string | null }> => {
-        setIsLoading(true);
         try {
             const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) {
                 return { error: error.message };
             }
             // fetchAndSetUserProfile is called automatically via onAuthStateChange SIGNED_IN
+            // isLoading is managed by onAuthStateChange, not here
             return { error: null };
         } catch (err) {
             console.error('Login error', err);
             return { error: 'An unexpected error occurred. Please try again.' };
-        } finally {
-            setIsLoading(false);
         }
     };
 

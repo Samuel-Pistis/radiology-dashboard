@@ -93,7 +93,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 supabase.from('activity_logs').select('*'),
                 supabase.from('contrast_logs').select('*'),
                 supabase.from('daily_contrast_records').select('*'),
-                supabase.from('centre_settings').select('*').single(),
+                supabase.from('centre_settings').select('*').maybeSingle(),
                 supabase.from('weekly_operations_logs').select('*'),
                 supabase.from('staff_logs').select('*'),
                 supabase.from('equipment_logs').select('id, centre_id, modality_id, modality_name, reason_category, description, resolution, start_time, end_time, is_ongoing, logged_by, logged_by_name, created_at'),
