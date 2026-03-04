@@ -18,9 +18,11 @@ import { HandoverTimeline } from '../components/HandoverTimeline';
 import { EquipmentStatusWidget } from '../components/EquipmentStatusWidget';
 import { DowntimeModal } from '../components/DowntimeModal';
 
+import { useAuth } from '../context/AuthContext';
+
 const COLORS = ['#0D9488', '#6366F1', '#F59E0B', '#10B981', '#111827', '#6B7280'];
 
-type DateRangeFilter = 'this_week' | 'this_month' | 'last_30_days' | 'all_time';
+type DateRangeFilter = 'today' | 'this_week' | 'this_month' | 'last_30_days' | 'all_time';
 
 interface DailyActivityLog {
     id: string;
@@ -34,8 +36,9 @@ interface DailyActivityLog {
 
 export const Dashboard: React.FC = () => {
     const { activityLogs, contrastRecords, weeklyOpsLogs, modalities, contrastTypes, isLoading } = useAppContext();
+    const { user } = useAuth();
     const navigate = useNavigate();
-    const [dateRange, setDateRange] = useState<DateRangeFilter>('this_month');
+    const [dateRange, setDateRange] = useState<DateRangeFilter>('today');
     const [isDowntimeModalOpen, setIsDowntimeModalOpen] = useState(false);
 
     // Filter Logic
@@ -47,6 +50,11 @@ export const Dashboard: React.FC = () => {
             if (isNaN(logDate.getTime())) return true; // Safety fallback
 
             switch (dateRange) {
+                case 'today': {
+                    return logDate.getDate() === now.getDate() &&
+                        logDate.getMonth() === now.getMonth() &&
+                        logDate.getFullYear() === now.getFullYear();
+                }
                 case 'this_week': {
                     const oneWeekAgo = new Date();
                     oneWeekAgo.setDate(now.getDate() - 7);
@@ -156,9 +164,12 @@ export const Dashboard: React.FC = () => {
     const recentActivityColumns: Column<DailyActivityLog>[] = [
         { header: 'Date', accessorKey: (row: DailyActivityLog) => new Date(row.date).toLocaleDateString() },
         { header: 'Modality', accessorKey: (row: DailyActivityLog) => modalities.find(m => m.id === row.modalityId)?.name || 'Unknown' },
-        { header: 'Investigations', accessorKey: 'totalInvestigations' },
-        { header: 'Revenue', accessorKey: (row: DailyActivityLog) => formatNaira(row.revenueAmount || 0) }
+        { header: 'Investigations', accessorKey: 'totalInvestigations' }
     ];
+
+    if (user?.role === 'admin') {
+        recentActivityColumns.push({ header: 'Revenue', accessorKey: (row: DailyActivityLog) => formatNaira(row.revenueAmount || 0) });
+    }
 
     const chartTooltipStyle = {
         backgroundColor: '#ffffff',
@@ -219,6 +230,7 @@ export const Dashboard: React.FC = () => {
                             onChange={(e) => setDateRange(e.target.value as DateRangeFilter)}
                             className="w-48 bg-white"
                         >
+                            <option value="today">Today</option>
                             <option value="this_week">This Week</option>
                             <option value="this_month">This Month</option>
                             <option value="last_30_days">Last 30 Days</option>
@@ -243,12 +255,16 @@ export const Dashboard: React.FC = () => {
                     accentColor="border-l-indigo-500"
                     trend={{ direction: 'neutral', value: 0, label: "Total volume" }}
                 />
-                <StatCard
-                    label="Revenue Collected"
-                    value={formatNaira(totalRevenue)}
-                    accentColor="border-l-success"
-                    trend={{ direction: 'up', value: 0, label: "vs previous" }}
-                />
+
+                {user?.role === 'admin' && (
+                    <StatCard
+                        label="Revenue Collected"
+                        value={formatNaira(totalRevenue)}
+                        accentColor="border-l-success"
+                        trend={{ direction: 'up', value: 0, label: "vs previous" }}
+                    />
+                )}
+
                 <StatCard
                     label="Films Used"
                     value={totalFilmsUsed}
@@ -259,29 +275,31 @@ export const Dashboard: React.FC = () => {
 
             {/* Charts Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Weekly Revenue Bar Chart */}
-                <Card>
-                    <h3 className="text-xl font-semibold mb-6 text-text-primary">Weekly Revenue</h3>
-                    {revenueComparisonData.length === 0 ? (
-                        <div className="py-12 text-center text-text-secondary">
-                            <p>No revenue comparison data available for this range.</p>
-                        </div>
-                    ) : (
-                        <div className="h-80 w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={revenueComparisonData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-                                    <XAxis dataKey="name" stroke="#6B7280" axisLine={false} tickLine={false} />
-                                    <YAxis stroke="#6B7280" axisLine={false} tickLine={false} />
-                                    <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={chartTooltipStyle} />
-                                    <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                                    <Bar dataKey="Last Week" fill="#E5E7EB" radius={[4, 4, 0, 0]} barSize={30} />
-                                    <Bar dataKey="This Week" fill="#0D9488" radius={[4, 4, 0, 0]} barSize={30} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    )}
-                </Card>
+                {/* Weekly Revenue Bar Chart (Admin Only) */}
+                {user?.role === 'admin' && (
+                    <Card>
+                        <h3 className="text-xl font-semibold mb-6 text-text-primary">Weekly Revenue</h3>
+                        {revenueComparisonData.length === 0 ? (
+                            <div className="py-12 text-center text-text-secondary">
+                                <p>No revenue comparison data available for this range.</p>
+                            </div>
+                        ) : (
+                            <div className="h-80 w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={revenueComparisonData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                                        <XAxis dataKey="name" stroke="#6B7280" axisLine={false} tickLine={false} />
+                                        <YAxis stroke="#6B7280" axisLine={false} tickLine={false} />
+                                        <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={chartTooltipStyle} />
+                                        <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
+                                        <Bar dataKey="Last Week" fill="#E5E7EB" radius={[4, 4, 0, 0]} barSize={30} />
+                                        <Bar dataKey="This Week" fill="#0D9488" radius={[4, 4, 0, 0]} barSize={30} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
+                    </Card>
+                )}
 
                 {/* Contrast Usage Line Chart */}
                 <Card>
