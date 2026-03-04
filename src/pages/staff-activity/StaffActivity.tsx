@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
-import { useCentre } from '../../hooks/useCentre';
 import { PageHeader, Button, StatCard } from '@/components/ui';
 import { Save, Plus, Minus, ChevronDown, ChevronRight, X, AlertTriangle, TrendingUp, Download, UserX, Activity } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
@@ -9,7 +8,6 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, L
 const RadiographerActivityForm: React.FC = () => {
     const { modalities, centreSettings, addStaffLog, staffLogs } = useAppContext();
     const { user } = useAuth();
-    const { centreId } = useCentre();
 
     // State: Section 1 - Procedures
     const [procedures, setProcedures] = useState<Record<string, number>>({});
@@ -88,7 +86,6 @@ const RadiographerActivityForm: React.FC = () => {
         // Construct log payload
         const log = {
             id: `staff-log-${Date.now()}`,
-            centre_id: centreId,
             date: new Date().toISOString().split('T')[0],
             staff_id: user?.id || 'unknown',
             staff_name: user?.name || 'Unknown',

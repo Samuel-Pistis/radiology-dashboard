@@ -2,47 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { Card, Input, Button } from '@/components/ui';
 import { Building2, Save } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import type { Centre } from '@/types';
 
 export const SettingsCentreProfile: React.FC = () => {
-    const { centreSettings, updateCentreProfile } = useAppContext();
-    const [centre, setCentre] = useState<Centre | null>(null);
+    const { centreSettings, updateCentreSettings } = useAppContext();
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [contactInfo, setContactInfo] = useState('');
     const [isSaving, setIsSaving] = useState(false);
 
+    // Load straight from the global settings row
     useEffect(() => {
-        const fetchCentre = async () => {
-            if (!centreSettings?.centre_id) return;
-            const { data } = await supabase.from('centres').select('*').eq('id', centreSettings.centre_id).single();
-            if (data) {
-                setCentre(data);
-                setName(data.name || '');
-                setAddress(data.address || '');
-                setContactInfo(data.contact_info || '');
-            }
-        };
-        fetchCentre();
-    }, [centreSettings?.centre_id]);
+        if (centreSettings) {
+            setName(centreSettings.name || '');
+            setAddress(centreSettings.address || '');
+            setContactInfo(centreSettings.contact_info || '');
+        }
+    }, [centreSettings]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!centre) return;
         setIsSaving(true);
         try {
-            await updateCentreProfile(centre.id, { name, address, contact_info: contactInfo });
-            alert('Centre Profile updated successfully!');
+            await updateCentreSettings({ name, address, contact_info: contactInfo });
+            alert('Settings Profile updated successfully!');
         } catch (error) {
             console.error(error);
-            alert('Failed to update centre.');
+            alert('Failed to update profile.');
         } finally {
             setIsSaving(false);
         }
     };
-
-    if (!centre) return <Card className="p-8 text-center text-text-muted">Loading centre details...</Card>;
 
     return (
         <Card className="p-8">

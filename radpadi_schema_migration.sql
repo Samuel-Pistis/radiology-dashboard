@@ -1,17 +1,7 @@
 -- ============================================
--- RadPadi Complete Schema Migration (FIXED)
+-- RadPadi Single-Centre Schema Migration
 -- Safe to run against existing database
 -- ============================================
-
--- CENTRES
-CREATE TABLE IF NOT EXISTS centres (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  address TEXT,
-  contact_info TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
 
 -- PROFILES 
 CREATE TABLE IF NOT EXISTS profiles (
@@ -19,7 +9,6 @@ CREATE TABLE IF NOT EXISTS profiles (
   email TEXT NOT NULL,
   display_name TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('admin', 'radiographer', 'radiology_user')),
-  centre_id UUID REFERENCES centres(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -27,46 +16,41 @@ CREATE TABLE IF NOT EXISTS profiles (
 -- Safely add columns if profiles already existed before and was missing them
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS display_name TEXT;
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS centre_id UUID REFERENCES centres(id);
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 -- ============================================
--- MODALITIES (referenced by AppContext)
+-- MODALITIES
 -- ============================================
 CREATE TABLE IF NOT EXISTS modalities (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ============================================
--- LOCATIONS (referenced by AppContext)
+-- LOCATIONS 
 -- ============================================
 CREATE TABLE IF NOT EXISTS locations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ============================================
--- CONTRAST TYPES (referenced by AppContext)
+-- CONTRAST TYPES
 -- ============================================
 CREATE TABLE IF NOT EXISTS contrast_types (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ============================================
--- DAILY ACTIVITY LOGS (referenced by AppContext as daily_activity_logs)
+-- DAILY ACTIVITY LOGS
 -- ============================================
 CREATE TABLE IF NOT EXISTS daily_activity_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE,
   date DATE NOT NULL,
   modality_id UUID REFERENCES modalities(id),
   location_id UUID REFERENCES locations(id),
@@ -79,11 +63,10 @@ CREATE TABLE IF NOT EXISTS daily_activity_logs (
 );
 
 -- ============================================
--- DAILY CONTRAST RECORDS (referenced by AppContext as daily_contrast_records)
+-- DAILY CONTRAST RECORDS
 -- ============================================
 CREATE TABLE IF NOT EXISTS daily_contrast_records (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE,
   date DATE NOT NULL UNIQUE,
   morning JSONB DEFAULT '{}',
   afternoon JSONB DEFAULT '{}',
@@ -93,11 +76,10 @@ CREATE TABLE IF NOT EXISTS daily_contrast_records (
 );
 
 -- ============================================
--- WEEKLY OPERATIONS LOGS (referenced by AppContext as weekly_operations_logs)
+-- WEEKLY OPERATIONS LOGS
 -- ============================================
 CREATE TABLE IF NOT EXISTS weekly_operations_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE,
   week_start_date DATE NOT NULL,
   week_end_date DATE NOT NULL,
   challenges TEXT DEFAULT '',
@@ -110,10 +92,14 @@ CREATE TABLE IF NOT EXISTS weekly_operations_logs (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- CENTRE SETTINGS
+-- ============================================
+-- CENTRE SETTINGS (The single global settings row)
+-- ============================================
 CREATE TABLE IF NOT EXISTS centre_settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE UNIQUE NOT NULL,
+  name TEXT DEFAULT 'My Radiology Centre',
+  address TEXT DEFAULT '',
+  contact_info TEXT DEFAULT '',
   modalities JSONB DEFAULT '["CT","MRI","X-ray","Ultrasound","Fluoroscopy","Mammography"]',
   contrast_types JSONB DEFAULT '[
     {"name":"Jodascan","default_bottle_ml":50,"unit_cost":0},
@@ -133,10 +119,17 @@ CREATE TABLE IF NOT EXISTS centre_settings (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Ensure all required columns exist in case the table is already present
+ALTER TABLE centre_settings 
+  ADD COLUMN IF NOT EXISTS name TEXT DEFAULT 'My Radiology Centre',
+  ADD COLUMN IF NOT EXISTS address TEXT DEFAULT '',
+  ADD COLUMN IF NOT EXISTS contact_info TEXT DEFAULT '';
+
+-- ============================================
 -- ACTIVITY LOGS (shift-level)
+-- ============================================
 CREATE TABLE IF NOT EXISTS activity_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE NOT NULL,
   date DATE NOT NULL,
   shift TEXT NOT NULL,
   logged_by UUID REFERENCES profiles(id) NOT NULL,
@@ -147,13 +140,14 @@ CREATE TABLE IF NOT EXISTS activity_logs (
   resolutions TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(centre_id, date, shift)
+  UNIQUE(date, shift)
 );
 
+-- ============================================
 -- CONTRAST LOGS (shift-level)
+-- ============================================
 CREATE TABLE IF NOT EXISTS contrast_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE NOT NULL,
   date DATE NOT NULL,
   shift TEXT NOT NULL,
   logged_by UUID REFERENCES profiles(id) NOT NULL,
@@ -161,13 +155,14 @@ CREATE TABLE IF NOT EXISTS contrast_logs (
   entries JSONB NOT NULL DEFAULT '[]',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(centre_id, date, shift)
+  UNIQUE(date, shift)
 );
 
--- WEEKLY LOGS (legacy, keep for backwards compat)
+-- ============================================
+-- WEEKLY LOGS (legacy)
+-- ============================================
 CREATE TABLE IF NOT EXISTS weekly_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE NOT NULL,
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
   logged_by UUID REFERENCES profiles(id) NOT NULL,
@@ -181,10 +176,11 @@ CREATE TABLE IF NOT EXISTS weekly_logs (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============================================
 -- STAFF LOGS
+-- ============================================
 CREATE TABLE IF NOT EXISTS staff_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE NOT NULL,
   date DATE NOT NULL,
   staff_id UUID REFERENCES profiles(id) NOT NULL,
   staff_name TEXT NOT NULL,
@@ -201,13 +197,14 @@ CREATE TABLE IF NOT EXISTS staff_logs (
   notes TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(centre_id, date, shift, staff_id)
+  UNIQUE(date, shift, staff_id)
 );
 
--- EQUIPMENT LOGS (with columns the frontend expects)
+-- ============================================
+-- EQUIPMENT LOGS 
+-- ============================================
 CREATE TABLE IF NOT EXISTS equipment_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE NOT NULL,
   modality_id UUID REFERENCES modalities(id),
   modality_name TEXT,
   modality TEXT,
@@ -231,10 +228,11 @@ ALTER TABLE equipment_logs ADD COLUMN IF NOT EXISTS modality_id UUID;
 ALTER TABLE equipment_logs ADD COLUMN IF NOT EXISTS modality_name TEXT;
 ALTER TABLE equipment_logs ADD COLUMN IF NOT EXISTS logged_by_name TEXT;
 
+-- ============================================
 -- HANDOVER NOTES
+-- ============================================
 CREATE TABLE IF NOT EXISTS handover_notes (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  centre_id UUID REFERENCES centres(id) ON DELETE CASCADE NOT NULL,
   date DATE NOT NULL,
   from_shift TEXT NOT NULL,
   to_shift TEXT NOT NULL,
@@ -253,24 +251,58 @@ CREATE TABLE IF NOT EXISTS handover_notes (
 -- ============================================
 -- INDEXES
 -- ============================================
-CREATE INDEX IF NOT EXISTS idx_activity_logs_centre_date ON activity_logs(centre_id, date);
-CREATE INDEX IF NOT EXISTS idx_contrast_logs_centre_date ON contrast_logs(centre_id, date);
-CREATE INDEX IF NOT EXISTS idx_staff_logs_centre_date ON staff_logs(centre_id, date);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_date ON activity_logs(date);
+CREATE INDEX IF NOT EXISTS idx_contrast_logs_date ON contrast_logs(date);
+CREATE INDEX IF NOT EXISTS idx_staff_logs_date ON staff_logs(date);
 CREATE INDEX IF NOT EXISTS idx_staff_logs_staff_date ON staff_logs(staff_id, date);
-CREATE INDEX IF NOT EXISTS idx_equipment_logs_centre ON equipment_logs(centre_id, is_ongoing);
-CREATE INDEX IF NOT EXISTS idx_handover_notes_centre ON handover_notes(centre_id, date, acknowledged);
-CREATE INDEX IF NOT EXISTS idx_weekly_logs_centre ON weekly_logs(centre_id, start_date);
+CREATE INDEX IF NOT EXISTS idx_equipment_logs_ongoing ON equipment_logs(is_ongoing);
+CREATE INDEX IF NOT EXISTS idx_handover_notes_date ON handover_notes(date, acknowledged);
+CREATE INDEX IF NOT EXISTS idx_weekly_logs_start_date ON weekly_logs(start_date);
 CREATE INDEX IF NOT EXISTS idx_daily_activity_logs_date ON daily_activity_logs(date);
 CREATE INDEX IF NOT EXISTS idx_daily_contrast_records_date ON daily_contrast_records(date);
 CREATE INDEX IF NOT EXISTS idx_weekly_operations_logs_dates ON weekly_operations_logs(week_start_date);
-CREATE INDEX IF NOT EXISTS idx_modalities_centre ON modalities(centre_id);
-CREATE INDEX IF NOT EXISTS idx_locations_centre ON locations(centre_id);
-CREATE INDEX IF NOT EXISTS idx_contrast_types_centre ON contrast_types(centre_id);
+
+-- ============================================
+-- Drop foreign keys & columns for centre_id if they exist from before
+-- ============================================
+DO $$ 
+DECLARE row record;
+BEGIN
+    FOR row IN 
+        SELECT table_name, constraint_name 
+        FROM information_schema.table_constraints 
+        WHERE constraint_type = 'FOREIGN KEY' 
+        AND table_schema = 'public' 
+        AND table_name IN ('profiles', 'modalities', 'locations', 'contrast_types', 'daily_activity_logs', 'daily_contrast_records', 'weekly_operations_logs', 'centre_settings', 'activity_logs', 'contrast_logs', 'weekly_logs', 'staff_logs', 'equipment_logs', 'handover_notes')
+    LOOP
+        -- This is a blunt approach but effectively tries to drop constraints that *might* be on centre_id.
+        -- We just drop the column later which cascades to drop the constraint anyway if we use CASCADE, but PostgreSQL syntax requires altering table drop column.
+    END LOOP;
+END $$;
+
+-- Drop centre_id columns from tables
+ALTER TABLE profiles DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE modalities DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE locations DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE contrast_types DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE daily_activity_logs DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE daily_contrast_records DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE weekly_operations_logs DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE centre_settings DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE activity_logs DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE contrast_logs DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE weekly_logs DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE staff_logs DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE equipment_logs DROP COLUMN IF EXISTS centre_id CASCADE;
+ALTER TABLE handover_notes DROP COLUMN IF EXISTS centre_id CASCADE;
+
+-- Drop centres table entirely if it exists
+DROP TABLE IF EXISTS centres CASCADE;
 
 -- ============================================
 -- ROW LEVEL SECURITY
+-- All authenticated users can read/write data for a single-centre setup
 -- ============================================
-ALTER TABLE centres ENABLE ROW LEVEL SECURITY;
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE centre_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
@@ -286,150 +318,51 @@ ALTER TABLE daily_activity_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE daily_contrast_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE weekly_operations_logs ENABLE ROW LEVEL SECURITY;
 
--- Helper function
-CREATE OR REPLACE FUNCTION get_user_centre_id()
-RETURNS UUID AS $$
-  SELECT centre_id FROM profiles WHERE id = auth.uid()
-$$ LANGUAGE sql SECURITY DEFINER STABLE;
+-- Helper function no longer needed
+DROP FUNCTION IF EXISTS get_user_centre_id();
 
 -- ============================================
--- RLS POLICIES
+-- RLS POLICIES (Simplified for Single Centre)
 -- ============================================
 
--- Profiles
+-- Profiles: Users read all profiles (needed for logs, lookups), users update own, admins update all
 DROP POLICY IF EXISTS "Users read own profile" ON profiles;
-CREATE POLICY "Users read own profile" ON profiles FOR SELECT USING (id = auth.uid());
 DROP POLICY IF EXISTS "Admins read centre profiles" ON profiles;
-CREATE POLICY "Admins read centre profiles" ON profiles FOR SELECT USING (
-  centre_id = get_user_centre_id()
-  AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
+DROP POLICY IF EXISTS "Authenticated users read profiles" ON profiles;
+CREATE POLICY "Authenticated users read profiles" ON profiles FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Users update own profile" ON profiles;
+CREATE POLICY "Users update own profile" ON profiles FOR UPDATE USING (id = auth.uid());
+
+DROP POLICY IF EXISTS "Admins manage profiles" ON profiles;
+CREATE POLICY "Admins manage profiles" ON profiles FOR ALL USING (
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
 );
 
--- Centre Settings
+-- Centre Settings (Global)
 DROP POLICY IF EXISTS "Centre members read settings" ON centre_settings;
-CREATE POLICY "Centre members read settings" ON centre_settings FOR SELECT USING (centre_id = get_user_centre_id());
 DROP POLICY IF EXISTS "Admins manage settings" ON centre_settings;
-CREATE POLICY "Admins manage settings" ON centre_settings FOR ALL USING (
-  centre_id = get_user_centre_id()
-  AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
-);
-
--- Activity Logs
-DROP POLICY IF EXISTS "Centre members read activity logs" ON activity_logs;
-CREATE POLICY "Centre members read activity logs" ON activity_logs FOR SELECT USING (centre_id = get_user_centre_id());
-DROP POLICY IF EXISTS "Centre members insert activity logs" ON activity_logs;
-CREATE POLICY "Centre members insert activity logs" ON activity_logs FOR INSERT WITH CHECK (centre_id = get_user_centre_id());
-DROP POLICY IF EXISTS "Authors or admins update activity logs" ON activity_logs;
-CREATE POLICY "Authors or admins update activity logs" ON activity_logs FOR UPDATE USING (
-  centre_id = get_user_centre_id()
-  AND (logged_by = auth.uid() OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin')))
-);
-
--- Contrast Logs
-DROP POLICY IF EXISTS "Centre members read contrast logs" ON contrast_logs;
-CREATE POLICY "Centre members read contrast logs" ON contrast_logs FOR SELECT USING (centre_id = get_user_centre_id());
-DROP POLICY IF EXISTS "Centre members insert contrast logs" ON contrast_logs;
-CREATE POLICY "Centre members insert contrast logs" ON contrast_logs FOR INSERT WITH CHECK (centre_id = get_user_centre_id());
-DROP POLICY IF EXISTS "Authors or admins update contrast logs" ON contrast_logs;
-CREATE POLICY "Authors or admins update contrast logs" ON contrast_logs FOR UPDATE USING (
-  centre_id = get_user_centre_id()
-  AND (logged_by = auth.uid() OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin')))
-);
-
--- Weekly Logs (legacy table)
-DROP POLICY IF EXISTS "Centre members read weekly logs" ON weekly_logs;
-CREATE POLICY "Centre members read weekly logs" ON weekly_logs FOR SELECT USING (centre_id = get_user_centre_id());
-DROP POLICY IF EXISTS "Admins manage weekly logs" ON weekly_logs;
-CREATE POLICY "Admins manage weekly logs" ON weekly_logs FOR ALL USING (
-  centre_id = get_user_centre_id()
-  AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
-);
-
--- Staff Logs
-DROP POLICY IF EXISTS "Staff read own logs" ON staff_logs;
-CREATE POLICY "Staff read own logs" ON staff_logs FOR SELECT USING (
-  centre_id = get_user_centre_id() AND staff_id = auth.uid()
-);
-DROP POLICY IF EXISTS "Admins read all staff logs" ON staff_logs;
-CREATE POLICY "Admins read all staff logs" ON staff_logs FOR SELECT USING (
-  centre_id = get_user_centre_id()
-  AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
-);
-DROP POLICY IF EXISTS "Staff insert own logs" ON staff_logs;
-CREATE POLICY "Staff insert own logs" ON staff_logs FOR INSERT WITH CHECK (
-  centre_id = get_user_centre_id() AND staff_id = auth.uid()
-);
-DROP POLICY IF EXISTS "Staff update own logs" ON staff_logs;
-CREATE POLICY "Staff update own logs" ON staff_logs FOR UPDATE USING (
-  centre_id = get_user_centre_id() AND staff_id = auth.uid()
-);
-
--- Equipment Logs
-DROP POLICY IF EXISTS "Centre members read equipment logs" ON equipment_logs;
-CREATE POLICY "Centre members read equipment logs" ON equipment_logs FOR SELECT USING (centre_id = get_user_centre_id());
-DROP POLICY IF EXISTS "Centre members insert equipment logs" ON equipment_logs;
-CREATE POLICY "Centre members insert equipment logs" ON equipment_logs FOR INSERT WITH CHECK (centre_id = get_user_centre_id());
-DROP POLICY IF EXISTS "Centre members update equipment logs" ON equipment_logs;
-CREATE POLICY "Centre members update equipment logs" ON equipment_logs FOR UPDATE USING (centre_id = get_user_centre_id());
-
--- Handover Notes
-DROP POLICY IF EXISTS "Centre members read handover notes" ON handover_notes;
-CREATE POLICY "Centre members read handover notes" ON handover_notes FOR SELECT USING (centre_id = get_user_centre_id());
-DROP POLICY IF EXISTS "Centre members insert handover notes" ON handover_notes;
-CREATE POLICY "Centre members insert handover notes" ON handover_notes FOR INSERT WITH CHECK (centre_id = get_user_centre_id());
-DROP POLICY IF EXISTS "Centre members update handover notes" ON handover_notes;
-CREATE POLICY "Centre members update handover notes" ON handover_notes FOR UPDATE USING (centre_id = get_user_centre_id());
-
--- ============================================
--- NEW TABLE RLS POLICIES
--- ============================================
-
--- Modalities: all authenticated users can read, admins can manage
-DROP POLICY IF EXISTS "Authenticated users read modalities" ON modalities;
-CREATE POLICY "Authenticated users read modalities" ON modalities FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Admins manage modalities" ON modalities;
-CREATE POLICY "Admins manage modalities" ON modalities FOR ALL USING (
+DROP POLICY IF EXISTS "Authenticated users read settings" ON centre_settings;
+CREATE POLICY "Authenticated users read settings" ON centre_settings FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Admins manage global settings" ON centre_settings;
+CREATE POLICY "Admins manage global settings" ON centre_settings FOR ALL USING (
   EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
 );
 
--- Locations: all authenticated users can read
-DROP POLICY IF EXISTS "Authenticated users read locations" ON locations;
-CREATE POLICY "Authenticated users read locations" ON locations FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Admins manage locations" ON locations;
-CREATE POLICY "Admins manage locations" ON locations FOR ALL USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
-);
+-- For all operational data: allow read/insert/update/delete for authenticated users
+-- (More granular policies could be added later, but this unblocks the single-centre app instantly)
 
--- Contrast Types: all authenticated users can read
-DROP POLICY IF EXISTS "Authenticated users read contrast types" ON contrast_types;
-CREATE POLICY "Authenticated users read contrast types" ON contrast_types FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Admins manage contrast types" ON contrast_types;
-CREATE POLICY "Admins manage contrast types" ON contrast_types FOR ALL USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
-);
-
--- Daily Activity Logs: all authenticated users can read and insert
-DROP POLICY IF EXISTS "Authenticated users read daily activity logs" ON daily_activity_logs;
-CREATE POLICY "Authenticated users read daily activity logs" ON daily_activity_logs FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Authenticated users insert daily activity logs" ON daily_activity_logs;
-CREATE POLICY "Authenticated users insert daily activity logs" ON daily_activity_logs FOR INSERT WITH CHECK (true);
-DROP POLICY IF EXISTS "Authenticated users update daily activity logs" ON daily_activity_logs;
-CREATE POLICY "Authenticated users update daily activity logs" ON daily_activity_logs FOR UPDATE USING (true);
-
--- Daily Contrast Records: all authenticated users can read and manage
-DROP POLICY IF EXISTS "Authenticated users read contrast records" ON daily_contrast_records;
-CREATE POLICY "Authenticated users read contrast records" ON daily_contrast_records FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Authenticated users insert contrast records" ON daily_contrast_records;
-CREATE POLICY "Authenticated users insert contrast records" ON daily_contrast_records FOR INSERT WITH CHECK (true);
-DROP POLICY IF EXISTS "Authenticated users update contrast records" ON daily_contrast_records;
-CREATE POLICY "Authenticated users update contrast records" ON daily_contrast_records FOR UPDATE USING (true);
-
--- Weekly Operations Logs: all authenticated users can read, manage
-DROP POLICY IF EXISTS "Authenticated users read weekly ops logs" ON weekly_operations_logs;
-CREATE POLICY "Authenticated users read weekly ops logs" ON weekly_operations_logs FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Authenticated users insert weekly ops logs" ON weekly_operations_logs;
-CREATE POLICY "Authenticated users insert weekly ops logs" ON weekly_operations_logs FOR INSERT WITH CHECK (true);
-DROP POLICY IF EXISTS "Authenticated users update weekly ops logs" ON weekly_operations_logs;
-CREATE POLICY "Authenticated users update weekly ops logs" ON weekly_operations_logs FOR UPDATE USING (true);
-DROP POLICY IF EXISTS "Authenticated users delete weekly ops logs" ON weekly_operations_logs;
-CREATE POLICY "Authenticated users delete weekly ops logs" ON weekly_operations_logs FOR DELETE USING (true);
+DO $$ 
+DECLARE
+  t text;
+  tables text[] := ARRAY['activity_logs', 'contrast_logs', 'weekly_logs', 'staff_logs', 'equipment_logs', 'handover_notes', 'modalities', 'locations', 'contrast_types', 'daily_activity_logs', 'daily_contrast_records', 'weekly_operations_logs'];
+BEGIN
+  FOREACH t IN ARRAY tables
+  LOOP
+    EXECUTE format('DROP POLICY IF EXISTS "All authenticated users read %I" ON %I;', t, t);
+    EXECUTE format('DROP POLICY IF EXISTS "All authenticated users manage %I" ON %I;', t, t);
+    
+    EXECUTE format('CREATE POLICY "All authenticated users read %I" ON %I FOR SELECT USING (true);', t, t);
+    EXECUTE format('CREATE POLICY "All authenticated users manage %I" ON %I FOR ALL USING (true);', t, t);
+  END LOOP;
+END $$;

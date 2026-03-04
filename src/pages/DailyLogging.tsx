@@ -9,12 +9,10 @@ import { HandoverBanner } from '../components/HandoverBanner';
 import { HandoverComposer } from '../components/HandoverComposer';
 import { DowntimeModal } from '../components/DowntimeModal';
 import type { PendingNote } from '../components/HandoverComposer';
-import { useCentre } from '../hooks/useCentre';
 
 export const DailyLogging: React.FC = () => {
     const { modalities, filmSizes, saveShiftActivityLog, shiftActivityLogs, centreSettings, saveShiftContrastLog, shiftContrastLogs, addHandoverNote } = useAppContext();
     const { user } = useAuth();
-    const { centreId, centreName } = useCentre();
 
     const [activeTab, setActiveTab] = useState<'activity' | 'contrast'>('contrast'); // Default to contrast for testing
     const [successMessage, setSuccessMessage] = useState('');
@@ -87,7 +85,6 @@ export const DailyLogging: React.FC = () => {
 
         await saveShiftActivityLog({
             id: `act-${Date.now()}`,
-            centre_id: centreId,
             date: activityDate,
             shift: activityShift,
             logged_by: user?.id || 'unknown',
@@ -104,7 +101,6 @@ export const DailyLogging: React.FC = () => {
             await Promise.all(pendingNotes.map(note =>
                 addHandoverNote({
                     id: `hov-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-                    centre_id: centreId,
                     date: activityDate,
                     from_shift: activityShift,
                     to_shift: nextShift,
@@ -194,7 +190,6 @@ export const DailyLogging: React.FC = () => {
 
         await saveShiftContrastLog({
             id: `cont-shift-${Date.now()}`,
-            centre_id: centreId,
             date: contrastDate,
             shift: contrastShift,
             logged_by: user?.id || 'unknown',
@@ -635,7 +630,7 @@ export const DailyLogging: React.FC = () => {
                     {/* Header Controls */}
                     <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-8 mt-2">
                         <div className="flex flex-col">
-                            <h3 className="text-xs font-semibold text-text-secondary tracking-wider mb-1">{centreName}</h3>
+                            <h3 className="text-xs font-semibold text-text-secondary tracking-wider mb-1">{centreSettings?.name || 'Radiology Centre'}</h3>
                             <h2 className="text-2xl font-bold text-text-primary">Daily Contrast Consumption</h2>
                             <p className="text-text-secondary font-medium mt-1">
                                 {new Date(contrastDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}

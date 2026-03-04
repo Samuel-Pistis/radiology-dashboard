@@ -5,7 +5,6 @@ export interface User {
     name: string;
     role: UserRole;
     email?: string;
-    centre_id?: string;
 }
 
 export interface Modality {
@@ -109,28 +108,20 @@ export interface AppState {
     staffProfiles: Profile[];
 }
 
-export interface Centre {
-    id: string;
-    name: string;
-    address?: string;
-    contact_info?: string;
-    created_at?: string;
-    updated_at?: string;
-}
-
 export interface Profile {
     id: string;
     email: string;
     display_name: string;
     role: UserRole;
-    centre_id?: string;
     created_at?: string;
     updated_at?: string;
 }
 
 export interface CentreSettings {
     id: string;
-    centre_id: string;
+    name?: string;
+    address?: string;
+    contact_info?: string;
     modalities: any;
     contrast_types: any;
     film_sizes: any;
@@ -142,7 +133,6 @@ export interface CentreSettings {
 
 export interface ActivityLog {
     id: string;
-    centre_id: string;
     date: string;
     shift: string;
     logged_by: string;
@@ -157,7 +147,6 @@ export interface ActivityLog {
 
 export interface ContrastLog {
     id: string;
-    centre_id: string;
     date: string;
     shift: string;
     logged_by: string;
@@ -169,7 +158,6 @@ export interface ContrastLog {
 
 export interface WeeklyLog {
     id: string;
-    centre_id: string;
     start_date: string;
     end_date: string;
     logged_by: string;
@@ -185,7 +173,6 @@ export interface WeeklyLog {
 
 export interface StaffLog {
     id: string;
-    centre_id: string;
     date: string;
     staff_id: string;
     staff_name: string;
@@ -206,7 +193,6 @@ export interface StaffLog {
 
 export interface EquipmentLog {
     id: string;
-    centre_id: string;
     modality_id: string;
     modality_name: string;
     reason_category: string;
@@ -222,7 +208,6 @@ export interface EquipmentLog {
 
 export interface HandoverNote {
     id: string;
-    centre_id: string;
     date: string;
     from_shift: string;
     to_shift: string;

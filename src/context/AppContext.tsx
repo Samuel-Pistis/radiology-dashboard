@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState, StaffLog, EquipmentLog, HandoverNote, ActivityLog, ContrastLog, Centre, CentreSettings, UserRole } from '../types';
+import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState, StaffLog, EquipmentLog, HandoverNote, ActivityLog, ContrastLog, CentreSettings, UserRole } from '../types';
 import { useToast } from './ToastContext';
 import { supabase } from '../lib/supabase';
 
@@ -19,7 +19,6 @@ interface AppContextType extends AppState {
     updateEquipmentLog: (id: string, updates: Partial<EquipmentLog>) => Promise<void>;
     addHandoverNote: (note: HandoverNote) => Promise<void>;
     acknowledgeHandoverNote: (id: string, userId: string) => Promise<void>;
-    updateCentreProfile: (id: string, updates: Partial<Centre>) => Promise<void>;
     updateCentreSettings: (updates: Partial<CentreSettings>) => Promise<void>;
     updateStaffRole: (profileId: string, role: UserRole) => Promise<void>;
     inviteUser: (email: string) => Promise<void>;
@@ -96,9 +95,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 supabase.from('centre_settings').select('*').maybeSingle(),
                 supabase.from('weekly_operations_logs').select('*'),
                 supabase.from('staff_logs').select('*'),
-                supabase.from('equipment_logs').select('id, centre_id, modality_id, modality_name, reason_category, description, resolution, start_time, end_time, is_ongoing, logged_by, logged_by_name, created_at'),
+                supabase.from('equipment_logs').select('id, modality_id, modality_name, reason_category, description, resolution, start_time, end_time, is_ongoing, logged_by, logged_by_name, created_at'),
                 supabase.from('handover_notes').select('*'),
-                supabase.from('profiles').select('id, email, display_name, role, centre_id, created_at, updated_at')
+                supabase.from('profiles').select('id, email, display_name, role, created_at, updated_at')
             ]);
 
             const modalities = modalitiesRes?.data || [];
@@ -237,7 +236,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         try {
             const { error } = await supabase.from('activity_logs').upsert([{
                 id: log.id,
-                centre_id: log.centre_id,
                 date: log.date,
                 shift: log.shift,
                 logged_by: log.logged_by,
@@ -246,13 +244,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 films: log.films,
                 challenges: log.challenges,
                 resolutions: log.resolutions
-            }], { onConflict: 'centre_id,date,shift' });
+            }], { onConflict: 'date,shift' });
 
             if (error) throw error;
 
             setState(prev => {
                 const existingIndex = prev.shiftActivityLogs.findIndex(
-                    r => r.date === log.date && r.shift === log.shift && r.centre_id === log.centre_id
+                    r => r.date === log.date && r.shift === log.shift
                 );
                 if (existingIndex >= 0) {
                     const newLogs = [...prev.shiftActivityLogs];
@@ -272,19 +270,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         try {
             const { error } = await supabase.from('contrast_logs').upsert([{
                 id: log.id,
-                centre_id: log.centre_id,
                 date: log.date,
                 shift: log.shift,
                 logged_by: log.logged_by,
                 logged_by_name: log.logged_by_name,
                 entries: log.entries
-            }], { onConflict: 'centre_id,date,shift' });
+            }], { onConflict: 'date,shift' });
 
             if (error) throw error;
 
             setState(prev => {
                 const existingIndex = prev.shiftContrastLogs.findIndex(
-                    r => r.date === log.date && r.shift === log.shift && r.centre_id === log.centre_id
+                    r => r.date === log.date && r.shift === log.shift
                 );
                 if (existingIndex >= 0) {
                     const newLogs = [...prev.shiftContrastLogs];
@@ -444,16 +441,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
     };
 
-    const updateCentreProfile = async (id: string, updates: Partial<Centre>) => {
-        try {
-            const { error } = await supabase.from('centres').update(updates).eq('id', id);
-            if (error) throw error;
-        } catch (error) {
-            console.error('Error updating centre:', error);
-            showToast('Failed to update centre profile. Please try again.', 'error');
-            throw error;
-        }
-    };
+
 
     const updateCentreSettings = async (updates: Partial<CentreSettings>) => {
         try {
@@ -465,21 +453,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 if (error) throw error;
                 setState(prev => ({ ...prev, centreSettings: { ...prev.centreSettings!, ...updates } }));
             } else {
-                const { data: { user: authUser } } = await supabase.auth.getUser();
-                const { data: profile } = authUser
-                    ? await supabase.from('profiles').select('centre_id').eq('id', authUser.id).single()
-                    : { data: null };
-
-                const centreId = profile?.centre_id;
-                if (!centreId) {
-                    showToast('Cannot save settings: no centre linked to your account.', 'error');
-                    return;
-                }
-
-                const newRow = { centre_id: centreId, ...updates };
+                // If there are no settings at all, insert the first row
                 const { data, error } = await supabase
                     .from('centre_settings')
-                    .insert([newRow])
+                    .insert([updates])
                     .select()
                     .single();
                 if (error) throw error;
@@ -529,7 +506,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             updateEquipmentLog,
             addHandoverNote,
             acknowledgeHandoverNote,
-            updateCentreProfile,
             updateCentreSettings,
             updateStaffRole,
             inviteUser,

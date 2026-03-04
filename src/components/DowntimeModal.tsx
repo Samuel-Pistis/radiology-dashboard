@@ -6,7 +6,6 @@ import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
 import { AlertTriangle } from 'lucide-react';
 import type { EquipmentLog } from '@/types';
-import { useCentre } from '../hooks/useCentre';
 
 const REASON_CATEGORIES = [
     'Power failure',
@@ -36,7 +35,6 @@ export const DowntimeModal: React.FC<DowntimeModalProps> = ({
 }) => {
     const { modalities, addEquipmentLog } = useAppContext();
     const { user } = useAuth();
-    const { centreId } = useCentre();
     const { showToast } = useToast();
 
     const nowStr = toLocalDatetimeString(new Date());
@@ -68,7 +66,6 @@ export const DowntimeModal: React.FC<DowntimeModalProps> = ({
         try {
             const log: EquipmentLog = {
                 id: `eq-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-                centre_id: centreId,
                 modality_id: modalityId,
                 modality_name: selectedModality?.name || modalityId,
                 reason_category: reasonCategory,

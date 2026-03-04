@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('id, display_name, role, centre_id')
+                .select('id, display_name, role')
                 .eq('id', userId)
                 .single();
 
@@ -64,7 +64,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     name: email?.split('@')[0] || 'Unknown User',
                     role: (email?.includes('admin') ? 'admin' : 'radiology_user') as UserRole,
                     email: email ?? undefined,
-                    centre_id: undefined,
                 });
             } else if (data) {
                 setUser({
@@ -72,7 +71,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     name: data.display_name,
                     role: data.role as UserRole,
                     email,
-                    centre_id: data.centre_id ?? undefined,
                 });
             }
         } catch (e) {
