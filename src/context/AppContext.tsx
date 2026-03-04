@@ -74,19 +74,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const fetchInitialData = async () => {
             try {
                 const [
-                    { data: modalities },
-                    { data: locations },
-                    { data: contrastTypes },
-                    { data: activityLogs },
-                    { data: shiftActivityLogs },
-                    { data: shiftContrastLogs },
-                    { data: contrastRecords },
-                    { data: centreSettings },
-                    { data: weeklyOpsLogs },
-                    { data: staffLogs },
-                    { data: equipmentLogs },
-                    { data: handoverNotes },
-                    { data: profiles }
+                    modalitiesRes,
+                    locationsRes,
+                    contrastTypesRes,
+                    activityLogsRes,
+                    shiftActivityLogsRes,
+                    shiftContrastLogsRes,
+                    contrastRecordsRes,
+                    centreSettingsRes,
+                    weeklyOpsLogsRes,
+                    staffLogsRes,
+                    equipmentLogsRes,
+                    handoverNotesRes,
+                    profilesRes
                 ] = await Promise.all([
                     supabase.from('modalities').select('*'),
                     supabase.from('locations').select('*'),
@@ -103,8 +103,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     supabase.from('profiles').select('id, email, display_name, role, centre_id, created_at, updated_at')
                 ]);
 
+                const modalities = modalitiesRes?.data || [];
+                const locations = locationsRes?.data || [];
+                const contrastTypes = contrastTypesRes?.data || [];
+                const activityLogs = activityLogsRes?.data || [];
+                const shiftActivityLogs = shiftActivityLogsRes?.data || [];
+                const shiftContrastLogs = shiftContrastLogsRes?.data || [];
+                const contrastRecords = contrastRecordsRes?.data || [];
+                const centreSettings = centreSettingsRes?.data || null;
+                const weeklyOpsLogs = weeklyOpsLogsRes?.data || [];
+                const staffLogs = staffLogsRes?.data || [];
+                const equipmentLogs = equipmentLogsRes?.data || [];
+                const handoverNotes = handoverNotesRes?.data || [];
+                const profiles = profilesRes?.data || [];
+
                 // Map database columns back to camelCase frontend models
-                const mappedActivityLogs = (activityLogs || []).map(log => ({
+                const mappedActivityLogs = (activityLogs || []).map((log: any) => ({
                     id: log.id,
                     date: log.date,
                     modalityId: log.modality_id,
@@ -115,7 +129,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     revenueAmount: Number(log.revenue_amount)
                 }));
 
-                const mappedWeeklyOpsLogs = (weeklyOpsLogs || []).map(log => ({
+                const mappedWeeklyOpsLogs = (weeklyOpsLogs || []).map((log: any) => ({
                     id: log.id,
                     weekStartDate: log.week_start_date,
                     weekEndDate: log.week_end_date,
@@ -128,7 +142,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 }));
 
                 const finalContrastTypes = (contrastTypes && contrastTypes.length > 0)
-                    ? [...contrastTypes, ...defaultState.contrastTypes.filter(d => !contrastTypes.some(c => c.name === d.name))]
+                    ? [...contrastTypes, ...defaultState.contrastTypes.filter(d => !contrastTypes.some((c: any) => c.name === d.name))]
                     : defaultState.contrastTypes;
 
                 const parsedSettings = centreSettings ? centreSettings : null;
@@ -429,11 +443,38 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     const updateCentreSettings = async (updates: Partial<CentreSettings>) => {
-        if (!state.centreSettings) return;
         try {
-            const { error } = await supabase.from('centre_settings').update(updates).eq('id', state.centreSettings.id);
-            if (error) throw error;
-            setState(prev => ({ ...prev, centreSettings: { ...prev.centreSettings!, ...updates } }));
+            if (state.centreSettings) {
+                // Row exists — update it
+                const { error } = await supabase
+                    .from('centre_settings')
+                    .update(updates)
+                    .eq('id', state.centreSettings.id);
+                if (error) throw error;
+                setState(prev => ({ ...prev, centreSettings: { ...prev.centreSettings!, ...updates } }));
+            } else {
+                // No row yet — insert one
+                // We need a centre_id; fetch it from the logged-in user's profile if possible
+                const { data: { user: authUser } } = await supabase.auth.getUser();
+                const { data: profile } = authUser
+                    ? await supabase.from('profiles').select('centre_id').eq('id', authUser.id).single()
+                    : { data: null };
+
+                const centreId = profile?.centre_id;
+                if (!centreId) {
+                    showToast('Cannot save settings: no centre linked to your account.', 'error');
+                    return;
+                }
+
+                const newRow = { centre_id: centreId, ...updates };
+                const { data, error } = await supabase
+                    .from('centre_settings')
+                    .insert([newRow])
+                    .select()
+                    .single();
+                if (error) throw error;
+                setState(prev => ({ ...prev, centreSettings: data as CentreSettings }));
+            }
         } catch (error) {
             console.error('Error updating settings:', error);
             showToast('Failed to save settings. Please try again.', 'error');

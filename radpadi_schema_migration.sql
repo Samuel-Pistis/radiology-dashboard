@@ -186,90 +186,90 @@ ALTER TABLE handover_notes ENABLE ROW LEVEL SECURITY;
 -- Helper function
 CREATE OR REPLACE FUNCTION get_user_centre_id()
 RETURNS UUID AS $$
-  SELECT centre_id FROM profiles WHERE id = auth.uid()
+  SELECT centre_id FROM profiles WHERE id::uuid::uuid = (auth.uid())::uuid
 $$ LANGUAGE sql SECURITY DEFINER STABLE;
 
 -- RLS POLICIES (Using DO blocks to skip if they already exist, or just DROP IF EXISTS and CREATE)
 -- Profiles
 DROP POLICY IF EXISTS "Users read own profile" ON profiles;
-CREATE POLICY "Users read own profile" ON profiles FOR SELECT USING (id = auth.uid());
+CREATE POLICY "Users read own profile" ON profiles FOR SELECT USING (id::uuid::uuid = (auth.uid())::uuid);
 DROP POLICY IF EXISTS "Admins read centre profiles" ON profiles;
 CREATE POLICY "Admins read centre profiles" ON profiles FOR SELECT USING (
-  centre_id = get_user_centre_id()
-  AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
+  centre_id::uuid = get_user_centre_id()
+  AND EXISTS (SELECT 1 FROM profiles WHERE id::uuid::uuid = (auth.uid())::uuid AND role IN ('admin', 'superadmin'))
 );
 
 -- Centre Settings
 DROP POLICY IF EXISTS "Centre members read settings" ON centre_settings;
-CREATE POLICY "Centre members read settings" ON centre_settings FOR SELECT USING (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members read settings" ON centre_settings FOR SELECT USING (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Admins manage settings" ON centre_settings;
 CREATE POLICY "Admins manage settings" ON centre_settings FOR ALL USING (
-  centre_id = get_user_centre_id()
-  AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
+  centre_id::uuid = get_user_centre_id()
+  AND EXISTS (SELECT 1 FROM profiles WHERE id::uuid = (auth.uid())::uuid AND role IN ('admin', 'superadmin'))
 );
 
 -- Activity Logs
 DROP POLICY IF EXISTS "Centre members read activity logs" ON activity_logs;
-CREATE POLICY "Centre members read activity logs" ON activity_logs FOR SELECT USING (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members read activity logs" ON activity_logs FOR SELECT USING (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Centre members insert activity logs" ON activity_logs;
-CREATE POLICY "Centre members insert activity logs" ON activity_logs FOR INSERT WITH CHECK (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members insert activity logs" ON activity_logs FOR INSERT WITH CHECK (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Authors or admins update activity logs" ON activity_logs;
 CREATE POLICY "Authors or admins update activity logs" ON activity_logs FOR UPDATE USING (
-  centre_id = get_user_centre_id()
-  AND (logged_by = auth.uid() OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin')))
+  centre_id::uuid = get_user_centre_id()
+  AND (logged_by::uuid::uuid = (auth.uid())::uuid OR EXISTS (SELECT 1 FROM profiles WHERE id::uuid::uuid = (auth.uid())::uuid AND role IN ('admin', 'superadmin')))
 );
 
 -- Contrast Logs
 DROP POLICY IF EXISTS "Centre members read contrast logs" ON contrast_logs;
-CREATE POLICY "Centre members read contrast logs" ON contrast_logs FOR SELECT USING (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members read contrast logs" ON contrast_logs FOR SELECT USING (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Centre members insert contrast logs" ON contrast_logs;
-CREATE POLICY "Centre members insert contrast logs" ON contrast_logs FOR INSERT WITH CHECK (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members insert contrast logs" ON contrast_logs FOR INSERT WITH CHECK (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Authors or admins update contrast logs" ON contrast_logs;
 CREATE POLICY "Authors or admins update contrast logs" ON contrast_logs FOR UPDATE USING (
-  centre_id = get_user_centre_id()
-  AND (logged_by = auth.uid() OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin')))
+  centre_id::uuid = get_user_centre_id()
+  AND (logged_by::uuid::uuid = (auth.uid())::uuid OR EXISTS (SELECT 1 FROM profiles WHERE id::uuid::uuid = (auth.uid())::uuid AND role IN ('admin', 'superadmin')))
 );
 
 -- Weekly Logs
 DROP POLICY IF EXISTS "Centre members read weekly logs" ON weekly_logs;
-CREATE POLICY "Centre members read weekly logs" ON weekly_logs FOR SELECT USING (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members read weekly logs" ON weekly_logs FOR SELECT USING (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Admins manage weekly logs" ON weekly_logs;
 CREATE POLICY "Admins manage weekly logs" ON weekly_logs FOR ALL USING (
-  centre_id = get_user_centre_id()
-  AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
+  centre_id::uuid = get_user_centre_id()
+  AND EXISTS (SELECT 1 FROM profiles WHERE id::uuid = (auth.uid())::uuid AND role IN ('admin', 'superadmin'))
 );
 
 -- Staff Logs
 DROP POLICY IF EXISTS "Staff read own logs" ON staff_logs;
 CREATE POLICY "Staff read own logs" ON staff_logs FOR SELECT USING (
-  centre_id = get_user_centre_id() AND staff_id = auth.uid()
+  centre_id::uuid = get_user_centre_id() AND staff_id::uuid::uuid = (auth.uid())::uuid
 );
 DROP POLICY IF EXISTS "Admins read all staff logs" ON staff_logs;
 CREATE POLICY "Admins read all staff logs" ON staff_logs FOR SELECT USING (
-  centre_id = get_user_centre_id()
-  AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'superadmin'))
+  centre_id::uuid = get_user_centre_id()
+  AND EXISTS (SELECT 1 FROM profiles WHERE id::uuid = (auth.uid())::uuid AND role IN ('admin', 'superadmin'))
 );
 DROP POLICY IF EXISTS "Staff insert own logs" ON staff_logs;
 CREATE POLICY "Staff insert own logs" ON staff_logs FOR INSERT WITH CHECK (
-  centre_id = get_user_centre_id() AND staff_id = auth.uid()
+  centre_id::uuid = get_user_centre_id() AND staff_id::uuid::uuid = (auth.uid())::uuid
 );
 DROP POLICY IF EXISTS "Staff update own logs" ON staff_logs;
 CREATE POLICY "Staff update own logs" ON staff_logs FOR UPDATE USING (
-  centre_id = get_user_centre_id() AND staff_id = auth.uid()
+  centre_id::uuid = get_user_centre_id() AND staff_id::uuid::uuid = (auth.uid())::uuid
 );
 
 -- Equipment Logs
 DROP POLICY IF EXISTS "Centre members read equipment logs" ON equipment_logs;
-CREATE POLICY "Centre members read equipment logs" ON equipment_logs FOR SELECT USING (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members read equipment logs" ON equipment_logs FOR SELECT USING (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Centre members insert equipment logs" ON equipment_logs;
-CREATE POLICY "Centre members insert equipment logs" ON equipment_logs FOR INSERT WITH CHECK (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members insert equipment logs" ON equipment_logs FOR INSERT WITH CHECK (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Centre members update equipment logs" ON equipment_logs;
-CREATE POLICY "Centre members update equipment logs" ON equipment_logs FOR UPDATE USING (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members update equipment logs" ON equipment_logs FOR UPDATE USING (centre_id::uuid = get_user_centre_id());
 
 -- Handover Notes
 DROP POLICY IF EXISTS "Centre members read handover notes" ON handover_notes;
-CREATE POLICY "Centre members read handover notes" ON handover_notes FOR SELECT USING (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members read handover notes" ON handover_notes FOR SELECT USING (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Centre members insert handover notes" ON handover_notes;
-CREATE POLICY "Centre members insert handover notes" ON handover_notes FOR INSERT WITH CHECK (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members insert handover notes" ON handover_notes FOR INSERT WITH CHECK (centre_id::uuid = get_user_centre_id());
 DROP POLICY IF EXISTS "Centre members update handover notes" ON handover_notes;
-CREATE POLICY "Centre members update handover notes" ON handover_notes FOR UPDATE USING (centre_id = get_user_centre_id());
+CREATE POLICY "Centre members update handover notes" ON handover_notes FOR UPDATE USING (centre_id::uuid = get_user_centre_id());

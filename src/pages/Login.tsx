@@ -1,22 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Activity, UserCog, ArrowRight, ShieldCheck, HeartPulse } from 'lucide-react';
+import { Activity, Mail, Lock, ArrowRight, HeartPulse, AlertCircle } from 'lucide-react';
 
 export const Login: React.FC = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState<string | null>(null);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleLogin = async (role: 'admin' | 'radiology_user') => {
-        setIsLoading(role);
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setIsLoading(true);
         try {
-            await login(role);
-            navigate('/');
-        } catch (error) {
-            console.error('Login failed', error);
+            const { error: loginError } = await login(email, password);
+            if (loginError) {
+                setError(loginError);
+            } else {
+                navigate('/');
+            }
+        } catch {
+            setError('An unexpected error occurred. Please try again.');
         } finally {
-            setIsLoading(null);
+            setIsLoading(false);
         }
     };
 
@@ -25,6 +34,7 @@ export const Login: React.FC = () => {
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="w-full max-w-md rad-card z-10 mx-4">
+                {/* Branding */}
                 <div className="flex flex-col items-center mb-8">
                     <div className="bg-primary/10 p-4 rounded-2xl mb-4 relative">
                         <Activity className="w-10 h-10 text-primary" />
@@ -37,55 +47,77 @@ export const Login: React.FC = () => {
                         <p className="text-text-secondary text-sm">Radiology Management System</p>
                     </div>
                 </div>
-                <div className="space-y-4">
-                    <button
-                        onClick={() => handleLogin('admin')}
-                        disabled={isLoading !== null}
-                        className={`w-full group flex items-center p-4 rounded-xl border transition-all duration-300 ${isLoading === 'admin'
-                            ? 'bg-primary/5 border-primary/30 border-l-4 border-l-primary'
-                            : 'bg-white border-border hover:border-border hover:shadow-sm hover:border-l-4 hover:border-l-primary'
-                            }`}
-                    >
-                        <div className="bg-primary/10 text-primary p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform">
-                            <ShieldCheck className="w-6 h-6" />
-                        </div>
-                        <div className="flex-1 text-left">
-                            <h3 className="font-semibold text-text-primary group-hover:text-primary transition-colors">Admin Portal</h3>
-                            <p className="text-sm text-text-muted font-medium">Full access & settings</p>
-                        </div>
-                        {isLoading === 'admin' ? (
-                            <Activity className="w-5 h-5 text-primary animate-spin" />
-                        ) : (
-                            <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                        )}
-                    </button>
 
+                {/* Login Form */}
+                <form onSubmit={handleLogin} className="space-y-4">
+                    {/* Error banner */}
+                    {error && (
+                        <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+                            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                            <span>{error}</span>
+                        </div>
+                    )}
+
+                    {/* Email */}
+                    <div className="space-y-1.5">
+                        <label htmlFor="email" className="text-sm font-medium text-text-secondary">
+                            Email address
+                        </label>
+                        <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+                            <input
+                                id="email"
+                                type="email"
+                                autoComplete="email"
+                                required
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                placeholder="you@radpadi.com"
+                                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-white text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Password */}
+                    <div className="space-y-1.5">
+                        <label htmlFor="password" className="text-sm font-medium text-text-secondary">
+                            Password
+                        </label>
+                        <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+                            <input
+                                id="password"
+                                type="password"
+                                autoComplete="current-password"
+                                required
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-white text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Submit */}
                     <button
-                        onClick={() => handleLogin('radiology_user')}
-                        disabled={isLoading !== null}
-                        className={`w-full group flex items-center p-4 rounded-xl border transition-all duration-300 ${isLoading === 'radiology_user'
-                            ? 'bg-primary/5 border-primary/30 border-l-4 border-l-primary'
-                            : 'bg-white border-border hover:border-border hover:shadow-sm hover:border-l-4 hover:border-l-primary'
-                            }`}
+                        type="submit"
+                        disabled={isLoading || !email || !password}
+                        className="w-full group flex items-center justify-center gap-2 bg-primary text-white py-3 rounded-xl font-semibold hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40 transition disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                     >
-                        <div className="bg-primary/10 text-primary p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform">
-                            <UserCog className="w-6 h-6" />
-                        </div>
-                        <div className="flex-1 text-left">
-                            <h3 className="font-semibold text-text-primary group-hover:text-primary transition-colors">Radiology Tech</h3>
-                            <p className="text-sm text-text-muted font-medium">Daily logging & reports</p>
-                        </div>
-                        {isLoading === 'radiology_user' ? (
-                            <Activity className="w-5 h-5 text-primary animate-spin" />
+                        {isLoading ? (
+                            <Activity className="w-5 h-5 animate-spin" />
                         ) : (
-                            <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                            <>
+                                Sign in
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                            </>
                         )}
                     </button>
-                </div>
+                </form>
 
                 <div className="mt-8 pt-6 border-t border-border text-center">
                     <p className="text-sm text-text-muted font-medium">
-                        Demo environment. Secure connection verified.
+                        Secure connection verified.
                     </p>
                 </div>
             </div>
