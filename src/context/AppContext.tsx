@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { Modality, DailyActivityLog, DailyContrastRecord, WeeklyOperationsLog, AppState, StaffLog, EquipmentLog, HandoverNote, ActivityLog, ContrastLog, Centre, CentreSettings, UserRole } from '../types';
 import { useToast } from './ToastContext';
+import { supabase } from '../lib/supabase';
 
 interface AppContextType extends AppState {
     isLoading: boolean;
@@ -63,114 +64,127 @@ const defaultState: AppState = {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-import { supabase } from '../lib/supabase';
-
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [state, setState] = useState<AppState>(defaultState);
     const [isLoading, setIsLoading] = useState(true);
     const { showToast } = useToast();
 
+    // Defined outside useEffect so it can be called from anywhere in the component
+    const fetchInitialData = async () => {
+        try {
+            const [
+                modalitiesRes,
+                locationsRes,
+                contrastTypesRes,
+                activityLogsRes,
+                shiftActivityLogsRes,
+                shiftContrastLogsRes,
+                contrastRecordsRes,
+                centreSettingsRes,
+                weeklyOpsLogsRes,
+                staffLogsRes,
+                equipmentLogsRes,
+                handoverNotesRes,
+                profilesRes
+            ] = await Promise.all([
+                supabase.from('modalities').select('*'),
+                supabase.from('locations').select('*'),
+                supabase.from('contrast_types').select('*'),
+                supabase.from('daily_activity_logs').select('*'),
+                supabase.from('activity_logs').select('*'),
+                supabase.from('contrast_logs').select('*'),
+                supabase.from('daily_contrast_records').select('*'),
+                supabase.from('centre_settings').select('*').single(),
+                supabase.from('weekly_operations_logs').select('*'),
+                supabase.from('staff_logs').select('*'),
+                supabase.from('equipment_logs').select('id, centre_id, modality_id, modality_name, reason_category, description, resolution, start_time, end_time, is_ongoing, logged_by, logged_by_name, created_at'),
+                supabase.from('handover_notes').select('*'),
+                supabase.from('profiles').select('id, email, display_name, role, centre_id, created_at, updated_at')
+            ]);
+
+            const modalities = modalitiesRes?.data || [];
+            const locations = locationsRes?.data || [];
+            const contrastTypes = contrastTypesRes?.data || [];
+            const activityLogs = activityLogsRes?.data || [];
+            const shiftActivityLogs = shiftActivityLogsRes?.data || [];
+            const shiftContrastLogs = shiftContrastLogsRes?.data || [];
+            const contrastRecords = contrastRecordsRes?.data || [];
+            const centreSettings = centreSettingsRes?.data || null;
+            const weeklyOpsLogs = weeklyOpsLogsRes?.data || [];
+            const staffLogs = staffLogsRes?.data || [];
+            const equipmentLogs = equipmentLogsRes?.data || [];
+            const handoverNotes = handoverNotesRes?.data || [];
+            const profiles = profilesRes?.data || [];
+
+            const mappedActivityLogs = (activityLogs || []).map((log: any) => ({
+                id: log.id,
+                date: log.date,
+                modalityId: log.modality_id,
+                locationId: log.location_id,
+                totalInvestigations: log.total_investigations,
+                film10x12Used: log.film_10x12_used,
+                film14x17Used: log.film_14x17_used,
+                revenueAmount: Number(log.revenue_amount)
+            }));
+
+            const mappedWeeklyOpsLogs = (weeklyOpsLogs || []).map((log: any) => ({
+                id: log.id,
+                weekStartDate: log.week_start_date,
+                weekEndDate: log.week_end_date,
+                challenges: log.challenges,
+                resolutions: log.resolutions,
+                revenue: log.revenue,
+                investigations: log.investigations,
+                films: log.films,
+                contrast: log.contrast
+            }));
+
+            const finalContrastTypes = (contrastTypes && contrastTypes.length > 0)
+                ? [...contrastTypes, ...defaultState.contrastTypes.filter(d => !contrastTypes.some((c: any) => c.name === d.name))]
+                : defaultState.contrastTypes;
+
+            const parsedSettings = centreSettings ? centreSettings : null;
+
+            setState({
+                modalities: (modalities && modalities.length > 0) ? modalities : defaultState.modalities,
+                locations: (locations && locations.length > 0) ? locations : defaultState.locations,
+                filmSizes: defaultState.filmSizes,
+                contrastTypes: finalContrastTypes,
+                activityLogs: mappedActivityLogs,
+                shiftActivityLogs: shiftActivityLogs || [],
+                shiftContrastLogs: shiftContrastLogs || [],
+                contrastRecords: contrastRecords || [],
+                centreSettings: parsedSettings,
+                weeklyOpsLogs: mappedWeeklyOpsLogs,
+                staffLogs: staffLogs || [],
+                equipmentLogs: equipmentLogs || [],
+                handoverNotes: handoverNotes || [],
+                staffProfiles: profiles || [],
+            });
+        } catch (error) {
+            console.error('Error fetching data from Supabase:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchInitialData = async () => {
-            try {
-                const [
-                    modalitiesRes,
-                    locationsRes,
-                    contrastTypesRes,
-                    activityLogsRes,
-                    shiftActivityLogsRes,
-                    shiftContrastLogsRes,
-                    contrastRecordsRes,
-                    centreSettingsRes,
-                    weeklyOpsLogsRes,
-                    staffLogsRes,
-                    equipmentLogsRes,
-                    handoverNotesRes,
-                    profilesRes
-                ] = await Promise.all([
-                    supabase.from('modalities').select('*'),
-                    supabase.from('locations').select('*'),
-                    supabase.from('contrast_types').select('*'),
-                    supabase.from('daily_activity_logs').select('*'),
-                    supabase.from('activity_logs').select('*'),
-                    supabase.from('contrast_logs').select('*'),
-                    supabase.from('daily_contrast_records').select('*'),
-                    supabase.from('centre_settings').select('*').single(), // Assuming 1 row per centre for now
-                    supabase.from('weekly_operations_logs').select('*'),
-                    supabase.from('staff_logs').select('*'),
-                    supabase.from('equipment_logs').select('id, centre_id, modality_id, modality_name, reason_category, description, resolution, start_time, end_time, is_ongoing, logged_by, logged_by_name, created_at'),
-                    supabase.from('handover_notes').select('*'),
-                    supabase.from('profiles').select('id, email, display_name, role, centre_id, created_at, updated_at')
-                ]);
-
-                const modalities = modalitiesRes?.data || [];
-                const locations = locationsRes?.data || [];
-                const contrastTypes = contrastTypesRes?.data || [];
-                const activityLogs = activityLogsRes?.data || [];
-                const shiftActivityLogs = shiftActivityLogsRes?.data || [];
-                const shiftContrastLogs = shiftContrastLogsRes?.data || [];
-                const contrastRecords = contrastRecordsRes?.data || [];
-                const centreSettings = centreSettingsRes?.data || null;
-                const weeklyOpsLogs = weeklyOpsLogsRes?.data || [];
-                const staffLogs = staffLogsRes?.data || [];
-                const equipmentLogs = equipmentLogsRes?.data || [];
-                const handoverNotes = handoverNotesRes?.data || [];
-                const profiles = profilesRes?.data || [];
-
-                // Map database columns back to camelCase frontend models
-                const mappedActivityLogs = (activityLogs || []).map((log: any) => ({
-                    id: log.id,
-                    date: log.date,
-                    modalityId: log.modality_id,
-                    locationId: log.location_id,
-                    totalInvestigations: log.total_investigations,
-                    film10x12Used: log.film_10x12_used,
-                    film14x17Used: log.film_14x17_used,
-                    revenueAmount: Number(log.revenue_amount)
-                }));
-
-                const mappedWeeklyOpsLogs = (weeklyOpsLogs || []).map((log: any) => ({
-                    id: log.id,
-                    weekStartDate: log.week_start_date,
-                    weekEndDate: log.week_end_date,
-                    challenges: log.challenges,
-                    resolutions: log.resolutions,
-                    revenue: log.revenue,
-                    investigations: log.investigations,
-                    films: log.films,
-                    contrast: log.contrast
-                }));
-
-                const finalContrastTypes = (contrastTypes && contrastTypes.length > 0)
-                    ? [...contrastTypes, ...defaultState.contrastTypes.filter(d => !contrastTypes.some((c: any) => c.name === d.name))]
-                    : defaultState.contrastTypes;
-
-                const parsedSettings = centreSettings ? centreSettings : null;
-
-                setState({
-                    modalities: (modalities && modalities.length > 0) ? modalities : defaultState.modalities,
-                    locations: (locations && locations.length > 0) ? locations : defaultState.locations,
-                    filmSizes: defaultState.filmSizes, // Static in frontend for now
-                    contrastTypes: finalContrastTypes,
-                    activityLogs: mappedActivityLogs,
-                    shiftActivityLogs: shiftActivityLogs || [],
-                    shiftContrastLogs: shiftContrastLogs || [],
-                    contrastRecords: contrastRecords || [],
-                    centreSettings: parsedSettings,
-                    weeklyOpsLogs: mappedWeeklyOpsLogs,
-                    staffLogs: staffLogs || [],
-                    equipmentLogs: equipmentLogs || [],
-                    handoverNotes: handoverNotes || [],
-                    staffProfiles: profiles || [],
-                });
-            } catch (error) {
-                console.error('Error fetching data from Supabase:', error);
-            } finally {
+        // Only fetch data once a valid Supabase session exists.
+        // This prevents hanging on the loading screen when Supabase RLS
+        // blocks unauthenticated table reads.
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+            if (session?.user) {
+                setIsLoading(true);
+                await fetchInitialData();
+            } else {
+                setState(defaultState);
                 setIsLoading(false);
             }
-        };
+        });
 
-        fetchInitialData();
+        return () => {
+            subscription.unsubscribe();
+        };
     }, []);
 
     const addModality = async (modality: Modality) => {
@@ -445,7 +459,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const updateCentreSettings = async (updates: Partial<CentreSettings>) => {
         try {
             if (state.centreSettings) {
-                // Row exists — update it
                 const { error } = await supabase
                     .from('centre_settings')
                     .update(updates)
@@ -453,8 +466,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 if (error) throw error;
                 setState(prev => ({ ...prev, centreSettings: { ...prev.centreSettings!, ...updates } }));
             } else {
-                // No row yet — insert one
-                // We need a centre_id; fetch it from the logged-in user's profile if possible
                 const { data: { user: authUser } } = await supabase.auth.getUser();
                 const { data: profile } = authUser
                     ? await supabase.from('profiles').select('centre_id').eq('id', authUser.id).single()
