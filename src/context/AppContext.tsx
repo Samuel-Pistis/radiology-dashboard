@@ -65,7 +65,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [state, setState] = useState<AppState>(defaultState);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { showToast } = useToast();
 
     // Defined outside useEffect so it can be called from anywhere in the component

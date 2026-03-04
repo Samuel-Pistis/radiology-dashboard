@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AppProvider, useAppContext } from './context/AppContext';
+import { AppProvider } from './context/AppContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { Layout } from './components/Layout';
@@ -36,22 +36,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AppRoutes = () => {
-  const { isLoading: isAppLoading } = useAppContext();
-  const { isLoading: isAuthLoading } = useAuth();
-
-  if (isAppLoading || isAuthLoading) {
-    return (
-      <div className="min-h-screen bg-surface flex flex-col items-center justify-center">
-        <Activity className="w-12 h-12 text-primary animate-pulse mb-4" />
-        <p className="text-text-secondary font-medium tracking-wide">Connecting to RadPadi Secure Database...</p>
-        <div className="flex gap-2 mt-4 text-xs font-mono text-text-muted opacity-50">
-          <span>DB: {isAppLoading ? 'WAITING' : 'OK'}</span> |
-          <span>AUTH: {isAuthLoading ? 'WAITING' : 'OK'}</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <Router>
       <Routes>
