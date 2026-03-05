@@ -34,14 +34,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         initializeAuth();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, _session) => {
-            if (event === 'SIGNED_OUT') {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session?.user) {
+                // Profile fetch happens here so login() can return as soon as
+                // signInWithPassword succeeds — shaving a full DB round-trip off
+                // the time the login button spins.
+                await fetchAndSetUserProfile(session.user.id, session.user.email);
+                setIsLoading(false);
+            } else if (event === 'SIGNED_OUT') {
                 setUser(null);
+                setIsLoading(false);
+            } else {
+                // INITIAL_SESSION handled by initializeAuth() above.
+                // TOKEN_REFRESHED / USER_UPDATED: no action needed.
+                setIsLoading(false);
             }
-            // SIGNED_IN: login() already called fetchAndSetUserProfile eagerly before navigate.
-            // INITIAL_SESSION: getSession() above already handled the page-reload case.
-            // TOKEN_REFRESHED / USER_UPDATED: no action needed.
-            setIsLoading(false);
         });
 
         return () => {
@@ -81,14 +88,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const login = async (email: string, password: string): Promise<{ error: string | null }> => {
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) {
-                return { error: error.message };
-            }
-            // Eagerly fetch the profile so user is set before the caller navigates
-            if (data.session?.user) {
-                await fetchAndSetUserProfile(data.session.user.id, data.session.user.email);
-            }
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) return { error: error.message };
+            // Profile fetch is handled by onAuthStateChange(SIGNED_IN) so we don't
+            // block here. Set isLoading=true so ProtectedRoute waits for the profile
+            // rather than redirecting back to /login while user is still null.
+            setIsLoading(true);
             return { error: null };
         } catch (err) {
             console.error('Login error', err);

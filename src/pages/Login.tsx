@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { Activity, Mail, Lock, ArrowRight, HeartPulse, AlertCircle } from 'lucide-react';
 
 export const Login: React.FC = () => {
@@ -10,6 +11,14 @@ export const Login: React.FC = () => {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Fire a lightweight DB ping as soon as the login page loads.
+        // Supabase free-tier projects auto-pause after inactivity; the first
+        // request takes 5-15s to wake them up. By pinging now, Supabase will
+        // be warm by the time the user finishes typing and clicks Sign In.
+        supabase.from('centre_settings').select('id').limit(1);
+    }, []);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
