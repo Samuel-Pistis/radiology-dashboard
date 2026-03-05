@@ -180,11 +180,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         // Only fetch data once a valid Supabase session exists.
         // This prevents hanging on the loading screen when Supabase RLS
         // blocks unauthenticated table reads.
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            if (session?.user) {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
+                // Only (re)load data on actual sign-in or page reload.
+                // TOKEN_REFRESHED / USER_UPDATED do not need a full data reload.
                 setIsLoading(true);
                 await fetchInitialData();
-            } else {
+            } else if (event === 'SIGNED_OUT') {
                 setState(defaultState);
                 setIsLoading(false);
             }

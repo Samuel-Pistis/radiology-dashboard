@@ -34,12 +34,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         initializeAuth();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'SIGNED_IN' && session?.user) {
-                await fetchAndSetUserProfile(session.user.id, session.user.email);
-            } else if (event === 'SIGNED_OUT') {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, _session) => {
+            if (event === 'SIGNED_OUT') {
                 setUser(null);
             }
+            // SIGNED_IN: login() already called fetchAndSetUserProfile eagerly before navigate.
+            // INITIAL_SESSION: getSession() above already handled the page-reload case.
+            // TOKEN_REFRESHED / USER_UPDATED: no action needed.
             setIsLoading(false);
         });
 
