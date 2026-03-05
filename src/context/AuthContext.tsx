@@ -80,12 +80,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const login = async (email: string, password: string): Promise<{ error: string | null }> => {
         try {
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) {
                 return { error: error.message };
             }
-            // fetchAndSetUserProfile is called automatically via onAuthStateChange SIGNED_IN
-            // isLoading is managed by onAuthStateChange, not here
+            // Eagerly fetch the profile so user is set before the caller navigates
+            if (data.session?.user) {
+                await fetchAndSetUserProfile(data.session.user.id, data.session.user.email);
+            }
             return { error: null };
         } catch (err) {
             console.error('Login error', err);
