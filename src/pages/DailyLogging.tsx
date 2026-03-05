@@ -61,7 +61,7 @@ const defaultEntry = (): ContrastEntry => ({
 
 export const DailyLogging: React.FC = () => {
     const {
-        modalities, filmSizes, saveShiftActivityLog, shiftActivityLogs,
+        modalities, filmSizes, contrastTypes, saveShiftActivityLog, shiftActivityLogs,
         centreSettings, saveShiftContrastLog, shiftContrastLogs, addHandoverNote,
     } = useAppContext();
     const { user } = useAuth();
@@ -195,10 +195,12 @@ export const DailyLogging: React.FC = () => {
 
     const activeContrastTypes = useMemo<ContrastType[]>(() => {
         const raw = centreSettings?.contrast_types;
-        if (!raw) return [];
-        if (Array.isArray(raw)) return raw;
-        return Object.values(raw) as ContrastType[];
-    }, [centreSettings]);
+        // Fall back to the contrast_types table data when centreSettings
+        // hasn't been configured yet, so inputs are always visible.
+        if (!raw) return contrastTypes;
+        const vals: ContrastType[] = Array.isArray(raw) ? raw : Object.values(raw) as ContrastType[];
+        return vals.length > 0 ? vals : contrastTypes;
+    }, [centreSettings, contrastTypes]);
 
     const minThresholds: { min_ml: number; min_bottles: number } =
         centreSettings?.contrast_alerts ?? { min_ml: 100, min_bottles: 2 };
@@ -792,7 +794,7 @@ const ShiftContrastPanel: React.FC<ShiftContrastPanelProps> = ({
                                                     type="number" min="0"
                                                     value={entry.receivedMls || ''}
                                                     onChange={e => onChange(c.id, 'receivedMls', parseInt(e.target.value) || 0)}
-                                                    className="w-full min-h-[40px] bg-white border border-border rounded-lg px-3 py-2 text-center font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                                    className="w-full min-h-[40px] bg-white border-2 border-gray-200 rounded-lg px-3 py-2 text-center font-medium focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                                     placeholder="0"
                                                 />
                                             </td>
@@ -801,7 +803,7 @@ const ShiftContrastPanel: React.FC<ShiftContrastPanelProps> = ({
                                                     type="number" min="0"
                                                     value={entry.receivedBottles || ''}
                                                     onChange={e => onChange(c.id, 'receivedBottles', parseInt(e.target.value) || 0)}
-                                                    className="w-full min-h-[40px] bg-white border border-border rounded-lg px-3 py-2 text-center font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                                    className="w-full min-h-[40px] bg-white border-2 border-gray-200 rounded-lg px-3 py-2 text-center font-medium focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                                     placeholder="0"
                                                 />
                                             </td>
@@ -810,7 +812,7 @@ const ShiftContrastPanel: React.FC<ShiftContrastPanelProps> = ({
                                                     type="number" min="0"
                                                     value={entry.consumedMls || ''}
                                                     onChange={e => onChange(c.id, 'consumedMls', parseInt(e.target.value) || 0)}
-                                                    className={`w-full min-h-[40px] border rounded-lg px-3 py-2 text-center font-medium focus:ring-1 outline-none transition-all ${hasDiscrepancy ? 'border-red-300 bg-red-50 text-red-700 focus:border-red-400 focus:ring-red-200' : 'bg-white border-border focus:border-primary focus:ring-primary'}`}
+                                                    className={`w-full min-h-[40px] border rounded-lg px-3 py-2 text-center font-medium focus:ring-1 outline-none transition-all ${hasDiscrepancy ? 'border-red-300 bg-red-50 text-red-700 focus:border-red-400 focus:ring-red-200' : 'bg-white border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20'}`}
                                                     placeholder="0"
                                                 />
                                             </td>
@@ -819,7 +821,7 @@ const ShiftContrastPanel: React.FC<ShiftContrastPanelProps> = ({
                                                     type="number" min="0"
                                                     value={entry.consumedBottles || ''}
                                                     onChange={e => onChange(c.id, 'consumedBottles', parseInt(e.target.value) || 0)}
-                                                    className={`w-full min-h-[40px] border rounded-lg px-3 py-2 text-center font-medium focus:ring-1 outline-none transition-all ${hasDiscrepancy ? 'border-red-300 bg-red-50 text-red-700 focus:border-red-400 focus:ring-red-200' : 'bg-white border-border focus:border-primary focus:ring-primary'}`}
+                                                    className={`w-full min-h-[40px] border rounded-lg px-3 py-2 text-center font-medium focus:ring-1 outline-none transition-all ${hasDiscrepancy ? 'border-red-300 bg-red-50 text-red-700 focus:border-red-400 focus:ring-red-200' : 'bg-white border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20'}`}
                                                     placeholder="0"
                                                 />
                                             </td>
