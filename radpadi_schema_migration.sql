@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT NOT NULL,
   display_name TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('admin', 'radiographer', 'radiology_user')),
+  role TEXT NOT NULL CHECK (role IN ('admin', 'radiology_user')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS weekly_operations_logs (
   week_end_date DATE NOT NULL,
   challenges TEXT DEFAULT '',
   resolutions TEXT DEFAULT '',
-  revenue JSONB DEFAULT '{}',
+  revenue JSONB DEFAULT '[]',
   investigations JSONB DEFAULT '[]',
   films JSONB DEFAULT '[]',
   contrast JSONB DEFAULT '[]',
@@ -100,21 +100,11 @@ CREATE TABLE IF NOT EXISTS centre_settings (
   name TEXT DEFAULT 'My Radiology Centre',
   address TEXT DEFAULT '',
   contact_info TEXT DEFAULT '',
-  modalities JSONB DEFAULT '["CT","MRI","X-ray","Ultrasound","Fluoroscopy","Mammography"]',
-  contrast_types JSONB DEFAULT '[
-    {"name":"Jodascan","default_bottle_ml":50,"unit_cost":0},
-    {"name":"Jodascan 300","default_bottle_ml":100,"unit_cost":0},
-    {"name":"Hexopack 350","default_bottle_ml":100,"unit_cost":0},
-    {"name":"Gastrolux","default_bottle_ml":250,"unit_cost":0},
-    {"name":"MRI Contrast","default_bottle_ml":15,"unit_cost":0}
-  ]',
-  film_sizes JSONB DEFAULT '["14x17","10x12","8x10"]',
-  shifts JSONB DEFAULT '[
-    {"name":"Morning","start_time":"08:00","end_time":"16:00"},
-    {"name":"Afternoon","start_time":"16:00","end_time":"00:00"},
-    {"name":"Night","start_time":"00:00","end_time":"08:00"}
-  ]',
-  contrast_alerts JSONB DEFAULT '[]',
+  modalities JSONB DEFAULT '{}',
+  contrast_types JSONB DEFAULT '{}',
+  film_sizes JSONB DEFAULT '{}',
+  shifts JSONB DEFAULT '{}',
+  contrast_alerts JSONB DEFAULT '{"min_ml": 100, "min_bottles": 5}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
