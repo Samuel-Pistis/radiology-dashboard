@@ -34,14 +34,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         initializeAuth();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, _session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, _session) => {
             if (event === 'SIGNED_OUT') {
                 setUser(null);
+                setIsLoading(false);
             }
-            // SIGNED_IN: login() already calls fetchAndSetUserProfile before returning.
-            // INITIAL_SESSION: initializeAuth() above handles page-reload profile fetch.
-            // TOKEN_REFRESHED / USER_UPDATED: no action needed.
-            setIsLoading(false);
+            // SIGNED_IN     → login() awaits fetchAndSetUserProfile before returning,
+            //                  so user is set before navigate('/') is called.
+            // INITIAL_SESSION → initializeAuth() above fetches the profile and then
+            //                  calls setIsLoading(false) in its finally block.
+            //                  Calling setIsLoading(false) here would race with that
+            //                  and clear the loading flag before user is set.
+            // TOKEN_REFRESHED / USER_UPDATED → no action needed.
         });
 
         return () => {
