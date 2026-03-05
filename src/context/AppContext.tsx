@@ -141,7 +141,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 ? [...contrastTypes, ...defaultState.contrastTypes.filter(d => !contrastTypes.some((c: any) => c.name === d.name))]
                 : defaultState.contrastTypes;
 
-            const parsedSettings = centreSettings ? centreSettings : null;
+            const parsedSettings = centreSettings ? {
+                ...centreSettings,
+                contrast_types: (centreSettings.contrast_types && centreSettings.contrast_types.length > 0) ? centreSettings.contrast_types : finalContrastTypes,
+                film_sizes: (centreSettings.film_sizes && centreSettings.film_sizes.length > 0) ? centreSettings.film_sizes : defaultState.filmSizes,
+                shifts: (centreSettings.shifts && centreSettings.shifts.length > 0) ? centreSettings.shifts : [
+                    { name: 'Morning', start_time: '08:00', end_time: '16:00' },
+                    { name: 'Afternoon', start_time: '16:00', end_time: '00:00' },
+                    { name: 'Night', start_time: '00:00', end_time: '08:00' }
+                ],
+                contrast_alerts: centreSettings.contrast_alerts || { min_ml: 100, min_bottles: 5 }
+            } : null;
 
             setState({
                 modalities: (modalities && modalities.length > 0) ? modalities : defaultState.modalities,

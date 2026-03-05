@@ -12,8 +12,9 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     ({ className, label, helperText, error, leftIcon, rightIcon, id, ...props }, ref) => {
 
-        // Generate an ID if one wasn't provided, to link label and input
-        const inputId = id || React.useId();
+        // Generate an ID unconditionally (hooks must not be called conditionally)
+        const generatedId = React.useId();
+        const inputId = id ?? generatedId;
 
         return (
             <div className="flex flex-col w-full">
