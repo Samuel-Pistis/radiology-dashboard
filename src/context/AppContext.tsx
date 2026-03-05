@@ -181,11 +181,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         // This prevents hanging on the loading screen when Supabase RLS
         // blocks unauthenticated table reads.
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
-                // Only (re)load data on actual sign-in or page reload.
-                // TOKEN_REFRESHED / USER_UPDATED do not need a full data reload.
+            if (event === 'INITIAL_SESSION' && session?.user) {
+                // Page reload: block on loading so dashboard doesn't flash empty.
                 setIsLoading(true);
                 await fetchInitialData();
+            } else if (event === 'SIGNED_IN' && session?.user) {
+                // Login flow: user is already navigated to dashboard, fetch in background.
+                // Don't set isLoading so the app renders immediately with defaults.
+                fetchInitialData();
             } else if (event === 'SIGNED_OUT') {
                 setState(defaultState);
                 setIsLoading(false);
