@@ -5,12 +5,19 @@ import { supabase } from '../lib/supabase';
 import { Activity, Mail, Lock, ArrowRight, HeartPulse, AlertCircle } from 'lucide-react';
 
 export const Login: React.FC = () => {
-    const { login } = useAuth();
+    const { user, login } = useAuth();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Navigate as soon as the user object is set in AuthContext.
+    // This fires after onAuthStateChange(SIGNED_IN) fetches the profile —
+    // guaranteeing user is fully populated before we enter the app.
+    useEffect(() => {
+        if (user) navigate('/', { replace: true });
+    }, [user, navigate]);
 
     useEffect(() => {
         // Fire a lightweight DB ping as soon as the login page loads.
@@ -28,15 +35,15 @@ export const Login: React.FC = () => {
             const sanitizedEmail = email.trim().toLowerCase();
             const { error: loginError } = await login(sanitizedEmail, password);
             if (loginError) {
-                console.error("Supabase login rejection:", loginError);
+                console.error('Supabase login rejection:', loginError);
                 setError(loginError);
-            } else {
-                navigate('/');
+                setIsLoading(false);
             }
+            // On success: leave the spinner running until useEffect([user])
+            // navigates away. The button stays disabled while isLoading=true.
         } catch (err) {
-            console.error("Critical login flow catch:", err);
+            console.error('Critical login flow catch:', err);
             setError('An unexpected error occurred. Please try again.');
-        } finally {
             setIsLoading(false);
         }
     };

@@ -16,43 +16,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        // Try to fetch session on load
-        const initializeAuth = async () => {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-
-                if (session?.user) {
-                    await fetchAndSetUserProfile(session.user.id, session.user.email);
-                }
-            } catch (error) {
-                console.error("Supabase auth initialization error (falling back to mock):", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        initializeAuth();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, _session) => {
-            if (event === 'SIGNED_OUT') {
-                setUser(null);
-                setIsLoading(false);
-            }
-            // SIGNED_IN     → login() awaits fetchAndSetUserProfile before returning,
-            //                  so user is set before navigate('/') is called.
-            // INITIAL_SESSION → initializeAuth() above fetches the profile and then
-            //                  calls setIsLoading(false) in its finally block.
-            //                  Calling setIsLoading(false) here would race with that
-            //                  and clear the loading flag before user is set.
-            // TOKEN_REFRESHED / USER_UPDATED → no action needed.
-        });
-
-        return () => {
-            subscription.unsubscribe();
-        };
-    }, []);
-
     const fetchAndSetUserProfile = async (userId: string, email?: string) => {
         try {
             const { data, error } = await supabase
@@ -62,8 +25,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 .single();
 
             if (error) {
-                console.warn('Could not fetch profile entirely, using fallback mapping ->', error.message);
-                // Just map it using mocked details if Supabase setup is incomplete for profiles
+                console.warn('Could not fetch profile, using fallback ->', error.message);
                 setUser({
                     id: userId,
                     name: email?.split('@')[0] || 'Unknown User',
@@ -79,20 +41,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 });
             }
         } catch (e) {
-            console.error("Error fetching user profile:", e);
+            console.error('Error fetching user profile:', e);
         }
     };
 
+    useEffect(() => {
+        // onAuthStateChange is the single source of truth for all auth state.
+        // INITIAL_SESSION fires immediately on listener attachment (handles page reload).
+        // SIGNED_IN fires on every successful login (handles second+ logins).
+        // SIGNED_OUT fires on logout.
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'INITIAL_SESSION') {
+                if (session?.user) {
+                    await fetchAndSetUserProfile(session.user.id, session.user.email);
+                }
+                // Always clear the loading flag after INITIAL_SESSION resolves,
+                // whether or not a session was found.
+                setIsLoading(false);
+            } else if (event === 'SIGNED_IN') {
+                if (session?.user) {
+                    await fetchAndSetUserProfile(session.user.id, session.user.email);
+                }
+                // isLoading stays false (was cleared by INITIAL_SESSION).
+                // Login.tsx navigates via useEffect([user]) once user is set here.
+            } else if (event === 'SIGNED_OUT') {
+                setUser(null);
+                setIsLoading(false);
+            }
+            // TOKEN_REFRESHED / USER_UPDATED → no action needed.
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
+
+    // login() only handles signInWithPassword. Profile fetch and navigation
+    // happen via onAuthStateChange(SIGNED_IN) and Login's useEffect([user]).
     const login = async (email: string, password: string): Promise<{ error: string | null }> => {
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) return { error: error.message };
-            // Fetch profile eagerly so user is set before the caller navigates.
-            // The warmup ping on the login page keeps Supabase warm, so this
-            // adds only ~100ms on top of signInWithPassword.
-            if (data.session?.user) {
-                await fetchAndSetUserProfile(data.session.user.id, data.session.user.email);
-            }
             return { error: null };
         } catch (err) {
             console.error('Login error', err);
@@ -101,11 +90,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const logout = async () => {
-        setUser(null);
         try {
             await supabase.auth.signOut();
+            // SIGNED_OUT event handler clears user and isLoading.
         } catch (error) {
             console.error('Logout error:', error);
+            // signOut failed (e.g. network down) — clear local state manually.
+            setUser(null);
+            setIsLoading(false);
         }
     };
 
